@@ -1,0 +1,60 @@
+[project]
+name = "process-twin"
+version = "0.1.0"
+description = "From written SOP to governed agent workflow: KYC onboarding process twin with tacit-vs-written delta detection, citation guardrails, durable execution, and pre-production evaluation."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Adi Shukla", email = "ashukla_be21@thapar.edu" }]
+
+# Rationale (ground rule 2): every runtime dependency maps to one architectural layer
+# of the brief (§2). Nothing here is speculative — if a layer moves phases, its dep moves too.
+dependencies = [
+    "pydantic>=2.7",           # structured LLM output validation + self-correction loops (§6.1)
+    "pydantic-settings>=2.2",  # 12-factor config; thresholds live in config, never in code
+    "anthropic>=0.40",         # LLM API; model tiering handled in config.py (ground rule 6)
+    "langgraph>=0.2",          # agent runtime: interrupt/resume HITL, conditional edges (§7)
+    "neo4j>=5.20",             # process twin graph driver (§5)
+    "qdrant-client>=1.9",      # clause-level retrieval index (§7.4)
+    "temporalio>=1.7",         # durable execution: signals, retries, resumability (§8)
+    "langfuse>=2.50,<3",       # observability. Pinned <3: tracing.py is written against the
+                               # v2 SDK, and self-hosted v2 needs only postgres (see docker-compose)
+    "fastapi>=0.110",          # approvals inbox + explorer backend (§7.5, §11)
+    "uvicorn>=0.29",
+    "httpx>=0.27",             # policy fetching with checksums (§4.1)
+    "pyyaml>=6.0",             # personas, golden suite, probe definitions
+    "pypdf>=4.2",              # FATF PDF parsing (§4.1)
+    "beautifulsoup4>=4.12",    # FFIEC manual HTML parsing (§4.1)
+]
+
+[project.optional-dependencies]
+# Separate extra because fastembed pulls ONNX runtime + ~100MB of model weights on first use.
+# CI installs only `dev`; retrieval tests degrade gracefully (see tests/test_retrieval.py).
+retrieval = [
+    "fastembed>=0.3",  # BGE embeddings + cross-encoder reranker on CPU, no torch, no API cost
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/process_twin"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

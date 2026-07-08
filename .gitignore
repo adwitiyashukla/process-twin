@@ -1,0 +1,33 @@
+# secrets — never committed; .env.example documents every variable
+.env
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# data that is fetched or produced locally, never committed:
+# raw policy downloads are re-fetched with checksum verification (scripts/fetch_policies.py);
+# FATF-derived processed clauses are regenerated locally (copyright — see docs/architecture.md)
+data/policies/raw/*
+!data/policies/raw/.gitkeep
+data/policies/processed/fatf_*.jsonl
+
+# runtime artifacts
+data/audit/*
+!data/audit/.gitkeep
+data/dead_letter/*
+!data/dead_letter/.gitkeep
+reports/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

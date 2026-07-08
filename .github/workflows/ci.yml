@@ -1,0 +1,22 @@
+# CI runs unit tests + lint only. Integration paths that need docker services
+# (neo4j/qdrant/temporal/langfuse) or an API key run locally via the Makefile;
+# everything CI-side uses the same dry-run/no-op fallbacks the sandbox tests use.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install (dev extra only — retrieval models are not needed for unit tests)
+        run: uv sync --python 3.11 --extra dev
+      - name: Lint
+        run: uv run ruff check .
+      - name: Tests
+        run: uv run pytest
