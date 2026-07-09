@@ -1,0 +1,335 @@
+{
+  "HC-001": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-002": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-003": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D5"
+    ]
+  },
+  "HC-004": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-005": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D4"
+    ]
+  },
+  "HC-006": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-007": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-008": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-009": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D5"
+    ]
+  },
+  "HC-010": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-011": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-012": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D4"
+    ]
+  },
+  "HC-013": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-014": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-015": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-016": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-017": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-018": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-019": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D4"
+    ]
+  },
+  "HC-020": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-021": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D5"
+    ]
+  },
+  "HC-022": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-023": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-024": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-025": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-026": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D4"
+    ]
+  },
+  "HC-027": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-028": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D5"
+    ]
+  },
+  "HC-029": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-030": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-031": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-032": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-033": {
+    "category": "policy_consistent",
+    "deltas": [
+      "D4"
+    ]
+  },
+  "HC-034": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-035": {
+    "category": "policy_consistent",
+    "deltas": []
+  },
+  "HC-036": {
+    "category": "tacit_pattern",
+    "d10_stance": "reject",
+    "deltas": [
+      "D1",
+      "D10"
+    ]
+  },
+  "HC-037": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D8",
+      "D4"
+    ]
+  },
+  "HC-038": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D9",
+      "D7"
+    ]
+  },
+  "HC-039": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D6"
+    ]
+  },
+  "HC-040": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D2",
+      "D5"
+    ]
+  },
+  "HC-041": {
+    "category": "tacit_pattern",
+    "d10_stance": "accept",
+    "deltas": [
+      "D1",
+      "D10"
+    ]
+  },
+  "HC-042": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D8"
+    ]
+  },
+  "HC-043": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D6",
+      "D4"
+    ]
+  },
+  "HC-044": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D9",
+      "D8"
+    ]
+  },
+  "HC-045": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D2"
+    ]
+  },
+  "HC-046": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D1",
+      "D7"
+    ]
+  },
+  "HC-047": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D2",
+      "D3",
+      "D5"
+    ]
+  },
+  "HC-048": {
+    "category": "tacit_pattern",
+    "d10_stance": "accept",
+    "deltas": [
+      "D2",
+      "D6",
+      "D10"
+    ]
+  },
+  "HC-049": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D2",
+      "D3"
+    ]
+  },
+  "HC-050": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D3",
+      "D6",
+      "D4"
+    ]
+  },
+  "HC-051": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D3",
+      "D8",
+      "D6"
+    ]
+  },
+  "HC-052": {
+    "category": "tacit_pattern",
+    "deltas": [
+      "D3",
+      "D9",
+      "D6"
+    ]
+  },
+  "HC-053": {
+    "category": "tacit_pattern",
+    "d10_stance": "reject",
+    "deltas": [
+      "D7",
+      "D10"
+    ]
+  },
+  "HC-054": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "identity_verification_skipped_then_approved"
+  },
+  "HC-055": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "bo_certification_never_collected"
+  },
+  "HC-056": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "sanctions_screen_run_after_decision"
+  },
+  "HC-057": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "edd_required_but_not_performed"
+  },
+  "HC-058": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "callback_skipped_on_50k_account"
+  },
+  "HC-059": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "approved_despite_two_address_mismatches"
+  },
+  "HC-060": {
+    "category": "error",
+    "deltas": [],
+    "error_kind": "pep_hit_dispositioned_without_compliance_signoff"
+  }
+}

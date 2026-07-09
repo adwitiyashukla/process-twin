@@ -1,0 +1,67 @@
+# Six practitioner personas (brief §4.2). Every transcript in transcripts/ is generated
+# from one of these + the interview guide + that persona's assigned deltas (see SYNTHETIC.md).
+# knows_deltas is ground truth for "who voices what" — test_synthetic_integrity verifies
+# each assigned delta is actually voiced in the persona's transcript.
+
+interview_guide:
+  - "Walk me through a standard onboarding, start to finish."
+  - "What does the manual not tell you?"
+  - "When do you escalate, and why?"
+  - "Describe a case that went wrong."
+  - "Which rules do you apply more strictly than written?"
+  - "Which written steps get skipped in practice, and why?"
+
+personas:
+  - id: P1
+    name: Priya Raghavan
+    role: Senior KYC Analyst
+    tenure_years: 8
+    risk_attitude: conservative — "I'd rather over-flag than explain a miss to the regulator"
+    pet_peeves: ["stale utility bills", "case systems that lose free-text notes"]
+    speech_style: precise, numbers-first, cites her own case history
+    knows_deltas: [D1, D4, D5, D8]
+
+  - id: P2
+    name: Marcus Webb
+    role: QA Reviewer
+    tenure_years: 6
+    risk_attitude: strict constructionist — practice should match the written procedure
+    pet_peeves: ["undocumented workarounds", "PO-box addresses waved through"]
+    speech_style: measured, references checklists, mildly exasperated
+    knows_deltas: [D5, D6, D10]
+
+  - id: P3
+    name: Elena Vasquez
+    role: BSA Compliance Officer
+    tenure_years: 12
+    risk_attitude: pragmatic — cares about defensibility in an exam, not ceremony
+    pet_peeves: ["escalations with no written trail", "policy gaps everyone knows about"]
+    speech_style: big-picture, war stories, careful hedging
+    knows_deltas: [D1, D7, D9]
+
+  - id: P4
+    name: Jordan Lee
+    role: Frontline Onboarding Rep
+    tenure_years: 2
+    risk_attitude: customer-first — hates losing a good customer to paperwork
+    pet_peeves: ["callback verification nobody answers", "rejecting people over formatting"]
+    speech_style: fast, informal, concrete examples, admits shortcuts
+    knows_deltas: [D2, D3, D6, D10]
+
+  - id: P5
+    name: Fatima Noor
+    role: EDD Specialist
+    tenure_years: 7
+    risk_attitude: investigative — "the file should tell the story without me in the room"
+    pet_peeves: ["verbal referrals with no ticket", "name-matching tools that can't spell"]
+    speech_style: methodical, case-file oriented, dry humor
+    knows_deltas: [D3, D7, D8, D9]
+
+  - id: P6
+    name: Tom Okafor
+    role: Ops Team Lead
+    tenure_years: 9
+    risk_attitude: throughput-aware — controls matter, queues also matter
+    pet_peeves: ["rework loops", "steps that exist only to cover someone upstream"]
+    speech_style: process-map thinker, defends his sequencing choices openly
+    knows_deltas: [D2, D4, D6]
