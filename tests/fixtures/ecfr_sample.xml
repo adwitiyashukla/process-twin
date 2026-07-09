@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEST FIXTURE: structure mimics eCFR versioner XML for a CFR section; text is fake.
+     Exercises: letter/number/roman nesting, the (h)->(i) letter-vs-roman ambiguity,
+     undesignated continuation paragraphs, multi-marker openings like (b)(1). -->
+<DIV5 N="1010" TYPE="PART">
+  <DIV8 N="§ 1010.999" TYPE="SECTION">
+    <HEAD>§ 1010.999 Test section for parser fixtures.</HEAD>
+    <P>(a) In general. Each covered institution must establish written procedures for widget identification.</P>
+    <P>(b) Identification and verification. With respect to widgets the institution must:</P>
+    <P>(1) Identify each widget owner by obtaining the required information at the time of opening.</P>
+    <P>(2) Verify the identity of each widget owner within a reasonable time, according to risk.</P>
+    <P>(i) For documentary verification, an unexpired government-issued document is required.</P>
+    <P>(ii) For non-documentary verification, independent data sources may be used instead.</P>
+    <P>(c) Definitions. For purposes of this section the following terms apply as stated below.</P>
+    <P>(d) Recordkeeping. Records made under this section shall include all of the following items.</P>
+    <P>(e) Retention. Records shall be retained for five years after the account is closed.</P>
+    <P>(f) Reliance. Reliance on another institution is permitted when reasonable and documented.</P>
+    <P>(g) Exclusions. Certain entities are excluded from the widget ownership requirement entirely.</P>
+    <P>(h) Exemptions. The following accounts are exempt from the requirements of paragraph (b).</P>
+    <P>(i) Special measures. Nothing in this section relieves an institution of other obligations.</P>
+    <P>This undesignated paragraph continues the discussion of special measures without a marker.</P>
+    <P>(j) Effective date. Compliance with this section is required as of the applicability date.</P>
+  </DIV8>
+</DIV5>

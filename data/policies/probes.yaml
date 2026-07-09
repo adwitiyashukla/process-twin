@@ -1,0 +1,71 @@
+# Phase-1 acceptance probes (brief §13): 20 hand-written queries, hit@5 >= 0.9.
+#
+# A probe HITS when any of the top-5 retrieved clause_ids starts with one of its
+# expected_prefixes. Prefix matching (not exact IDs) keeps probes robust to paragraph
+# numbering details while still failing loudly if retrieval lands in the wrong
+# document or the wrong section. Run: make probe   (after: make fetch parse index)
+#
+# Coverage is deliberate: 6 CFR / 4 CIP / 5 CDD / 2 BO / 3 FATF-or-cross — roughly
+# proportional to how often the golden suite (phase 6) will cite each source.
+
+probes:
+  - id: PR-01
+    query: "at what ownership percentage must beneficial owners of a legal entity customer be identified"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-02
+    query: "definition of beneficial owner including the control prong single individual with significant responsibility"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-03
+    query: "certification regarding beneficial owners obtained at the time a new account is opened"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-04
+    query: "which legal entity customers are excluded or exempt from beneficial ownership requirements"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-05
+    query: "how long must beneficial ownership identification records be retained after the account is closed"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-06
+    query: "may a covered financial institution rely on another financial institution to perform beneficial ownership requirements"
+    expected_prefixes: ["CFR-1010.230"]
+  - id: PR-07
+    query: "customer identification program must collect name date of birth address and identification number"
+    expected_prefixes: ["FFIEC-CIP"]
+  - id: PR-08
+    query: "documentary verification of identity using unexpired government issued identification such as passport or driver's license"
+    expected_prefixes: ["FFIEC-CIP"]
+  - id: PR-09
+    query: "non-documentary verification methods such as contacting the customer or checking references with other institutions"
+    expected_prefixes: ["FFIEC-CIP"]
+  - id: PR-10
+    query: "adequate notice to customers that the bank will request information to verify their identity"
+    expected_prefixes: ["FFIEC-CIP"]
+  - id: PR-11
+    query: "risk-based procedures for conducting ongoing customer due diligence"
+    expected_prefixes: ["FFIEC-CDD"]
+  - id: PR-12
+    query: "developing a customer risk profile at account opening"
+    expected_prefixes: ["FFIEC-CDD"]
+  - id: PR-13
+    query: "updating customer information and the risk profile when monitoring detects a change"
+    expected_prefixes: ["FFIEC-CDD"]
+  - id: PR-14
+    query: "enhanced due diligence procedures for customers that pose higher money laundering risk"
+    expected_prefixes: ["FFIEC-CDD"]
+  - id: PR-15
+    query: "understanding the nature and purpose of the customer relationship to assess expected activity"
+    expected_prefixes: ["FFIEC-CDD"]
+  - id: PR-16
+    query: "when must a bank identify and verify beneficial owners of legal entity customers examination procedures"
+    expected_prefixes: ["FFIEC-BO", "CFR-1010.230"]
+  - id: PR-17
+    query: "trigger to obtain an updated beneficial ownership certification when an existing account is renewed or rolled over"
+    expected_prefixes: ["FFIEC-BO", "CFR-1010.230"]
+  - id: PR-18
+    query: "timing of verification of identity may be completed after the establishment of the business relationship"
+    expected_prefixes: ["FATF-R10", "FFIEC-CIP"]
+  - id: PR-19
+    query: "where customer due diligence cannot be completed the institution should not open the account and consider filing a suspicious transaction report"
+    expected_prefixes: ["FATF-R10", "FFIEC-CDD"]
+  - id: PR-20
+    query: "simplified due diligence measures acceptable in lower risk situations"
+    expected_prefixes: ["FATF-R10"]
