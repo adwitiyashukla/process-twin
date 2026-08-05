@@ -2,7 +2,7 @@
 # Windows note: run these from WSL2 (recommended, Docker Desktop integrates with it)
 # or Git Bash with make installed. Every target is also a plain command you can copy.
 
-.PHONY: up down nuke test lint fmt hello hello-dry fetch parse index probe seed diff api run-case worker replay determinism report demo-durability
+.PHONY: up down nuke test verify lint fmt hello hello-dry fetch parse index probe seed diff api run-case worker replay determinism report demo-durability
 
 up:            ## start neo4j, qdrant, temporal(+ui), langfuse; wait until all healthy
 	docker compose up -d
@@ -16,6 +16,12 @@ nuke:          ## stop services AND delete all data volumes (fresh start)
 
 test:          ## run the test suite
 	pytest
+
+verify:        ## everything that runs without Docker or an API key
+	ruff check .
+	python scripts/check_determinism.py
+	pytest
+	python scripts/make_report.py
 
 lint:          ## static checks (ruff)
 	ruff check .

@@ -87,3 +87,53 @@ ledger delta; case-log regeneration is seeded and byte-deterministic, enforced b
 (`ground_truth_tags.json`) used only by evaluation. If labels rode along inside the case
 records, phase-3 extraction would be grading itself on leaked answers — the delta-detection
 P/R numbers would be meaningless.
+
+## Phase 4–6
+
+### Compile workflows from the graph instead of hand-writing them
+The graph is the source of truth. A process change — a new control, a newly detected delta,
+a re-sequenced step — becomes a re-compile, not a code change and a deploy. This is what
+makes the Diagnostics → Composition → Runtime loop a loop rather than three scripts.
+
+### `WorkflowSpec` as a plain data structure, LangGraph as a materialization step
+Every compile rule (cycle rejection, evidence prerequisites, forced HITL placement) is
+unit-testable without importing LangGraph, and the eval runner executes the spec directly.
+Coupling the compiler to the graph library would have made the rules testable only through
+the runtime.
+
+### Cycles rejected in v1
+A cyclic process makes path fidelity and termination guarantees meaningless. The legitimate
+use case people reach for cycles for — retry — belongs in the Temporal retry policy, where
+it gets exponential backoff, a cap, and visibility. Documented in the compiler docstring
+because "why won't it compile" is the first question a reader will have.
+
+### Deterministic atoms wherever auditability demands it
+Thresholds, ownership arithmetic and list logic are code. An examiner can re-derive every
+threshold decision by hand, and eval numbers don't move with model sampling. The LLM seam
+exists for genuine judgment, not for arithmetic that must be reproducible.
+
+### Guardrails ordered by how fundamental the problem is
+delta guard → citation validity → the atom's own reason → confidence gate. The reason the
+reviewer sees should be the most fundamental problem, not the last check that happened to
+run. Low confidence is usually a *symptom* of the atom encoding an unresolved question.
+
+### Temporal over a job queue
+Three things a queue doesn't give you: signals (a case sleeps for days awaiting a human
+while holding no process), replay-based recovery (kill the worker, resume mid-case), and
+durable timers. The cost is the determinism constraint, enforced in CI by AST analysis.
+
+### Audit log independent of Temporal
+Temporal history is an execution record; the audit log is *governance evidence* — append-
+only, hash-chained, replayable, and readable by someone who has never heard of Temporal.
+Keeping them separate means the compliance artifact doesn't depend on the orchestration
+choice. Idempotency keyed on (case_id, step_id, event_type) is what keeps retries from
+writing the same event twice.
+
+### What breaks at 10,000 cases/day, in order
+1. **Activity fan-out on a single worker** → partition workers by task queue, scale out.
+2. **Audit-log append is a read-modify-write** (it reads the whole file to get the previous
+   hash) → keep the chain head in memory/Redis, checkpoint periodically, shard by case
+   prefix with per-shard chains.
+3. **Retrieval latency per atom** → cache embeddings per clause set; the clause corpus is
+   nearly static, so a warm cache serves almost every case.
+Then: Neo4j read replicas for the graph-expansion queries.
