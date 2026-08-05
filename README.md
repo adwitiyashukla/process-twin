@@ -1,5 +1,9 @@
 # process-twin
 
+[![CI](https://github.com/ashukla-be21/process-twin/actions/workflows/ci.yml/badge.svg)](https://github.com/ashukla-be21/process-twin/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+
 **From written SOP to governed agent workflow — with pre-production evaluation and full audit trails.**
 
 Institutional knowledge lives in people's heads. Written policy drifts from what
@@ -166,5 +170,5 @@ test what generalises · Ragas-style semantic eval · policy-update diffing over
 
 ---
 
-Built by Adi Shukla. Stack: Python 3.11, Pydantic v2, LangGraph, Neo4j, Qdrant + BGE,
+MIT licensed. Built by Adi Shukla. Stack: Python 3.11, Pydantic v2, LangGraph, Neo4j, Qdrant + BGE,
 Temporal, Langfuse, FastAPI, pytest/ruff, Docker Compose.

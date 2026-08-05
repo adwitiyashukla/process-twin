@@ -26,6 +26,10 @@ data/dead_letter/*
 !data/dead_letter/.gitkeep
 reports/
 
+# local scaffolding — useful on this machine, noise in a public repo
+RUN-THIS.md
+publish.ps1
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
