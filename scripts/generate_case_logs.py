@@ -192,6 +192,10 @@ def build_tacit(t: int) -> tuple[CaseLog, dict]:
         escalations.append("EDD referral — two address mismatches across documents (house rule)")
         notes_parts.append("Two address mismatches across documents — automatic EDD referral "
                            "per unwritten team rule.")
+    if has("D5"):
+        exceptions.append("proof_of_address_refresh_requested")
+        notes_parts.append("Utility bill dated 72 days ago — requested fresher document per "
+                           "senior team practice (written policy accepts up to 90 days).")
     if has("D6"):
         notes_parts.append("Callback verification not performed: expected activity below $10k "
                            "(informal floor threshold).")
@@ -227,7 +231,7 @@ def build_tacit(t: int) -> tuple[CaseLog, dict]:
         address_is_po_box=bool(d10),
         id_documents=docs,
         tax_id_type="foreign" if has("D9") else "domestic",
-        expected_activity_usd=(4_000 + t * 450) if has("D6") else 30_000 + t * 6_500,
+        expected_activity_usd=(4_000 + (t * 450) % 5_500) if has("D6") else 30_000 + t * 6_500,
         pep_status="close_associate" if has("D7") else "none",
         beneficial_owners=bo,
     )

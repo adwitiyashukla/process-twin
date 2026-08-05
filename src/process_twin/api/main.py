@@ -1,11 +1,14 @@
-"""FastAPI app shell. Phase 0 ships /health only; the approvals inbox (§7.5) and
-explorer endpoints (§11) mount here in phases 4 and 3 respectively."""
+"""FastAPI app. /health from phase 0; explorer endpoints from phase 3; the approvals
+inbox (§7.5) mounts here in phase 4."""
 
 from __future__ import annotations
 
 from fastapi import FastAPI
 
+from process_twin.api.explorer import router as explorer_router
+
 app = FastAPI(title="process-twin", version="0.1.0")
+app.include_router(explorer_router)
 
 
 @app.get("/health")

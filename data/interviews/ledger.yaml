@@ -1,0 +1,76 @@
+# Machine-readable twin of the SYNTHETIC.md delta ledger — used by the delta-detection
+# P/R scorer (§6.3). `kind` uses the closed §5 enum (SYNTHETIC.md keeps the prose kinds);
+# `keywords` are any-of matchers against a detected delta's description (lowercased).
+# test_synthetic_integrity verifies ids + support stay in lockstep with SYNTHETIC.md.
+
+deltas:
+  - id: D1
+    kind: threshold
+    severity: high
+    keywords: ["20", "beneficial"]
+    written_prefixes: ["CFR-1010.230"]
+    personas: [P1, P3]
+    support: 11
+  - id: D2
+    kind: unwritten_rule
+    severity: medium
+    keywords: ["renewal receipt", "expired passport"]
+    written_prefixes: ["FFIEC-CIP"]
+    personas: [P4, P6]
+    support: 5
+  - id: D3
+    kind: unwritten_rule
+    severity: medium
+    keywords: ["address mismatch"]
+    written_prefixes: []
+    personas: [P4, P5]
+    support: 5
+  - id: D4
+    kind: sequence
+    severity: low
+    keywords: ["screening", "before"]
+    written_prefixes: ["FFIEC-CIP"]
+    personas: [P1, P6]
+    support: 8
+  - id: D5
+    kind: stricter_practice
+    severity: low
+    keywords: ["60", "utility"]
+    written_prefixes: ["FFIEC-CIP"]
+    personas: [P1, P2]
+    support: 6
+  - id: D6
+    kind: skipped_step
+    severity: high
+    keywords: ["callback"]
+    written_prefixes: ["FFIEC-CIP"]
+    personas: [P2, P4, P6]
+    support: 6
+  - id: D7
+    kind: unwritten_rule
+    severity: medium
+    keywords: ["verbal", "pep"]
+    written_prefixes: ["FFIEC-CDD"]
+    personas: [P3, P5]
+    support: 3
+  - id: D8
+    kind: unwritten_rule
+    severity: high
+    keywords: ["tolerance", "transliterat"]
+    written_prefixes: ["FFIEC-CIP", "FFIEC-CDD"]
+    personas: [P1, P5]
+    support: 4
+  - id: D9
+    kind: gap
+    severity: medium
+    keywords: ["foreign tax"]
+    written_prefixes: []
+    personas: [P3, P5]
+    support: 3
+  - id: D10
+    kind: practitioner_conflict
+    severity: medium
+    keywords: ["po box", "po-box"]
+    written_prefixes: []
+    personas: [P2, P4]
+    support: 4

@@ -1,15 +1,97 @@
 <!DOCTYPE html>
-<!-- Delta explorer (brief §11): neovis.js graph, Delta nodes with red halo sized by
-     severity, click-through side panel (written clause vs practiced evidence), diff-mode
-     toggle. Read-only v1 arrives in Phase 3 with the populated graph; the diff panel is
-     Phase 7 polish. This placeholder keeps the quickstart honest until then. -->
+<!-- Delta explorer v1 (brief §11): process graph with Delta nodes visually loud.
+     Served by FastAPI at /explorer; data from /api/graph + /api/deltas (live Neo4j or
+     derived-file fallback). Diff-mode toggle + click-through panel; deeper evidence
+     drill-down (clause text, persona quotes) is phase-7 polish. -->
 <html lang="en">
-<head><meta charset="utf-8"><title>process-twin explorer</title></head>
-<body style="font-family: system-ui; max-width: 40rem; margin: 4rem auto; line-height: 1.5">
+<head>
+<meta charset="utf-8"><title>process-twin — delta explorer</title>
+<script src="https://unpkg.com/vis-network@9.1.9/dist/vis-network.min.js"></script>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; display: flex; height: 100vh; }
+  #graph { flex: 1; }
+  #panel { width: 340px; border-left: 1px solid #ddd; padding: 14px 16px; overflow-y: auto; }
+  #panel h1 { font-size: 15px; margin: 0 0 8px; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; color: #fff;
+           font-size: 12px; margin-right: 6px; }
+  .high { background: #c62828; } .medium { background: #ef6c00; } .low { background: #f9a825; }
+  .delta-card { border: 1px solid #eee; border-radius: 8px; padding: 8px 10px; margin: 8px 0;
+                cursor: pointer; font-size: 13px; }
+  .delta-card:hover { background: #fafafa; }
+  #detail { font-size: 13px; line-height: 1.45; }
+  label { font-size: 13px; display: block; margin: 8px 0; }
+  .muted { color: #777; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="panel">
   <h1>process-twin — delta explorer</h1>
-  <p><strong>Arrives in Phase 3</strong> (read-only graph view) and Phase 7 (delta diff
-  panel). It renders the Neo4j process twin via neovis.js once <code>make seed</code>
-  has populated the graph. Until then: <code>docs/graph-schema.md</code> describes what
-  will be drawn here.</p>
+  <div class="muted" id="src"></div>
+  <label><input type="checkbox" id="diffmode"> diff mode (deltas + affected only)</label>
+  <div id="deltas"></div>
+  <div id="detail"></div>
+</div>
+<script>
+const COLORS = { Step: "#90caf9", Control: "#a5d6a7", Exception: "#ffe082",
+                 Evidence: "#e0e0e0", EscalationPath: "#ce93d8", Process: "#b0bec5" };
+const SEV_SIZE = { high: 34, medium: 26, low: 20 };
+let network, allNodes = [], allEdges = [], deltas = [];
+
+async function load() {
+  const g = await (await fetch("/api/graph")).json();
+  deltas = await (await fetch("/api/deltas")).json();
+  document.getElementById("src").textContent = "data source: " + g.source;
+  allNodes = g.nodes.map(n => n.label === "Delta" ? {
+    id: n.id, label: n.id, title: n.name, shape: "dot",
+    size: SEV_SIZE[n.severity] || 22, color: { background: "#ef5350", border: "#b71c1c" },
+    borderWidth: 4, font: { color: "#b71c1c" },
+  } : {
+    id: n.id, label: (n.name || n.id).slice(0, 28), shape: "box",
+    color: COLORS[n.label] || "#eee",
+  });
+  allEdges = g.edges.map(e => ({
+    from: e.from, to: e.to, arrows: "to",
+    dashes: e.type === "ABOUT", color: e.type === "ABOUT" ? "#ef5350" : "#999",
+    label: e.type === "NEXT" ? "" : e.type.toLowerCase(), font: { size: 9 },
+  }));
+  render();
+  const list = document.getElementById("deltas");
+  list.innerHTML = deltas.map(d =>
+    `<div class="delta-card" onclick="showDelta('${d.id}')">
+       <span class="badge ${d.severity}">${d.severity}</span><b>${d.id}</b> · ${d.kind}
+       <div class="muted">${d.description.slice(0, 90)}…</div></div>`).join("");
+}
+
+function render() {
+  const diff = document.getElementById("diffmode").checked;
+  let nodes = allNodes, edges = allEdges;
+  if (diff) {
+    const keep = new Set();
+    allEdges.filter(e => e.dashes).forEach(e => { keep.add(e.from); keep.add(e.to); });
+    nodes = allNodes.filter(n => keep.has(n.id));
+    edges = allEdges.filter(e => keep.has(e.from) && keep.has(e.to));
+  }
+  network = new vis.Network(document.getElementById("graph"),
+    { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) },
+    { physics: { stabilization: true, barnesHut: { springLength: 140 } } });
+  network.on("click", p => { if (p.nodes.length && p.nodes[0].startsWith("DET-")) showDelta(p.nodes[0]); });
+}
+
+function showDelta(id) {
+  const d = deltas.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById("detail").innerHTML = `
+    <hr><b>${d.id}</b> <span class="badge ${d.severity}">${d.severity}</span> ${d.kind}
+    <p>${d.description}</p>
+    <p><b>Written view:</b> ${(d.written_evidence || []).join(", ") || "(policy silent)"}</p>
+    <p><b>Practiced view:</b> ${(d.practiced_evidence || []).join(", ")}</p>
+    <p><b>Seen in:</b> ${d.support_count} of 60 historical cases</p>
+    <p><b>Recommendation:</b> ${d.recommendation}</p>`;
+}
+
+document.getElementById("diffmode").addEventListener("change", render);
+load();
+</script>
 </body>
 </html>
