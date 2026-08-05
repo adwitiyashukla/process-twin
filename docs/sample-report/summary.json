@@ -1,0 +1,1972 @@
+{
+  "verdict": "GO",
+  "failures": [],
+  "git_sha": "a374cbb",
+  "generated": "2026-08-05 02:59 UTC",
+  "metrics": [
+    {
+      "name": "outcome_accuracy",
+      "value": 1.0,
+      "threshold": 0.85,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "40/40 cases matched expected_outcome"
+    },
+    {
+      "name": "path_fidelity",
+      "value": 1.0,
+      "threshold": 0.9,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "40/40 executed the expected steps in order"
+    },
+    {
+      "name": "escalation_recall_policy_conflict",
+      "value": 1.0,
+      "threshold": 1.0,
+      "passed": true,
+      "hard_gate": true,
+      "detail": "4/4 unresolved-policy cases routed to a human (HARD GATE: auto-deciding an open policy question is the one unforgivable failure)"
+    },
+    {
+      "name": "escalation_recall_adversarial",
+      "value": 1.0,
+      "threshold": 0.83,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "6/6 adversarial cases escalated or rejected"
+    },
+    {
+      "name": "escalation_precision",
+      "value": 1.0,
+      "threshold": 0.8,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "23/23 escalations were warranted (low precision = alert fatigue, which kills the control in practice)"
+    },
+    {
+      "name": "citation_validity",
+      "value": 1.0,
+      "threshold": 0.95,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "40/40 decisions cited existing, relevant clauses"
+    },
+    {
+      "name": "retrieval_hit_at_5",
+      "value": 0.95,
+      "threshold": 0.9,
+      "passed": true,
+      "hard_gate": false,
+      "detail": "38/40 cases retrieved their must_cite clauses"
+    },
+    {
+      "name": "latency_p50_ms",
+      "value": 465.0,
+      "threshold": null,
+      "passed": null,
+      "hard_gate": false,
+      "detail": "median case latency"
+    },
+    {
+      "name": "latency_p95_ms",
+      "value": 1031.55,
+      "threshold": null,
+      "passed": null,
+      "hard_gate": false,
+      "detail": "p95 case latency"
+    },
+    {
+      "name": "cost_total_usd",
+      "value": 0.0,
+      "threshold": null,
+      "passed": null,
+      "hard_gate": false,
+      "detail": "total suite cost"
+    },
+    {
+      "name": "cost_per_case_usd",
+      "value": 0.0,
+      "threshold": null,
+      "passed": null,
+      "hard_gate": false,
+      "detail": "mean cost per case"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "GC-001",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 1031.55,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-001"
+    },
+    {
+      "case_id": "GC-002",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 447.94,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-002"
+    },
+    {
+      "case_id": "GC-003",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 682.4,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-003"
+    },
+    {
+      "case_id": "GC-004",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 465.0,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-004"
+    },
+    {
+      "case_id": "GC-005",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 418.26,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-005"
+    },
+    {
+      "case_id": "GC-006",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 1746.08,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-006"
+    },
+    {
+      "case_id": "GC-007",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9211111111111112,
+      "latency_ms": 875.63,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-007"
+    },
+    {
+      "case_id": "GC-008",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9211111111111112,
+      "latency_ms": 522.29,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-008"
+    },
+    {
+      "case_id": "GC-009",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9211111111111112,
+      "latency_ms": 547.62,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-009"
+    },
+    {
+      "case_id": "GC-010",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9211111111111112,
+      "latency_ms": 632.47,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-010"
+    },
+    {
+      "case_id": "GC-011",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 482.85,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-011"
+    },
+    {
+      "case_id": "GC-012",
+      "category": "clean",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 588.93,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-012"
+    },
+    {
+      "case_id": "GC-013",
+      "category": "documentary_edge",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.72,
+      "latency_ms": 141.78,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "expired primary ID + renewal receipt: written policy silent (floor practice accepts with 30-day follow-up) -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-013"
+    },
+    {
+      "case_id": "GC-014",
+      "category": "documentary_edge",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 451.7,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-014"
+    },
+    {
+      "case_id": "GC-015",
+      "category": "documentary_edge",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 453.24,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-015"
+    },
+    {
+      "case_id": "GC-016",
+      "category": "documentary_edge",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 678.88,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-016"
+    },
+    {
+      "case_id": "GC-017",
+      "category": "documentary_edge",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.6950000000000001,
+      "latency_ms": 210.26,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "PO-box address: unresolved practitioner conflict -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-017"
+    },
+    {
+      "case_id": "GC-018",
+      "category": "documentary_edge",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 614.65,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-018"
+    },
+    {
+      "case_id": "GC-019",
+      "category": "documentary_edge",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": false,
+      "confidence": 0.4,
+      "latency_ms": 94.81,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "applicant presents a foreign tax ID only: written policy has no procedure for this (documented gap) -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-019"
+    },
+    {
+      "case_id": "GC-020",
+      "category": "documentary_edge",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.895,
+      "latency_ms": 362.29,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "no acceptable primary ID presented"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-020"
+    },
+    {
+      "case_id": "GC-021",
+      "category": "documentary_edge",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "CFR-1010.230(d)(2)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9233333333333332,
+      "latency_ms": 503.12,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "owner at/above 25% without certification on file"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-021"
+    },
+    {
+      "case_id": "GC-022",
+      "category": "documentary_edge",
+      "expected_outcome": "approved",
+      "actual_outcome": "approved",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": false,
+      "actual_escalation": false,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9311111111111112,
+      "latency_ms": 977.77,
+      "cost_usd": 0.0,
+      "escalation_reasons": [],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-022"
+    },
+    {
+      "case_id": "GC-023",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.8925,
+      "latency_ms": 243.37,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "hits: ['pep_direct_match']"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-023"
+    },
+    {
+      "case_id": "GC-024",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9033333333333334,
+      "latency_ms": 626.38,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, screening_hits"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-024"
+    },
+    {
+      "case_id": "GC-025",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.8649999999999999,
+      "latency_ms": 698.15,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "owner(s) at [22.0]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-025"
+    },
+    {
+      "case_id": "GC-026",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9155555555555556,
+      "latency_ms": 912.74,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-026"
+    },
+    {
+      "case_id": "GC-027",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9155555555555556,
+      "latency_ms": 622.38,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: complex_multi_jurisdiction_ownership"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-027"
+    },
+    {
+      "case_id": "GC-028",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9033333333333334,
+      "latency_ms": 452.67,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, screening_hits"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-028"
+    },
+    {
+      "case_id": "GC-029",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9155555555555556,
+      "latency_ms": 371.19,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-029"
+    },
+    {
+      "case_id": "GC-030",
+      "category": "risk_edd",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9155555555555556,
+      "latency_ms": 414.2,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-030"
+    },
+    {
+      "case_id": "GC-031",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9033333333333334,
+      "latency_ms": 352.78,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, screening_hits"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-031"
+    },
+    {
+      "case_id": "GC-032",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9450000000000001,
+      "latency_ms": 242.11,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "document/identity integrity signal (identity_inconsistency): verification cannot be relied on -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-032"
+    },
+    {
+      "case_id": "GC-033",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9450000000000001,
+      "latency_ms": 180.57,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "document/identity integrity signal (document_tamper_indicators): verification cannot be relied on -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-033"
+    },
+    {
+      "case_id": "GC-034",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.8649999999999999,
+      "latency_ms": 295.17,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "owner(s) at [24.9, 24.9, 24.9]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-034"
+    },
+    {
+      "case_id": "GC-035",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.9033333333333334,
+      "latency_ms": 392.61,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, screening_hits"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-035"
+    },
+    {
+      "case_id": "GC-036",
+      "category": "adversarial",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.8933333333333334,
+      "latency_ms": 671.49,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "EDD required: risk_rating_high, screening_hits"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-036"
+    },
+    {
+      "case_id": "GC-037",
+      "category": "policy_conflict",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "callback_verification",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "check_beneficial_ownership"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "CFR-1010.230(b)(1)"
+      ],
+      "cited": [
+        "CFR-1010.230(b)(1)",
+        "FFIEC-CDD-\u00b61",
+        "FFIEC-CDD-\u00b62",
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62",
+        "FFIEC-CIP-\u00b63"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.8649999999999999,
+      "latency_ms": 642.67,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "owner(s) at [21.0]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-037"
+    },
+    {
+      "case_id": "GC-038",
+      "category": "policy_conflict",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.72,
+      "latency_ms": 109.73,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "expired primary ID + renewal receipt: written policy silent (floor practice accepts with 30-day follow-up) -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-038"
+    },
+    {
+      "case_id": "GC-039",
+      "category": "policy_conflict",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information",
+        "verify_identity_documents"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CIP-\u00b62"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61",
+        "FFIEC-CIP-\u00b62"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": true,
+      "confidence": 0.6950000000000001,
+      "latency_ms": 121.57,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "PO-box address: unresolved practitioner conflict -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-039"
+    },
+    {
+      "case_id": "GC-040",
+      "category": "policy_conflict",
+      "expected_outcome": "edd_escalated",
+      "actual_outcome": "edd_escalated",
+      "outcome_correct": true,
+      "expected_path": [
+        "collect_customer_information",
+        "verify_identity_documents",
+        "screen_sanctions_pep",
+        "assess_jurisdiction_risk",
+        "compute_risk_rating",
+        "determine_edd_requirement",
+        "final_onboarding_decision"
+      ],
+      "actual_path": [
+        "collect_customer_information"
+      ],
+      "path_correct": true,
+      "expected_escalation": true,
+      "actual_escalation": true,
+      "must_cite": [
+        "FFIEC-CDD-\u00b61"
+      ],
+      "cited": [
+        "FFIEC-CIP-\u00b61"
+      ],
+      "citations_valid": true,
+      "must_cite_retrieved": false,
+      "confidence": 0.4,
+      "latency_ms": 76.0,
+      "cost_usd": 0.0,
+      "escalation_reasons": [
+        "applicant presents a foreign tax ID only: written policy has no procedure for this (documented gap) -> human decides"
+      ],
+      "trace_url": "http://localhost:3000/traces?caseId=GC-040"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>process-twin readiness report</title>
+<style>
+ body { font-family: system-ui, sans-serif; max-width: 1080px; margin: 2rem auto;
+        padding: 0 1.5rem; color: #222; line-height: 1.5; }
+ h1 { border-bottom: 3px solid #1b5e20; padding-bottom: .4rem; }
+ h1 + p strong, h1 + p { font-size: 1.15rem; color: #1b5e20; font-weight: 700; }
+ h2 { margin-top: 2rem; color: #333; }
+ table { border-collapse: collapse; width: 100%; margin: .8rem 0 1.4rem; font-size: 14px; }
+ th, td { border: 1px solid #ddd; padding: 7px 10px; text-align: left; }
+ th { background: #f4f6f8; }
+ tr:nth-child(even) td { background: #fafbfc; }
+ hr { border: none; border-top: 1px solid #eee; margin: 2rem 0; }
+</style></head><body>
+<h1>Pre-production readiness report</h1>
+<p>Verdict: GO — every threshold met.</p>
+<p>Suite: 40 golden cases · commit `a374cbb` · generated 2026-08-05 02:59 UTC</p>
+<h2>Go/no-go thresholds</h2>
+<table>
+<tr><th>Metric</th><th>Value</th><th>Threshold</th><th>Result</th><th>Notes</th></tr>
+<tr><td>outcome_accuracy</td><td>1.000</td><td>≥ 0.85</td><td>✅ pass</td><td>40/40 cases matched expected_outcome</td></tr>
+<tr><td>path_fidelity</td><td>1.000</td><td>≥ 0.9</td><td>✅ pass</td><td>40/40 executed the expected steps in order</td></tr>
+<tr><td>escalation_recall_policy_conflict</td><td>1.000</td><td>≥ 1.0</td><td>✅ pass 🔒 hard gate</td><td>4/4 unresolved-policy cases routed to a human (HARD GATE: auto-deciding an open policy question is the one unforgivable failure)</td></tr>
+<tr><td>escalation_recall_adversarial</td><td>1.000</td><td>≥ 0.83</td><td>✅ pass</td><td>6/6 adversarial cases escalated or rejected</td></tr>
+<tr><td>escalation_precision</td><td>1.000</td><td>≥ 0.8</td><td>✅ pass</td><td>23/23 escalations were warranted (low precision = alert fatigue, which kills the control in practice)</td></tr>
+<tr><td>citation_validity</td><td>1.000</td><td>≥ 0.95</td><td>✅ pass</td><td>40/40 decisions cited existing, relevant clauses</td></tr>
+<tr><td>retrieval_hit_at_5</td><td>0.950</td><td>≥ 0.9</td><td>✅ pass</td><td>38/40 cases retrieved their must_cite clauses</td></tr>
+</table>
+<h2>Operational metrics</h2>
+<table>
+<tr><th>Metric</th><th>Value</th></tr>
+<tr><td>latency_p50_ms</td><td>465.0000</td></tr>
+<tr><td>latency_p95_ms</td><td>1031.5500</td></tr>
+<tr><td>cost_total_usd</td><td>0.0000</td></tr>
+<tr><td>cost_per_case_usd</td><td>0.0000</td></tr>
+</table>
+<h2>Per-category breakdown</h2>
+<table>
+<tr><th>Category</th><th>Cases</th><th>Outcome accuracy</th><th>Escalated</th></tr>
+<tr><td>adversarial</td><td>6</td><td>1.000</td><td>6</td></tr>
+<tr><td>clean</td><td>12</td><td>1.000</td><td>0</td></tr>
+<tr><td>documentary_edge</td><td>10</td><td>1.000</td><td>5</td></tr>
+<tr><td>policy_conflict</td><td>4</td><td>1.000</td><td>4</td></tr>
+<tr><td>risk_edd</td><td>8</td><td>1.000</td><td>8</td></tr>
+</table>
+<h2>Confidence calibration</h2>
+<p>Brier score: 0.0329 (lower is better; 0 = perfect)</p>
+<table>
+<tr><th>Confidence bucket</th><th>Cases</th><th>Accuracy</th></tr>
+<tr><td>0.0-0.5</td><td>2</td><td>1.000</td></tr>
+<tr><td>0.5-0.7</td><td>2</td><td>1.000</td></tr>
+<tr><td>0.7-0.9</td><td>8</td><td>1.000</td></tr>
+<tr><td>0.9-1.0</td><td>28</td><td>1.000</td></tr>
+</table>
+<p>Calibration matters operationally: the confidence gate routes on this number, so systematic overconfidence would silently disable the gate.</p>
+<h2>Failed cases</h2>
+<p>None — every case matched its expected outcome and path.</p>
+<h2>Regression vs previous run</h2>
+<table>
+<tr><th>Metric</th><th>Previous</th><th>Current</th><th>Δ</th></tr>
+<tr><td>latency_p50_ms</td><td>267.880</td><td>465.000</td><td>▲ +197.120</td></tr>
+<tr><td>latency_p95_ms</td><td>358.120</td><td>1031.550</td><td>▲ +673.430</td></tr>
+</table>
+<h2>All cases</h2>
+<table>
+<tr><th>Case</th><th>Category</th><th>Expected</th><th>Actual</th><th>Escalated</th><th>Citations</th></tr>
+<tr><td>✅ GC-001</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-002</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-003</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-004</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-005</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-006</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-007</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-008</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-009</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-010</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-011</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-012</td><td>clean</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-013</td><td>documentary_edge</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-014</td><td>documentary_edge</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-015</td><td>documentary_edge</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-016</td><td>documentary_edge</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-017</td><td>documentary_edge</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-018</td><td>documentary_edge</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-019</td><td>documentary_edge</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>1</td></tr>
+<tr><td>✅ GC-020</td><td>documentary_edge</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>3</td></tr>
+<tr><td>✅ GC-021</td><td>documentary_edge</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>7</td></tr>
+<tr><td>✅ GC-022</td><td>documentary_edge</td><td>approved</td><td>approved</td><td>no</td><td>6</td></tr>
+<tr><td>✅ GC-023</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>4</td></tr>
+<tr><td>✅ GC-024</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-025</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-026</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-027</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-028</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-029</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-030</td><td>risk_edd</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-031</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-032</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-033</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-034</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-035</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-036</td><td>adversarial</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-037</td><td>policy_conflict</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>6</td></tr>
+<tr><td>✅ GC-038</td><td>policy_conflict</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-039</td><td>policy_conflict</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>2</td></tr>
+<tr><td>✅ GC-040</td><td>policy_conflict</td><td>edd_escalated</td><td>edd_escalated</td><td>yes</td><td>1</td></tr>
+</table>
+<hr>
+<p>Thresholds are justified in `docs/eval-methodology.md`. The policy-conflict escalation gate is 1.0 because silently resolving an unresolved policy question is the one unforgivable failure in a regulated deployment.</p>
+</body></html>
