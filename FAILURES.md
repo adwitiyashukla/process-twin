@@ -137,3 +137,22 @@ say-so, and every one of those signals has a false-positive rate.
 future cases are written against a policy rather than an intuition. Recording it here
 rather than silently editing the YAML is the point: changing an expectation to make a test
 pass is only legitimate when the reasoning survives being written down.
+
+## 2026-08-05 — Publish script reported "lint and tests green" for checks that never ran
+**What broke:** `publish.ps1` guards publication behind `uv run ruff check` and
+`uv run pytest`. On a machine without `uv`, PowerShell raised CommandNotFoundException for
+both; `$LASTEXITCODE` retained its stale value from the previous successful command, so
+both `-ne 0` guards passed and the script printed "lint and tests green." The project was
+published with a verification step that had silently not executed.
+**How it was detected:** Reading the actual console output rather than the summary line —
+the CommandNotFoundException was visible directly above the green "lint and tests green."
+GitHub Actions independently confirmed the code itself was fine, but that was luck, not
+the guard working.
+**Fix:** The step now checks `Get-Command uv` first. If the tool is absent it says so
+loudly, states that the checks did NOT run, and points at the Actions tab — it never
+claims a pass it didn't observe.
+**Prevention:** A check must distinguish three states, not two: passed, failed, and
+*did not run*. Conflating the third with the first produces false confidence, which is
+strictly worse than no check at all. This is the same failure mode the project's own
+metrics guard against (FAILURES.md 2026-08-05: empty populations reported 0.0) and the
+same reason CI runs on a clean runner rather than trusting a developer machine.
