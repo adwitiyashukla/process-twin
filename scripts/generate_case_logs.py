@@ -350,13 +350,14 @@ def write_outputs(out_dir: Path = OUT_DIR) -> dict[str, int]:
     with (out_dir / "cases.jsonl").open("w", encoding="utf-8", newline="\n") as f:
         for c in cases:
             f.write(json.dumps(c.model_dump(), ensure_ascii=False, sort_keys=True) + "\n")
-    (out_dir / "ground_truth_tags.json").write_text(
-        json.dumps(tags, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    # newline="\n" on EVERY write, not just cases.jsonl: Path.write_text() applies the
+    # platform default, so on Windows these two sidecars gained \r\n and the
+    # byte-identical-regeneration guarantee held only on Linux (FAILURES.md 2026-08-05).
+    with (out_dir / "ground_truth_tags.json").open("w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(tags, indent=2, ensure_ascii=False, sort_keys=True) + "\n")
     counts = support_counts(tags)
-    (out_dir / "delta_support.json").write_text(
-        json.dumps(counts, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    with (out_dir / "delta_support.json").open("w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(counts, indent=2, sort_keys=True) + "\n")
     return counts
 
 

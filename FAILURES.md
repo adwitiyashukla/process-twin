@@ -156,3 +156,20 @@ claims a pass it didn't observe.
 strictly worse than no check at all. This is the same failure mode the project's own
 metrics guard against (FAILURES.md 2026-08-05: empty populations reported 0.0) and the
 same reason CI runs on a clean runner rather than trusting a developer machine.
+
+## 2026-08-05 — "Byte-identical regeneration" held only on Linux
+**What broke:** `test_committed_cases_match_regeneration_byte_for_byte` failed on Windows:
+`ground_truth_tags.json drifted from its generator`, diff at index 1, `b'\n' != b'\r'`.
+The generator wrote `cases.jsonl` through an explicit `open(..., newline="\n")` but wrote
+the two JSON sidecars via `Path.write_text()`, which applies the platform line-ending
+default. On Windows those files gained CRLF, so the reproducibility guarantee the README
+makes — and that the frozen delta ledger depends on — was true on Linux and false on
+Windows. Every CI run was green because CI runs Ubuntu.
+**How it was detected:** First execution of the suite on a Windows machine, minutes after
+the project was published. Nine phases of green CI never touched this, because the CI
+runner and the development sandbox were both Linux.
+**Fix:** Every artifact write in the generator now pins `newline="\n"` explicitly.
+**Prevention:** A determinism claim is only as strong as the platforms it was checked on.
+Single-OS CI cannot verify cross-platform reproducibility — the honest options are a test
+matrix (ubuntu + windows) or scoping the claim to one platform. Added to the roadmap;
+until then the claim is exercised on both by virtue of local runs on Windows.
