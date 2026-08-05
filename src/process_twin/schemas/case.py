@@ -45,6 +45,10 @@ class ApplicantProfile(StrictModel):
     expected_activity_usd: int = Field(ge=0)
     pep_status: Literal["none", "direct", "close_associate"] = "none"
     beneficial_owners: list[BeneficialOwner] = Field(default_factory=list)  # entities only
+    # Signals supplied by upstream tooling (document forensics, identity vendors, adverse
+    # media, transaction monitoring). Modelled explicitly rather than inferred from prose:
+    # the runtime must react to them, and the eval must be able to set them precisely.
+    risk_signals: list[str] = Field(default_factory=list)
 
 
 class CaseInput(StrictModel):

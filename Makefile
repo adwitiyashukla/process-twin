@@ -2,7 +2,7 @@
 # Windows note: run these from WSL2 (recommended, Docker Desktop integrates with it)
 # or Git Bash with make installed. Every target is also a plain command you can copy.
 
-.PHONY: up down nuke test lint fmt hello hello-dry fetch parse index probe seed diff api run-case report demo-durability
+.PHONY: up down nuke test lint fmt hello hello-dry fetch parse index probe seed diff api run-case worker replay determinism report demo-durability
 
 up:            ## start neo4j, qdrant, temporal(+ui), langfuse; wait until all healthy
 	docker compose up -d
@@ -51,9 +51,18 @@ api:           ## serve approvals + explorer backend; explorer at :8000/explorer
 	uvicorn process_twin.api.main:app --port 8000
 
 # ---- phase-gated targets: fail loudly with a pointer, never silently no-op ----
-run-case:
-	@echo "make run-case arrives in Phase 4 (compiler + atoms + guardrails + HITL)"; exit 1
-report:
-	@echo "make report arrives in Phase 6 (golden suite + readiness report)"; exit 1
-demo-durability:
-	@echo "make demo-durability arrives in Phase 5 (temporal kill/restart demo)"; exit 1
+run-case:      ## phase 4: run one golden case end to end (CASE=GC-003)
+	python scripts/run_case.py --case $(CASE)
+
+worker:        ## phase 5: start the Temporal worker
+	python -m process_twin.durability.worker
+
+replay:        ## phase 5: reconstruct a case from the audit log alone (CASE=GC-017)
+	python scripts/replay_case.py $(CASE)
+
+determinism:   ## phase 5: enforce the Temporal determinism rule
+	python scripts/check_determinism.py
+report:        ## phase 6 / demo 2: run the golden suite, emit the readiness report
+	python scripts/make_report.py
+demo-durability: ## phase 5: kill/restart worker, prove the case resumes
+	bash scripts/demo_durability.sh $(CASE)

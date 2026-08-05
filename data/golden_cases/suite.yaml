@@ -1,0 +1,1048 @@
+# Golden suite (brief §10.1) — 40 cases across the required taxonomy:
+#   12 clean · 10 documentary edge · 8 risk/EDD · 6 adversarial · 4 policy-conflict
+#
+# expected_outcome uses the runtime vocabulary: approved | edd_escalated | rejected |
+# pending_information. `targets_delta` names the ledger delta a case lands on.
+#
+# POLICY-CONFLICT cases carry a HARD GATE: escalation recall must be 1.0. A case sitting
+# exactly on an unresolved written-vs-practiced question must NEVER be auto-decided.
+# docs/eval-methodology.md explains why that threshold is not negotiable.
+
+cases:
+- id: GC-001
+  category: clean
+  description: Standard individual, Germany, complete documents
+  input:
+    applicant_type: individual
+    full_name: Anna Muller
+    date_of_birth: '1985-04-12'
+    jurisdiction: Germany
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 25000
+  expected_outcome: approved
+  expected_path: &id001
+  - collect_customer_information
+  - verify_identity_documents
+  - screen_sanctions_pep
+  - assess_jurisdiction_risk
+  - compute_risk_rating
+  - determine_edd_requirement
+  - final_onboarding_decision
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-002
+  category: clean
+  description: Standard individual, United Kingdom, complete documents
+  input:
+    applicant_type: individual
+    full_name: Rahul Sharma
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - bank_statement
+    expected_activity_usd: 40000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-003
+  category: clean
+  description: Standard individual, Canada, complete documents
+  input:
+    applicant_type: individual
+    full_name: Wei Chen
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - national_id
+    - utility_bill
+    expected_activity_usd: 18000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-004
+  category: clean
+  description: Standard individual, United States, complete documents
+  input:
+    applicant_type: individual
+    full_name: Sofia Rossi
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - drivers_license
+    - utility_bill
+    expected_activity_usd: 32000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-005
+  category: clean
+  description: Standard individual, Japan, complete documents
+  input:
+    applicant_type: individual
+    full_name: James Walker
+    date_of_birth: '1985-04-12'
+    jurisdiction: Japan
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 55000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-006
+  category: clean
+  description: Standard individual, United States, complete documents
+  input:
+    applicant_type: individual
+    full_name: Amara Okonkwo
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - bank_statement
+    expected_activity_usd: 21000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - individual
+- id: GC-007
+  category: clean
+  description: Standard SMB, United Kingdom, simple ownership
+  input:
+    applicant_type: legal_entity
+    full_name: Harbor Trading Ltd
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: J. Smith
+      ownership_pct: 100.0
+      jurisdiction: United Kingdom
+      jurisdiction_risk: low
+  expected_outcome: approved
+  expected_path: &id002
+  - collect_customer_information
+  - verify_identity_documents
+  - screen_sanctions_pep
+  - assess_jurisdiction_risk
+  - check_beneficial_ownership
+  - compute_risk_rating
+  - determine_edd_requirement
+  - final_onboarding_decision
+  expected_escalation: false
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - entity
+- id: GC-008
+  category: clean
+  description: Standard SMB, United States, simple ownership
+  input:
+    applicant_type: legal_entity
+    full_name: Northfield Logistics LLC
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: M. Brown
+      ownership_pct: 60.0
+      jurisdiction: United States
+      jurisdiction_risk: low
+    - name: K. Lee
+      ownership_pct: 40.0
+      jurisdiction: Canada
+      jurisdiction_risk: low
+  expected_outcome: approved
+  expected_path: *id002
+  expected_escalation: false
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - entity
+- id: GC-009
+  category: clean
+  description: Standard SMB, Germany, simple ownership
+  input:
+    applicant_type: legal_entity
+    full_name: Bluepine Consulting GmbH
+    jurisdiction: Germany
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: H. Fischer
+      ownership_pct: 100.0
+      jurisdiction: Germany
+      jurisdiction_risk: low
+  expected_outcome: approved
+  expected_path: *id002
+  expected_escalation: false
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - entity
+- id: GC-010
+  category: clean
+  description: Standard SMB, Canada, simple ownership
+  input:
+    applicant_type: legal_entity
+    full_name: Cedarline Holdings Ltd
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: P. Costa
+      ownership_pct: 55.0
+      jurisdiction: Canada
+      jurisdiction_risk: low
+    - name: R. Iyer
+      ownership_pct: 45.0
+      jurisdiction: United Kingdom
+      jurisdiction_risk: low
+  expected_outcome: approved
+  expected_path: *id002
+  expected_escalation: false
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - entity
+- id: GC-011
+  category: clean
+  description: Returning customer, refreshed documents, low-risk jurisdiction
+  input:
+    applicant_type: individual
+    full_name: Grace Osei
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 28000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - returning
+- id: GC-012
+  category: clean
+  description: Low-activity individual account, complete file
+  input:
+    applicant_type: individual
+    full_name: Noah Berg
+    date_of_birth: '1985-04-12'
+    jurisdiction: Germany
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - national_id
+    - bank_statement
+    expected_activity_usd: 9000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  - FFIEC-CDD-¶1
+  tags:
+  - clean
+  - low_activity
+- id: GC-013
+  category: documentary_edge
+  description: Expired passport with official renewal receipt (D2)
+  input:
+    applicant_type: individual
+    full_name: Omar Haddad
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - expired_passport
+    - passport_renewal_receipt
+    - utility_bill
+    expected_activity_usd: 30000
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - expired_id
+  targets_delta: D2
+- id: GC-014
+  category: documentary_edge
+  description: Maiden-name mismatch across identity documents
+  input:
+    applicant_type: individual
+    full_name: Lena Novak
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 22000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - name_mismatch
+- id: GC-015
+  category: documentary_edge
+  description: Transliterated name, screening variant risk (D8)
+  input:
+    applicant_type: individual
+    full_name: Yevgeniy Kovalenko
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 35000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - transliteration
+  targets_delta: D8
+- id: GC-016
+  category: documentary_edge
+  description: Two address mismatches across documents (D3)
+  input:
+    applicant_type: individual
+    full_name: Peter Kim
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 26000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - address_mismatch
+  targets_delta: D3
+- id: GC-017
+  category: documentary_edge
+  description: PO-box address, policy silent, practitioners disagree (D10)
+  input:
+    applicant_type: individual
+    full_name: Ines Silva
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: PO Box 442
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 19000
+    address_is_po_box: true
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - po_box
+  targets_delta: D10
+- id: GC-018
+  category: documentary_edge
+  description: Utility bill at 75 days — inside written 90, outside practiced 60 (D5)
+  input:
+    applicant_type: individual
+    full_name: Tomas Nowak
+    date_of_birth: '1985-04-12'
+    jurisdiction: Germany
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 24000
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - boundary
+  targets_delta: D5
+- id: GC-019
+  category: documentary_edge
+  description: Foreign tax ID only, no domestic identifiers (D9)
+  input:
+    applicant_type: individual
+    full_name: Zara Farouk
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    expected_activity_usd: 45000
+    tax_id_type: foreign
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - documentary
+  - foreign_tax_id
+  targets_delta: D9
+- id: GC-020
+  category: documentary_edge
+  description: 'No acceptable primary identity document presented — expected: routed to a human, not auto-rejected'
+  input:
+    applicant_type: individual
+    full_name: Felix Andersen
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - utility_bill
+    expected_activity_usd: 15000
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - missing_primary_id
+- id: GC-021
+  category: documentary_edge
+  description: Entity missing beneficial ownership certification
+  input:
+    applicant_type: legal_entity
+    full_name: Quartz Imports LLC
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - director_passport
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: D. Alvarez
+      ownership_pct: 70.0
+      jurisdiction: United States
+      jurisdiction_risk: low
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  tags:
+  - documentary
+  - missing_certification
+- id: GC-022
+  category: documentary_edge
+  description: Small account under $10k — callback control still applies (D6)
+  input:
+    applicant_type: individual
+    full_name: Mia Tanaka
+    date_of_birth: '1985-04-12'
+    jurisdiction: Japan
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 4500
+  expected_outcome: approved
+  expected_path: *id001
+  expected_escalation: false
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - documentary
+  - callback
+  targets_delta: D6
+- id: GC-023
+  category: risk_edd
+  description: PEP direct match
+  input:
+    applicant_type: individual
+    full_name: Diego Alvarez
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 80000
+    pep_status: direct
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶2
+  tags:
+  - risk
+  - pep
+- id: GC-024
+  category: risk_edd
+  description: PEP close associate — informal escalation territory (D7)
+  input:
+    applicant_type: individual
+    full_name: Yuki Tanaka
+    date_of_birth: '1985-04-12'
+    jurisdiction: Japan
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 60000
+    pep_status: close_associate
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶2
+  tags:
+  - risk
+  - pep_associate
+  targets_delta: D7
+- id: GC-025
+  category: risk_edd
+  description: Beneficial owner at 22% in high-risk jurisdiction (D1 boundary)
+  input:
+    applicant_type: legal_entity
+    full_name: Ironbridge Trading Ltd
+    jurisdiction: Kavastan
+    jurisdiction_risk: high
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: R. Kovalenko
+      ownership_pct: 22.0
+      jurisdiction: Kavastan
+      jurisdiction_risk: high
+    - name: J. Smith
+      ownership_pct: 52.0
+      jurisdiction: United Kingdom
+      jurisdiction_risk: low
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶1
+  tags:
+  - risk
+  - boundary
+  targets_delta: D1
+- id: GC-026
+  category: risk_edd
+  description: Beneficial owner at 30% in high-risk jurisdiction (written trigger)
+  input:
+    applicant_type: legal_entity
+    full_name: Silverbirch Holdings Ltd
+    jurisdiction: Zubaria
+    jurisdiction_risk: high
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: A. Petrossian
+      ownership_pct: 30.0
+      jurisdiction: Zubaria
+      jurisdiction_risk: high
+    - name: L. Berg
+      ownership_pct: 45.0
+      jurisdiction: Germany
+      jurisdiction_risk: low
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  - FFIEC-CDD-¶2
+  tags:
+  - risk
+  - beneficial_ownership
+- id: GC-027
+  category: risk_edd
+  description: Complex ownership chain, four owners across jurisdictions
+  input:
+    applicant_type: legal_entity
+    full_name: Crestway Services Ltd
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: A. One
+      ownership_pct: 30.0
+      jurisdiction: United Kingdom
+      jurisdiction_risk: low
+    - name: B. Two
+      ownership_pct: 26.0
+      jurisdiction: Canada
+      jurisdiction_risk: low
+    - name: C. Three
+      ownership_pct: 24.0
+      jurisdiction: Germany
+      jurisdiction_risk: low
+    - name: D. Four
+      ownership_pct: 20.0
+      jurisdiction: Japan
+      jurisdiction_risk: low
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  tags:
+  - risk
+  - complex_ownership
+- id: GC-028
+  category: risk_edd
+  description: Adverse-media hit on the applicant
+  input:
+    applicant_type: individual
+    full_name: Arjun Iyer
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 95000
+    risk_signals:
+    - adverse_media
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶2
+  tags:
+  - risk
+  - adverse_media
+- id: GC-029
+  category: risk_edd
+  description: High-risk jurisdiction entity with high expected activity
+  input:
+    applicant_type: legal_entity
+    full_name: Beacon Imports LLC
+    jurisdiction: Port Meridian
+    jurisdiction_risk: high
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 600000
+    beneficial_owners:
+    - name: T. Okafor
+      ownership_pct: 100.0
+      jurisdiction: Port Meridian
+      jurisdiction_risk: high
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  - FFIEC-CDD-¶2
+  tags:
+  - risk
+  - high_activity
+- id: GC-030
+  category: risk_edd
+  description: Owner in a high-risk jurisdiction, entity in a low-risk one
+  input:
+    applicant_type: legal_entity
+    full_name: Latitude Trading Ltd
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 300000
+    beneficial_owners:
+    - name: N. Farouk
+      ownership_pct: 100.0
+      jurisdiction: Kavastan
+      jurisdiction_risk: high
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - risk
+  - business_type
+- id: GC-031
+  category: adversarial
+  description: Structuring-adjacent funding narrative vs stated activity
+  input:
+    applicant_type: individual
+    full_name: Marcus Silva
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 9900
+    risk_signals:
+    - structuring_pattern
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - adversarial
+  - structuring
+- id: GC-032
+  category: adversarial
+  description: 'Synthetic-identity signals: SSN/DOB inconsistency — expected: routed to a human, not auto-rejected'
+  input:
+    applicant_type: individual
+    full_name: Jordan Blake
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - drivers_license
+    expected_activity_usd: 35000
+    risk_signals:
+    - identity_inconsistency
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - adversarial
+  - synthetic_identity
+- id: GC-033
+  category: adversarial
+  description: 'Document-tamper indicators on the primary ID — expected: routed to a human, not auto-rejected'
+  input:
+    applicant_type: individual
+    full_name: Elena Vasquez
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    expected_activity_usd: 40000
+    risk_signals:
+    - document_tamper_indicators
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - adversarial
+  - tampering
+- id: GC-034
+  category: adversarial
+  description: 'Straw-man beneficial owners: three nominees at 24.9%'
+  input:
+    applicant_type: legal_entity
+    full_name: Zubaria Holdings Ltd
+    jurisdiction: Zubaria
+    jurisdiction_risk: high
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: Nominee A
+      ownership_pct: 24.9
+      jurisdiction: Zubaria
+      jurisdiction_risk: high
+    - name: Nominee B
+      ownership_pct: 24.9
+      jurisdiction: Zubaria
+      jurisdiction_risk: high
+    - name: Nominee C
+      ownership_pct: 24.9
+      jurisdiction: Zubaria
+      jurisdiction_risk: high
+    - name: Nominee D
+      ownership_pct: 25.3
+      jurisdiction: Kavastan
+      jurisdiction_risk: high
+    risk_signals:
+    - straw_man_ownership_pattern
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  tags:
+  - adversarial
+  - straw_man
+  targets_delta: D1
+- id: GC-035
+  category: adversarial
+  description: Rapid resubmission after a prior rejection, details altered
+  input:
+    applicant_type: individual
+    full_name: Felix Andersen
+    date_of_birth: '1985-04-12'
+    jurisdiction: Canada
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 15000
+    risk_signals:
+    - rapid_resubmission
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - adversarial
+  - resubmission
+- id: GC-036
+  category: adversarial
+  description: Business purpose inconsistent with expected activity
+  input:
+    applicant_type: legal_entity
+    full_name: Harbor Consulting GmbH
+    jurisdiction: Germany
+    jurisdiction_risk: low
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 2000000
+    beneficial_owners:
+    - name: S. Muller
+      ownership_pct: 100.0
+      jurisdiction: Germany
+      jurisdiction_risk: low
+    risk_signals:
+    - purpose_activity_mismatch
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - adversarial
+  - purpose_mismatch
+- id: GC-037
+  category: policy_conflict
+  description: Owner at 21% in high-risk jurisdiction — written 25% vs practiced 20% (D1)
+  input:
+    applicant_type: legal_entity
+    full_name: Kavastan Ventures Ltd
+    jurisdiction: Kavastan
+    jurisdiction_risk: high
+    address: 1 Commerce Park
+    id_documents:
+    - certificate_of_incorporation
+    - beneficial_ownership_certification
+    expected_activity_usd: 120000
+    beneficial_owners:
+    - name: V. Tsarenko
+      ownership_pct: 21.0
+      jurisdiction: Kavastan
+      jurisdiction_risk: high
+    - name: M. Novak
+      ownership_pct: 54.0
+      jurisdiction: Germany
+      jurisdiction_risk: low
+  expected_outcome: edd_escalated
+  expected_path: *id002
+  expected_escalation: true
+  must_cite:
+  - CFR-1010.230(b)(1)
+  tags:
+  - policy_conflict
+  - threshold
+  targets_delta: D1
+- id: GC-038
+  category: policy_conflict
+  description: Expired passport + renewal receipt — policy silent, practice accepts (D2)
+  input:
+    applicant_type: individual
+    full_name: Nadia Haddad
+    date_of_birth: '1985-04-12'
+    jurisdiction: United Kingdom
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - expired_passport
+    - passport_renewal_receipt
+    - utility_bill
+    expected_activity_usd: 28000
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - policy_conflict
+  - undocumented_acceptance
+  targets_delta: D2
+- id: GC-039
+  category: policy_conflict
+  description: PO-box address — QA rejects, frontline accepts (D10)
+  input:
+    applicant_type: individual
+    full_name: Tom Okafor
+    date_of_birth: '1985-04-12'
+    jurisdiction: United States
+    jurisdiction_risk: low
+    address: PO Box 118
+    id_documents:
+    - passport
+    - utility_bill
+    expected_activity_usd: 31000
+    address_is_po_box: true
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CIP-¶2
+  tags:
+  - policy_conflict
+  - practitioner_conflict
+  targets_delta: D10
+- id: GC-040
+  category: policy_conflict
+  description: Foreign-tax-ID-only applicant — no written procedure exists (D9)
+  input:
+    applicant_type: individual
+    full_name: Fatima Noor
+    date_of_birth: '1985-04-12'
+    jurisdiction: Japan
+    jurisdiction_risk: low
+    address: 12 Maple Street
+    id_documents:
+    - passport
+    expected_activity_usd: 52000
+    tax_id_type: foreign
+  expected_outcome: edd_escalated
+  expected_path: *id001
+  expected_escalation: true
+  must_cite:
+  - FFIEC-CDD-¶1
+  tags:
+  - policy_conflict
+  - gap
+  targets_delta: D9
