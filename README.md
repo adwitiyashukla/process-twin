@@ -1,6 +1,6 @@
 # process-twin
 
-[![CI](https://github.com/ashukla-be21/process-twin/actions/workflows/ci.yml/badge.svg)](https://github.com/ashukla-be21/process-twin/actions/workflows/ci.yml)
+[![CI](https://github.com/adwitiyashukla/process-twin/actions/workflows/ci.yml/badge.svg)](https://github.com/adwitiyashukla/process-twin/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
@@ -106,7 +106,7 @@ exceeding its remit. So it gates the release outright.
 ## Quickstart
 
 ```bash
-git clone https://github.com/<you>/process-twin && cd process-twin
+git clone https://github.com/adwitiyashukla/process-twin && cd process-twin
 uv sync --all-extras
 cp .env.example .env                    # add ANTHROPIC_API_KEY for phases 3+
 docker compose up -d && python scripts/wait_healthy.py
