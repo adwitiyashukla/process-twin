@@ -136,7 +136,7 @@ uv sync --all-extras
 cp .env.example .env                    # add your ANTHROPIC_API_KEY here
 docker compose up -d && python scripts/wait_healthy.py
 
-make test                               # 126 tests, no Docker or API key needed
+make test                               # 147 tests, no Docker or API key needed
 make report                             # Demo 2, the readiness report
 make fetch parse index probe            # download policy docs, build the clause store
 make seed                               # extraction and graph building (needs API key)

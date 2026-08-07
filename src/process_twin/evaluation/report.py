@@ -62,7 +62,7 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
         f"**Verdict: {status}**" + (f" - failed: {', '.join(failures)}" if failures else
                                     " - every threshold met."),
         "",
-        f"Suite: {len(evals)} golden cases · commit `{sha}` · generated {generated}",
+        f"Suite: {len(evals)} golden cases, commit `{sha}`, generated {generated}",
         "",
         "## Go/no-go thresholds",
         "",
@@ -119,7 +119,7 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
     else:
         lines += ["| Metric | Previous | Current | Δ |", "|---|---|---|---|"]
         for name, prev_v, cur_v, delta in rows:
-            arrow = "▲" if delta > 0 else "▼"
+            arrow = "up" if delta > 0 else "down"
             lines.append(f"| {name} | {prev_v:.3f} | {cur_v:.3f} | {arrow} {delta:+.3f} |")
 
     lines += ["", "## All cases", "",

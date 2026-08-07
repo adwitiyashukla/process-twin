@@ -1,5 +1,5 @@
 # Golden suite - 40 cases across the taxonomy I chose:
-#   12 clean · 10 documentary edge · 8 risk/EDD · 6 adversarial · 4 policy-conflict
+#   12 clean, 10 documentary edge, 8 risk/EDD, 6 adversarial, 4 policy-conflict
 #
 # expected_outcome uses the runtime vocabulary: approved | edd_escalated | rejected |
 # pending_information. `targets_delta` names the ledger delta a case lands on.

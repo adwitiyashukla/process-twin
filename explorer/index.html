@@ -59,7 +59,7 @@ async function load() {
   const list = document.getElementById("deltas");
   list.innerHTML = deltas.map(d =>
     `<div class="delta-card" onclick="showDelta('${d.id}')">
-       <span class="badge ${d.severity}">${d.severity}</span><b>${d.id}</b> · ${d.kind}
+       <span class="badge ${d.severity}">${d.severity}</span><b>${d.id}</b> - ${d.kind}
        <div class="muted">${d.description.slice(0, 90)}…</div></div>`).join("");
 }
 

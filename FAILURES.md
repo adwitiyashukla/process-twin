@@ -225,3 +225,55 @@ does not.
 **What I learned.** Same lesson as the empty-population metric, in a different place: a check
 that cannot distinguish "passed" from "never ran" is worse than having no check, because it
 gets trusted.
+
+---
+
+## My own cleanup script quietly corrupted sixteen docstrings
+
+**What broke.** Sixteen one-line docstrings across the codebase ended mid-sentence.
+`graph/schema.py` opened with `"""Neo4j constraints and indexes. Uniqueness on every id is
+what makes the"""`. The sentence simply stopped.
+
+**How I found it.** Two days after I caused it, and by accident. I was searching the repo for
+something unrelated and the broken lines showed up in the results. Nothing had told me.
+
+**What was wrong.** I had written a script to strip comments out of the code. Part of it
+shortened docstrings to their first line, and it took the first physical line rather than the
+first sentence, then closed the quotes. Every docstring that wrapped got cut at the line
+break, and the result was still syntactically valid Python.
+
+**The fix.** Rewrote all sixteen by hand so each is a complete sentence that stands on its own.
+
+**What I learned.** Not one thing in my toolchain could have caught this. The files parsed,
+ruff was clean, the whole suite passed, CI stayed green. Every check I had verified that the
+code was valid, and none of them verified that the English was, so a public repo carried
+obviously broken sentences for two days. The lesson is not that I should be careful with bulk
+edits, it is that a bulk edit needs a check aimed at whatever that specific edit could
+plausibly break. I added one: a test that fails when a docstring ends on a comma, a colon, or
+a dangling article.
+
+---
+
+## A verification step that failed in the safe direction
+
+**What broke.** The script that rewrites the author information on my commits refused to
+push. It reported the rewrite as incomplete two lines after printing the correctly rewritten
+values on screen.
+
+**How I found it.** The script printed both the values it found and its verdict, and the two
+contradicted each other in the same block of output.
+
+**What was wrong.** `Sort-Object -Unique` in PowerShell returns a plain string rather than a
+one-item list when every value is identical. Indexing a string gives back a character, so my
+comparison was testing whether "A" equalled "Adwitiya Shukla <shuklaaw@mail.uc.edu>". The bug
+could only fire when the rewrite had actually worked, which is the one case where a
+verification step must not get it wrong.
+
+**The fix.** Wrapped both collections in `@()` to force an array regardless of length.
+
+**What I learned.** This is the mirror image of the entry above it. Same class of bug,
+opposite direction. That one claimed a pass over checks that never ran and pushed anyway.
+This one claimed a failure over a check that had passed, and refused to push. The second cost
+me about thirty seconds. The first could have put a broken repository in front of someone
+deciding whether to interview me. I cannot always make a check correct on the first attempt,
+so when I have the choice I would rather it be wrong in the direction that stops.

@@ -21,14 +21,16 @@ BANNED = {
     "⏳": "hourglass emoji, write the word",
     "≥": "greater-or-equal sign, write >=",
     "≤": "less-or-equal sign, write <=",
+    "·": "middle dot, use a comma",
+    "→": "arrow, write the word",
+    "▲": "up triangle, write the word",
+    "▼": "down triangle, write the word",
 }
 
 ALLOWED_NOTE = """
 These stay, because each one carries meaning:
   ¶  paragraph marker inside clause ids, for example FFIEC-CDD-¶12
-  §  section reference
-  →  flow arrow in the architecture diagram
-  ·  separator between links
+  §  section reference in a real policy citation
 """
 
 SEARCH_DIRS = ["src", "tests", "scripts", "docs", "data", "explorer", ".github"]

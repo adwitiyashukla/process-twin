@@ -2,7 +2,7 @@
 
 **Verdict: GO** - every threshold met.
 
-Suite: 40 golden cases · commit `76362d0` · generated 2026-08-07 04:38 UTC
+Suite: 40 golden cases, commit `76362d0`, generated 2026-08-07 04:38 UTC
 
 ## Go/no-go thresholds
 
@@ -56,8 +56,8 @@ None - every case matched its expected outcome and path.
 
 | Metric | Previous | Current | Δ |
 |---|---|---|---|
-| latency_p50_ms | 465.000 | 0.320 | ▼ -464.680 |
-| latency_p95_ms | 1031.550 | 1.490 | ▼ -1030.060 |
+| latency_p50_ms | 465.000 | 0.320 | down -464.680 |
+| latency_p95_ms | 1031.550 | 1.490 | down -1030.060 |
 
 ## All cases
 

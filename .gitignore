@@ -32,6 +32,7 @@ publish.ps1
 fix-identity.ps1
 fix_dashes.py
 strip_spec_refs.py
+fix_typography.py
 
 # OS and editor noise
 .DS_Store
