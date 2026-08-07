@@ -5,7 +5,7 @@ description = "From written SOP to governed agent workflow: KYC onboarding proce
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "Adi Shukla", email = "ashukla_be21@thapar.edu" }]
+authors = [{ name = "Adwitiya Shukla", email = "shuklaaw@mail.uc.edu" }]
 
 # Rationale (ground rule 2): every runtime dependency maps to one architectural layer
 # of the brief (§2). Nothing here is speculative - if a layer moves phases, its dep moves too.

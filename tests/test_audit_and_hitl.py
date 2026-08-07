@@ -113,20 +113,20 @@ class TestApprovalStore:
         rec = store.create("GC-017", "EL-bo", "confidence 0.40 < 0.7", out,
                            {"applicant": "…"})
         assert len(store.list_pending()) == 1
-        decided = store.decide(rec.request.approval_id, "approve", "adi", "looks fine")
+        decided = store.decide(rec.request.approval_id, "approve", "a.shukla", "looks fine")
         assert decided.decision.decision == "approve"
         assert store.list_pending() == []
 
     def test_double_decide_is_idempotent(self, tmp_path):
         store = ApprovalStore(tmp_path)
         rec = store.create("C", "S", "r", AtomOutput(result={}, confidence=0.1))
-        store.decide(rec.request.approval_id, "approve", "adi")
+        store.decide(rec.request.approval_id, "approve", "a.shukla")
         second = store.decide(rec.request.approval_id, "reject", "someone_else")
         assert second.decision.decision == "approve"
 
     def test_unknown_approval_raises(self, tmp_path):
         with pytest.raises(KeyError):
-            ApprovalStore(tmp_path).decide("AP-nope", "approve", "adi")
+            ApprovalStore(tmp_path).decide("AP-nope", "approve", "a.shukla")
 
 
 class TestExecutor:

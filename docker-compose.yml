@@ -106,8 +106,8 @@ services:
       LANGFUSE_INIT_PROJECT_NAME: process-twin
       LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-pk-lf-local-dev}
       LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-local-dev}
-      LANGFUSE_INIT_USER_EMAIL: adi@local.dev
-      LANGFUSE_INIT_USER_NAME: Adi
+      LANGFUSE_INIT_USER_EMAIL: dev@local.dev
+      LANGFUSE_INIT_USER_NAME: dev
       LANGFUSE_INIT_USER_PASSWORD: processtwin123
 
 volumes:

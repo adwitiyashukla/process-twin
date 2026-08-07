@@ -231,4 +231,4 @@ know from experience why that matters.
 Python 3.11, Pydantic v2, LangGraph, Neo4j, Qdrant with BGE embeddings, Temporal, Langfuse,
 FastAPI, pytest, ruff, Docker Compose.
 
-MIT licensed. Built by Adi Shukla.
+MIT licensed. Built by Adwitiya Shukla.

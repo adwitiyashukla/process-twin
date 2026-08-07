@@ -29,6 +29,7 @@ reports/
 # local scaffolding, useful on this machine but noise in a public repo
 RUN-THIS.md
 publish.ps1
+fix-identity.ps1
 fix_dashes.py
 
 # OS and editor noise

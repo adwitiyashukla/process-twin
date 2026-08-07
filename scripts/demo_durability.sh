@@ -33,7 +33,7 @@ APPROVAL=$(curl -s http://localhost:8000/approvals | python -c \
 if [ -n "$APPROVAL" ]; then
   curl -s -X POST "http://localhost:8000/approvals/$APPROVAL/decide" \
     -H 'content-type: application/json' \
-    -d '{"decision":"approve","reviewer":"adi","note":"durability demo"}' > /dev/null
+    -d '{"decision":"approve","reviewer":"a.shukla","note":"durability demo"}' > /dev/null
   echo "    approved $APPROVAL"
 fi
 wait $CASE_PID || true
