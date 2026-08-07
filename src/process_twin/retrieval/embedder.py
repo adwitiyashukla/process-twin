@@ -1,4 +1,4 @@
-"""Embedding + reranking behind a tiny protocol (brief §7.4, §2)."""
+"""Embedding and reranking behind a small protocol."""
 
 from __future__ import annotations
 

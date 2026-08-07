@@ -1,4 +1,4 @@
-"""Write the reconciled process + deltas into Neo4j with FULL provenance (brief §5)."""
+"""Write the reconciled process and deltas into Neo4j with full provenance."""
 
 from __future__ import annotations
 

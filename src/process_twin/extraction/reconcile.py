@@ -1,4 +1,4 @@
-"""Entity resolution across sources -> canonical nodes + conflict candidates (brief §6.2)."""
+"""Entity resolution across sources into canonical nodes and conflict candidates."""
 
 from __future__ import annotations
 

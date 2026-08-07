@@ -1,4 +1,4 @@
-"""Extraction/graph contracts: ProcessElement, CanonicalElement, Delta (brief §5, §6.1)."""
+"""Extraction and graph contracts: ProcessElement, CanonicalElement, Delta."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ class SourceSpan(StrictModel):
 
 
 class ProcessElement(StrictModel):
-    """What every per-source extractor emits (§6.1). source_spans is the non-negotiable:"""
+    """What every per-source extractor emits. source_spans is required, never optional."""
 
     element_type: ElementType
     name: str
@@ -46,7 +46,7 @@ class ProcessElement(StrictModel):
 
 
 class CanonicalElement(StrictModel):
-    """Post-reconciliation node: one real-world element, ALL provenance attached (§6.2)."""
+    """Post-reconciliation node: one real-world element with all provenance attached."""
 
     id: str
     element_type: ElementType
@@ -61,7 +61,7 @@ class CanonicalElement(StrictModel):
 
 
 class AttributeConflict(StrictModel):
-    """Sources disagree on an attribute -> delta candidate (never averaged away, §6.2)."""
+    """Sources disagree on an attribute, so it becomes a delta, never averaged away."""
 
     element_id: str
     element_name: str
@@ -73,7 +73,7 @@ class AttributeConflict(StrictModel):
 
 
 class Delta(StrictModel):
-    """First-class divergence node (§5) - the thesis of the project."""
+    """First-class divergence node, the whole point of the project."""
 
     id: str
     kind: DeltaKind

@@ -1,4 +1,4 @@
-"""Temporal worker entrypoint (brief §8)."""
+"""Temporal worker entrypoint."""
 
 from __future__ import annotations
 

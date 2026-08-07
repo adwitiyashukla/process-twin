@@ -1,4 +1,4 @@
-"""Cross-artifact integrity of the synthetic corpus (brief §4.2-4.3, ground rule 3)."""
+"""Cross-artifact integrity of the synthetic corpus."""
 
 import json
 import re

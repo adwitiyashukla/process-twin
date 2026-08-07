@@ -1,4 +1,4 @@
-"""Case-log loader + DETERMINISTIC pattern miner (brief §6.3 input side)."""
+"""Case-log loader and deterministic pattern miner."""
 
 from __future__ import annotations
 

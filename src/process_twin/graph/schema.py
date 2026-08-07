@@ -1,4 +1,4 @@
-"""Neo4j constraints + indexes (brief §5). Uniqueness on every id is what makes the"""
+"""Neo4j constraints and indexes. Uniqueness on every id is what makes re-seeding safe."""
 
 from __future__ import annotations
 

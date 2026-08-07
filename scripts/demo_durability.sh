@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Durability demo (brief §8): start a case, kill the worker mid-flight, restart it,
+# Durability demo: start a case, kill the worker mid-flight, restart it,
 # show the case resumes at the same step with an audit trail that has no gap and no
 # duplicate. Run from the repo root with `make up` already healthy.
 set -euo pipefail

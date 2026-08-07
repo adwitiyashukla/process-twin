@@ -1,4 +1,4 @@
-"""Compiler contracts (§7.1). Each compile-time rule the brief names gets a test:"""
+"""Compiler contracts. Every rule enforced at build time gets a test here."""
 
 import pytest
 

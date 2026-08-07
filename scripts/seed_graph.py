@@ -91,7 +91,7 @@ def main() -> int:
     print(f"  P = {score['precision']:.2f}  R = {score['recall']:.2f}  "
           f"(target >= 0.70 / >= 0.70)  missed: {score['missed_rows'] or 'none'}")
     if score["missed_rows"] or score["precision"] < 0.7:
-        print("  -> analyze misses/false positives in FAILURES.md (ground rule 4)")
+        print("  -> analyze misses/false positives in FAILURES.md")
 
     DERIVED.mkdir(parents=True, exist_ok=True)
     dumps = {

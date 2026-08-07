@@ -1,4 +1,4 @@
-"""Demo 1, CLI twin (brief §11): tacit-vs-written diff as Markdown."""
+"""Demo 1 as a CLI: the tacit-vs-written diff as Markdown."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Langfuse bootstrap (brief §9): one trace per case, one span per atom, a generation"""
+"""Langfuse bootstrap: one trace per case, one span per atom, one generation per call."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ def get_client() -> Any | None:
 
 
 def start_case_trace(case_id: str, **tags: Any) -> Any | None:
-    """One trace per case, tagged for filtering (§9): case_id, golden_case_id,"""
+    """One trace per case, tagged with case_id, golden_case_id and run for filtering."""
     client = get_client()
     if client is None:
         return None

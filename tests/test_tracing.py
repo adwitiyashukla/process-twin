@@ -1,4 +1,4 @@
-"""Tracing tests: the no-op guarantee (keyless never fails) and cost math (ground rule 6)."""
+"""Tracing tests: the no-op guarantee (keyless never fails) and the cost maths."""
 
 import pytest
 

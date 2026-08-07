@@ -1,4 +1,4 @@
-"""Pre-production readiness report - Demo 2 (brief §10.3)."""
+"""Pre-production readiness report, Demo 2."""
 
 from __future__ import annotations
 

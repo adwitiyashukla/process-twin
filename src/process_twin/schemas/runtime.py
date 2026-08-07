@@ -1,4 +1,4 @@
-"""Runtime contracts: AtomInput/AtomOutput, Citation, ApprovalRequest (brief §7.2, §7.5)."""
+"""Runtime contracts: AtomInput, AtomOutput, Citation, ApprovalRequest."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ class AtomInput(StrictModel):
 
 
 class AtomOutput(StrictModel):
-    """Every atom returns exactly this (§7.2). Guardrails read citations/confidence;"""
+    """Every atom returns exactly this. The guardrails read citations and confidence."""
 
     result: dict
     citations: list[Citation] = Field(default_factory=list)
@@ -44,7 +44,7 @@ class AtomOutput(StrictModel):
 
 
 class ApprovalRequest(StrictModel):
-    """A pending HITL gate (§7.5): everything a reviewer needs to decide, nothing more."""
+    """A pending human gate: everything a reviewer needs to decide, and nothing more."""
 
     approval_id: str
     case_id: str

@@ -61,7 +61,7 @@ async def append_audit(payload: AuditInput) -> str:
 
 @activity.defn
 async def load_workflow_spec(_: str) -> dict:
-    """Compile the workflow from the derived process graph (activity, not workflow code:"""
+    """Compile the workflow from the derived graph. An activity, because it reads disk."""
     import json
 
     from process_twin.runtime.compiler import compile_workflow

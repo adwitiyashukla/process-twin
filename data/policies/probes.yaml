@@ -1,4 +1,4 @@
-# Phase-1 acceptance probes (brief §13): 20 hand-written queries, hit@5 >= 0.9.
+# Retrieval acceptance probes: 20 hand-written queries, hit@5 >= 0.9.
 #
 # A probe HITS when any of the top-5 retrieved clause_ids starts with one of its
 # expected_prefixes. Prefix matching (not exact IDs) keeps probes robust to paragraph

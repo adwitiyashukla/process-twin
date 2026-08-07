@@ -1,6 +1,6 @@
 # process-twin local environment - one command: `docker compose up -d` (or `make up`).
 #
-# Topology decisions (rationale per ground rule 2, expanded in docs/architecture.md):
+# Topology decisions (expanded in docs/architecture.md):
 #   * Langfuse v2, not v3: v3 self-host needs clickhouse+redis+minio (6+ containers);
 #     v2 needs only postgres. For a single-dev laptop, trace/cost/score features are identical
 #     for our purposes. The python SDK is pinned <3 in pyproject.toml to match.

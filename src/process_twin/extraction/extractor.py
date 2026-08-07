@@ -1,4 +1,4 @@
-"""Per-source LLM extraction with the MANDATORY self-correction loop (brief §6.1)."""
+"""Per-source LLM extraction with the self-correction loop."""
 
 from __future__ import annotations
 
@@ -167,7 +167,7 @@ def extract_source(
     model_call: ModelCall | None = None,
     trace=None,
 ) -> list[ProcessElement]:
-    """Batch + cache wrapper. Cache makes seed-graph re-runs free (cost discipline) and,"""
+    """Batch and cache wrapper, so re-running seed-graph costs nothing in API calls."""
     cache_path = cache_dir / f"{name}.jsonl"
     if cache_path.exists() and not force:
         return [

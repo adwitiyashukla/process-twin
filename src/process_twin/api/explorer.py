@@ -1,4 +1,4 @@
-"""Explorer backend (brief §11): graph + delta JSON for the browser view."""
+"""Explorer backend: graph and delta JSON for the browser view."""
 
 from __future__ import annotations
 

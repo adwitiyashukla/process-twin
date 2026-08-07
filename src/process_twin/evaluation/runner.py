@@ -1,4 +1,4 @@
-"""Golden-suite executor (brief §10)."""
+"""Golden-suite executor."""
 
 from __future__ import annotations
 

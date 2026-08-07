@@ -1,4 +1,4 @@
-"""Case schemas (brief §3): ApplicantProfile, CaseInput, CaseOutcome, CaseLog."""
+"""Case schemas: ApplicantProfile, CaseInput, CaseOutcome, CaseLog."""
 
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ class CaseInput(StrictModel):
 
 
 class CaseLog(StrictModel):
-    """One historical case record - data/case_logs/cases.jsonl (brief §4.3)."""
+    """One historical case record from data/case_logs/cases.jsonl."""
 
     case_id: str
     applicant_profile: ApplicantProfile

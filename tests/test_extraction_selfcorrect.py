@@ -1,4 +1,4 @@
-"""The self-correction loop (§6.1) - the most reused pattern in the project."""
+"""The self-correction loop - the most reused pattern in the project."""
 
 import json
 

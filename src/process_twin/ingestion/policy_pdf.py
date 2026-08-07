@@ -1,4 +1,4 @@
-"""Policy corpus -> clause-level records with STABLE IDs (brief §4.1)."""
+"""Policy corpus to clause-level records with stable ids."""
 
 from __future__ import annotations
 

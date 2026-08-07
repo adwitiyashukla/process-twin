@@ -1,4 +1,4 @@
-"""Generate the 60 synthetic historical case logs (brief §4.3) - DETERMINISTICALLY."""
+"""Generate the 60 synthetic historical case logs, deterministically."""
 
 from __future__ import annotations
 

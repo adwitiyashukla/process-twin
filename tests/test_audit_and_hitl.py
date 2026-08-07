@@ -1,4 +1,4 @@
-"""Audit chain (§7.6), approval store (§7.5), and end-to-end executor behavior (§7)."""
+"""Audit chain, approval store, and end-to-end executor behaviour."""
 
 import subprocess
 import sys
@@ -182,7 +182,7 @@ class TestExecutor:
 
 
 def test_determinism_check_passes():
-    """The Temporal determinism rule is enforced in CI, not by memory (§8)."""
+    """The Temporal determinism rule is enforced in CI, not by memory."""
     proc = subprocess.run([sys.executable, "scripts/check_determinism.py"],
                           cwd=ROOT, capture_output=True, text=True)
     assert proc.returncode == 0, proc.stdout + proc.stderr

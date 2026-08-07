@@ -1,4 +1,4 @@
-"""Golden suite integrity, metric definitions, hard gates, and report generation (§10)."""
+"""Golden suite integrity, metric definitions, hard gates, and report generation."""
 
 from pathlib import Path
 
@@ -20,7 +20,7 @@ SUITE = yaml.safe_load((ROOT / "data/golden_cases/suite.yaml").read_text(encodin
 
 
 class TestSuiteIntegrity:
-    def test_taxonomy_matches_the_brief(self):
+    def test_taxonomy_is_the_shape_i_designed(self):
         counts = {}
         for c in SUITE["cases"]:
             counts[c["category"]] = counts.get(c["category"], 0) + 1

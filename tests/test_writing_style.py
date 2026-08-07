@@ -1,5 +1,6 @@
 """Keeps characters that read as machine-generated out of the repo."""
 
+import re
 from pathlib import Path
 
 import pytest
@@ -67,3 +68,60 @@ def test_clause_id_marker_survives():
     """The paragraph mark in clause ids must stay, citation checking depends on it."""
     atoms = (ROOT / "src/process_twin/runtime/atoms.py").read_text(encoding="utf-8")
     assert "¶" in atoms
+
+
+SPEC_REF = re.compile(r"brief\s*§|ground rule \d|\(§\d|the brief", re.IGNORECASE)
+
+CODE_DIRS = ["src", "scripts", "tests", "explorer", ".github"]
+CODE_FILES = ["pyproject.toml", "Makefile", "docker-compose.yml", ".env.example",
+              "data/golden_cases/suite.yaml", "data/policies/probes.yaml",
+              "data/interviews/personas.yaml", "data/interviews/ledger.yaml"]
+
+
+def code_files() -> list[Path]:
+    paths = [ROOT / name for name in CODE_FILES]
+    for directory in CODE_DIRS:
+        target = ROOT / directory
+        if target.exists():
+            paths.extend(p for p in target.rglob("*") if p.is_file())
+    return [
+        p for p in paths
+        if p.exists() and p.suffix.lower() not in SKIP_SUFFIXES
+        and p.name not in SKIP_NAMES
+        and "fixtures" not in p.relative_to(ROOT).parts
+        and "__pycache__" not in p.relative_to(ROOT).parts
+    ]
+
+
+def test_the_style_scan_actually_reaches_the_repo():
+    """Every check in this file passes trivially on an empty file list."""
+    assert len(code_files()) > 50
+    assert len(repo_text_files()) > 50
+
+
+def test_no_reference_to_an_external_spec():
+    offenders = []
+    for path in code_files():
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, PermissionError):
+            continue
+        for i, line in enumerate(text.splitlines(), 1):
+            if SPEC_REF.search(line):
+                offenders.append(f"{path.relative_to(ROOT)}:{i}")
+    assert not offenders, (
+        "a reader cannot see any document this points at. In: " + ", ".join(offenders[:8])
+    )
+
+
+def test_no_docstring_stops_mid_sentence():
+    """An earlier cleanup truncated one-line docstrings. This stops that recurring."""
+    dangling = re.compile(r'^\s*""".*(,|;|:|\b(the|a|an|and|of|to|with|that|is))"""$')
+    offenders = []
+    for path in code_files():
+        if path.suffix != ".py":
+            continue
+        for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if dangling.match(line):
+                offenders.append(f"{path.relative_to(ROOT)}:{i}")
+    assert not offenders, f"docstring ends mid-sentence. In: {', '.join(offenders[:8])}"

@@ -7,24 +7,23 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Adwitiya Shukla", email = "shuklaaw@mail.uc.edu" }]
 
-# Rationale (ground rule 2): every runtime dependency maps to one architectural layer
-# of the brief (§2). Nothing here is speculative - if a layer moves phases, its dep moves too.
+# Every runtime dependency maps to one architectural layer. Nothing here is speculative.
 dependencies = [
-    "pydantic>=2.7",           # structured LLM output validation + self-correction loops (§6.1)
+    "pydantic>=2.7",           # structured LLM output validation + self-correction loops
     "pydantic-settings>=2.2",  # 12-factor config; thresholds live in config, never in code
-    "anthropic>=0.40",         # LLM API; model tiering handled in config.py (ground rule 6)
-    "langgraph>=0.2",          # agent runtime: interrupt/resume HITL, conditional edges (§7)
-    "neo4j>=5.20",             # process twin graph driver (§5)
-    "qdrant-client>=1.9",      # clause-level retrieval index (§7.4)
-    "temporalio>=1.7",         # durable execution: signals, retries, resumability (§8)
+    "anthropic>=0.40",         # LLM API; model tiering handled in config.py
+    "langgraph>=0.2",          # agent runtime: interrupt/resume HITL, conditional edges
+    "neo4j>=5.20",             # process twin graph driver
+    "qdrant-client>=1.9",      # clause-level retrieval index
+    "temporalio>=1.7",         # durable execution: signals, retries, resumability
     "langfuse>=2.50,<3",       # observability. Pinned <3: tracing.py is written against the
                                # v2 SDK, and self-hosted v2 needs only postgres (see docker-compose)
-    "fastapi>=0.110",          # approvals inbox + explorer backend (§7.5, §11)
+    "fastapi>=0.110",          # approvals inbox + explorer backend
     "uvicorn>=0.29",
-    "httpx>=0.27",             # policy fetching with checksums (§4.1)
+    "httpx>=0.27",             # policy fetching with checksums
     "pyyaml>=6.0",             # personas, golden suite, probe definitions
-    "pypdf>=4.2",              # FATF PDF parsing (§4.1)
-    "beautifulsoup4>=4.12",    # FFIEC manual HTML parsing (§4.1)
+    "pypdf>=4.2",              # FATF PDF parsing
+    "beautifulsoup4>=4.12",    # FFIEC manual HTML parsing
 ]
 
 [project.optional-dependencies]

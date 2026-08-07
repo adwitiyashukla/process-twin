@@ -1,4 +1,4 @@
-"""Download the public policy corpus with pinned versions + checksums (brief §4.1)."""
+"""Download the public policy corpus with pinned versions and checksums."""
 
 from __future__ import annotations
 

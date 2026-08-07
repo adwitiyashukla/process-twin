@@ -1,4 +1,4 @@
-"""Reconstruct a case's full history from the audit log alone (brief §7.6)."""
+"""Reconstruct a case's full history from the audit log alone."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Retriever v1: vector search + cross-encoder rerank (brief §7.4)."""
+"""Retriever v1: vector search then cross-encoder rerank."""
 
 from __future__ import annotations
 

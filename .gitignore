@@ -31,6 +31,7 @@ RUN-THIS.md
 publish.ps1
 fix-identity.ps1
 fix_dashes.py
+strip_spec_refs.py
 
 # OS and editor noise
 .DS_Store

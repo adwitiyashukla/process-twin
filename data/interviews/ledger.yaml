@@ -1,5 +1,5 @@
 # Machine-readable twin of the SYNTHETIC.md delta ledger - used by the delta-detection
-# P/R scorer (§6.3). `kind` uses the closed §5 enum (SYNTHETIC.md keeps the prose kinds);
+# P/R scorer. `kind` uses the closed schema enum (SYNTHETIC.md keeps the prose kinds);
 # `keywords` are any-of matchers against a detected delta's description (lowercased).
 # test_synthetic_integrity verifies ids + support stay in lockstep with SYNTHETIC.md.
 

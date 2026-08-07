@@ -1,4 +1,4 @@
-"""Approvals inbox (brief §7.5)."""
+"""Approvals inbox."""
 
 from __future__ import annotations
 

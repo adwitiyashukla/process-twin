@@ -1,4 +1,4 @@
-"""Central configuration. Every tunable the brief calls out lives here, never inline."""
+"""Central configuration. Every tunable lives here, never inline in the code."""
 
 from __future__ import annotations
 

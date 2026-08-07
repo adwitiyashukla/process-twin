@@ -1,4 +1,4 @@
-"""Qdrant collection build from processed clauses (brief §7.4)."""
+"""Qdrant collection build from processed clauses."""
 
 from __future__ import annotations
 

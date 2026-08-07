@@ -1,4 +1,4 @@
-"""Temporal workflow: one workflow per case (brief §8)."""
+"""Temporal workflow: one workflow per case."""
 
 from __future__ import annotations
 
@@ -47,12 +47,12 @@ class CaseWorkflow:
 
     @workflow.signal
     def approval_decision(self, signal: ApprovalSignal) -> None:
-        """Resume point for HITL (§7.5): the API signals here after persisting the decision."""
+        """Resume point for a human gate: the API signals here once the decision is stored."""
         self._approval = signal
 
     @workflow.query
     def status(self) -> dict:
-        """Queryable mid-flight state - this is what the durability demo shows before and"""
+        """Mid-flight state the durability demo queries either side of the kill."""
         return {"current_step": self._current_step, "path": list(self._path),
                 "awaiting_human": self._approval is None and self._current_step.endswith("::hitl")}
 
@@ -138,7 +138,7 @@ class CaseWorkflow:
 
 
 async def signal_approval(workflow_id: str, decision: str, reviewer: str, note: str = "") -> None:
-    """Called by the approvals API after the decision is persisted (§7.5)."""
+    """Called by the approvals API after the decision is persisted."""
     from temporalio.client import Client
 
     from process_twin.config import get_settings

@@ -1,4 +1,4 @@
-"""Synthetic interview tooling (brief §4.2)."""
+"""Synthetic interview tooling."""
 
 from __future__ import annotations
 

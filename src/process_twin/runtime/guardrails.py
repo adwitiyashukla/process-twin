@@ -1,11 +1,11 @@
-"""Runtime guardrails (brief §7.3): citation validator, confidence gate, schema retry,"""
+"""Runtime guardrails: citation validator, confidence gate, schema retry, delta guard."""
 
 from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
 from process_twin.config import get_settings
-from process_twin.extraction.extractor import extract_batch  # noqa: F401 - §7.3(3): same loop
+from process_twin.extraction.extractor import extract_batch  # noqa: F401
 from process_twin.schemas.runtime import AtomOutput
 
 
@@ -19,7 +19,7 @@ class GuardrailResult(BaseModel):
 
 
 class CitationValidator:
-    """Every decision must cite >= 1 clause that (a) EXISTS in the clause store and"""
+    """Every decision must cite a clause that exists and is actually relevant."""
 
     def __init__(self, known_clause_ids: set[str], reranker=None, clause_texts=None,
                  threshold: float | None = None):
@@ -58,7 +58,7 @@ class CitationValidator:
 
 
 def confidence_gate(output: AtomOutput, threshold: float | None = None) -> GuardrailResult:
-    """Below threshold, an LLM's stated confidence is closer to a coin flip than a"""
+    """Below the threshold, stated confidence is closer to a coin flip than a measure."""
     t = threshold if threshold is not None else get_settings().confidence_threshold
     if output.confidence < t:
         return GuardrailResult(passed=False, needs_human=True,
@@ -82,7 +82,7 @@ def delta_guard(step_id: str, deltas: list[dict]) -> GuardrailResult:
 def run_all(output: AtomOutput, step_id: str, deltas: list[dict],
             validator: CitationValidator | None = None,
             decision_text: str | None = None) -> GuardrailResult:
-    """Apply guardrails in order of how FUNDAMENTAL the problem is, not in order of"""
+    """Guardrails run by how fundamental the problem is, not by how cheap the check is."""
     blocking = [delta_guard(step_id, deltas)]
     if validator is not None:
         blocking.append(validator.validate(output, decision_text))

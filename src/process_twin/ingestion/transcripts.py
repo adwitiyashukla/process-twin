@@ -1,4 +1,4 @@
-"""Transcript loader/segmenter (brief §6.1 input side)."""
+"""Transcript loader/segmenter."""
 
 from __future__ import annotations
 

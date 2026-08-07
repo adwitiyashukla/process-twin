@@ -1,4 +1,4 @@
-"""Run one case end to end through the compiled workflow (brief §3)."""
+"""Run one case end to end through the compiled workflow."""
 
 from __future__ import annotations
 

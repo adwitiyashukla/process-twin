@@ -1,4 +1,4 @@
-"""Append-only, hash-chained audit log (brief §7.6)."""
+"""Append-only, hash-chained audit log."""
 
 from __future__ import annotations
 
@@ -88,5 +88,5 @@ class AuditLog:
         return True, None
 
     def replay(self, case_id: str) -> list[AuditEvent]:
-        """Reconstruct one case's full history from the log alone (brief §7.6)."""
+        """Reconstruct one case's full history from the log alone."""
         return [e for e in self.read_all() if e.case_id == case_id]

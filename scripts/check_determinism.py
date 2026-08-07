@@ -1,4 +1,4 @@
-"""CI guard for the Temporal determinism rule (brief §8)."""
+"""CI guard for the Temporal determinism rule."""
 
 from __future__ import annotations
 

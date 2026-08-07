@@ -1,4 +1,4 @@
-"""Runtime contract tests (§7.2). Strictness is the feature under test: the"""
+"""Runtime contract tests. Strictness is the feature under test, not an accident."""
 
 import pytest
 from pydantic import ValidationError

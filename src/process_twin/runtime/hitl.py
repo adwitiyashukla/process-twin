@@ -1,4 +1,4 @@
-"""Human-in-the-loop gates and approval resume (brief §7.5)."""
+"""Human-in-the-loop gates and approval resume."""
 
 from __future__ import annotations
 

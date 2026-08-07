@@ -1,4 +1,4 @@
-"""Atom contract + registry (brief §7.2), plus the phase-0 hello-world atom."""
+"""Atom contract and registry, plus the hello-world atom."""
 
 from __future__ import annotations
 

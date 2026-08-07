@@ -1,4 +1,4 @@
-"""Readiness metrics + go/no-go thresholds (brief §10.2)."""
+"""Readiness metrics and go/no-go thresholds."""
 
 from __future__ import annotations
 
@@ -136,7 +136,7 @@ def compute_metrics(evals: list[CaseEvaluation]) -> list[MetricResult]:
 
 
 def confidence_calibration(evals: list[CaseEvaluation]) -> dict:
-    """Bucketed accuracy vs stated confidence + Brier score (§10.2)."""
+    """Bucketed accuracy vs stated confidence + Brier score."""
     buckets = {"0.0-0.5": [], "0.5-0.7": [], "0.7-0.9": [], "0.9-1.0": []}
     brier_terms = []
     for e in evals:

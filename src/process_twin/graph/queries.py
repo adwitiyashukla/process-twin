@@ -1,4 +1,4 @@
-"""The killer queries (brief §5) + retriever graph-expansion + explorer JSON."""
+"""The main graph queries, retriever expansion, and explorer JSON."""
 
 from __future__ import annotations
 
@@ -48,6 +48,6 @@ RETURN n.id AS id, labels(n)[0] AS label, coalesce(n.name, n.description) AS nam
 
 
 def step_clause_ids(session, step_id: str) -> list[str]:
-    """Graph expansion for the retriever (§7.4): clauses already linked to this step"""
+    """Graph expansion for the retriever: clauses already linked to this step."""
     record = session.run(STEP_CLAUSE_IDS, {"step_id": step_id}).single()
     return [c for c in (record["clause_ids"] if record else []) if c]

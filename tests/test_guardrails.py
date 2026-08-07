@@ -1,4 +1,4 @@
-"""Guardrail tests (§7.3). Every guardrail has at least one test proving it BLOCKS what"""
+"""Guardrail tests. Every guardrail has at least one test proving it BLOCKS what"""
 
 from process_twin.runtime.guardrails import (
     CitationValidator,
@@ -18,7 +18,7 @@ TEXTS = {
 
 
 class KeywordReranker:
-    """Stand-in cross-encoder: word overlap. Enough to prove the relevance PLUMBING;"""
+    """Stand-in cross-encoder scoring by word overlap, enough to test the plumbing."""
 
     def score(self, query, texts):
         q = set(query.lower().split())
@@ -79,7 +79,7 @@ class TestDeltaGuard:
     ]
 
     def test_delta_forces_human(self):
-        """The brief names this test explicitly (§7.3(4))."""
+        """A high-severity delta on a step routes to a human whatever else passes."""
         r = delta_guard("EL-callback", self.DELTAS)
         assert not r.passed and r.needs_human and "DET-001" in r.reason
 

@@ -1,4 +1,4 @@
-"""Neo4j process graph -> executable workflow spec (brief §7.1)."""
+"""Neo4j process graph -> executable workflow spec."""
 
 from __future__ import annotations
 

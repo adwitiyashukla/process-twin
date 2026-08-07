@@ -1,4 +1,4 @@
-# Six practitioner personas (brief §4.2). Every transcript in transcripts/ is generated
+# Six practitioner personas. Every transcript in transcripts/ is generated
 # from one of these + the interview guide + that persona's assigned deltas (see SYNTHETIC.md).
 # knows_deltas is ground truth for "who voices what" - test_synthetic_integrity verifies
 # each assigned delta is actually voiced in the persona's transcript.
