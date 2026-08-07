@@ -1,6 +1,4 @@
-"""Retrieval mechanics against an in-memory qdrant with the deterministic hashing
-embedder. These tests prove indexing/search/k-limit/injection plumbing — semantic
-quality is measured only by `make probe` with real BGE models (see embedder.py)."""
+"""Retrieval mechanics against an in-memory qdrant with the deterministic hashing"""
 
 import pytest
 
@@ -39,7 +37,6 @@ def _retriever(client, final_k=5, reranker=None):
 
 
 def test_lexical_query_finds_its_clause(indexed_client):
-    # hashing embedder = trigram overlap, so a query quoting the clause must rank it #1
     hits = _retriever(indexed_client).search("beneficial ownership threshold twenty five percent")
     assert hits[0].clause_id == "CFR-1010.999(a)"
     assert hits[0].vector_score is not None
@@ -50,7 +47,6 @@ def test_final_k_respected(indexed_client):
 
 
 def test_graph_injection_adds_missing_clause(indexed_client):
-    # phase-3 seam: a clause the vector search missed gets injected by clause_id
     hits = _retriever(indexed_client).search(
         "completely unrelated query text zzz", extra_clause_ids=["FATF-R10-IN-¶9"]
     )
@@ -67,7 +63,7 @@ def test_injection_does_not_duplicate_existing_candidate(indexed_client):
 def test_fake_reranker_reorders(indexed_client):
     class ReverseReranker:
         def score(self, query, texts):
-            return list(range(len(texts)))  # last candidate wins
+            return list(range(len(texts)))
 
     hits_plain = _retriever(indexed_client).search("customer identification program")
     hits_rr = _retriever(indexed_client, reranker=ReverseReranker()).search(

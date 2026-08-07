@@ -22,7 +22,6 @@ RETURN s.name AS step, s.confidence AS confidence, df.source_type AS source_type
 ORDER BY df.weight DESC, source_ref
 """
 
-# phase-3 acceptance: every extracted element must have >= 1 DERIVED_FROM
 PROVENANCE_COVERAGE = """
 MATCH (n) WHERE any(l IN labels(n) WHERE l IN
       ['Step','Control','Exception','Evidence','EscalationPath'])
@@ -49,7 +48,6 @@ RETURN n.id AS id, labels(n)[0] AS label, coalesce(n.name, n.description) AS nam
 
 
 def step_clause_ids(session, step_id: str) -> list[str]:
-    """Graph expansion for the retriever (§7.4): clauses already linked to this step
-    plus 1-hop neighbors — 'the graph tells you where to look'."""
+    """Graph expansion for the retriever (§7.4): clauses already linked to this step"""
     record = session.run(STEP_CLAUSE_IDS, {"step_id": step_id}).single()
     return [c for c in (record["clause_ids"] if record else []) if c]

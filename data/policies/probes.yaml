@@ -5,7 +5,7 @@
 # numbering details while still failing loudly if retrieval lands in the wrong
 # document or the wrong section. Run: make probe   (after: make fetch parse index)
 #
-# Coverage is deliberate: 6 CFR / 4 CIP / 5 CDD / 2 BO / 3 FATF-or-cross — roughly
+# Coverage is deliberate: 6 CFR / 4 CIP / 5 CDD / 2 BO / 3 FATF-or-cross - roughly
 # proportional to how often the golden suite (phase 6) will cite each source.
 
 probes:

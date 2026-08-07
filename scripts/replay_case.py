@@ -1,8 +1,4 @@
-"""Reconstruct a case's full history from the audit log alone (brief §7.6).
-
-    uv run python scripts/replay_case.py GC-017
-    uv run python scripts/replay_case.py --verify        # chain integrity only
-"""
+"""Reconstruct a case's full history from the audit log alone (brief §7.6)."""
 
 from __future__ import annotations
 
@@ -24,7 +20,7 @@ def main() -> int:
 
     log = AuditLog(Path(args.log))
     intact, problem = log.verify_chain()
-    print(f"chain integrity: {'INTACT' if intact else 'BROKEN — ' + str(problem)}")
+    print(f"chain integrity: {'INTACT' if intact else 'BROKEN - ' + str(problem)}")
     if args.verify or not args.case_id:
         return 0 if intact else 1
 

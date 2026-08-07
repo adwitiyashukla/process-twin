@@ -1,10 +1,4 @@
-"""Case executor: walks a compiled WorkflowSpec, runs atoms, applies guardrails, opens
-HITL gates, and writes the audit trail (brief §7).
-
-Kept separate from Temporal (§8) on purpose: the same executor runs inside a Temporal
-activity in production AND standalone in the eval runner. One execution semantics, two
-drivers — which is why golden-suite results actually predict runtime behavior.
-"""
+"""Case executor: walks a compiled WorkflowSpec, runs atoms, applies guardrails, opens"""
 
 from __future__ import annotations
 
@@ -18,7 +12,7 @@ from process_twin.runtime.atoms import get_atom
 from process_twin.runtime.compiler import NodeSpec, WorkflowSpec
 from process_twin.schemas.runtime import AtomInput, AtomOutput
 
-ApprovalResolver = Callable[[str, str, str, AtomOutput], str]  # -> approve|reject|request_info
+ApprovalResolver = Callable[[str, str, str, AtomOutput], str]
 
 
 class StepRecord(BaseModel):
@@ -39,7 +33,7 @@ class CaseResult(BaseModel):
 
     case_id: str
     outcome: str
-    path: list[str] = Field(default_factory=list)  # executed step_ids, in order
+    path: list[str] = Field(default_factory=list)
     records: list[StepRecord] = Field(default_factory=list)
     escalated: bool = False
     escalation_reasons: list[str] = Field(default_factory=list)
@@ -58,13 +52,7 @@ def execute_case(
     trace=None,
     extra_payload: dict | None = None,
 ) -> CaseResult:
-    """Run one case to completion.
-
-    approval_resolver decides HITL gates. None = "no reviewer available", which HALTS the
-    case as escalated — the correct default: an unattended system must never approve on a
-    human's behalf. The eval runner supplies a scripted resolver; production supplies the
-    Temporal signal.
-    """
+    """Run one case to completion."""
     deltas = deltas or []
     context: dict = {}
     result = CaseResult(case_id=case_id, outcome="in_progress")
@@ -72,7 +60,7 @@ def execute_case(
     visited: set[str] = set()
 
     while node_id is not None:
-        if node_id in visited:  # compiler forbids cycles; belt-and-braces at runtime
+        if node_id in visited:
             result.outcome = "error_cycle"
             break
         visited.add(node_id)
@@ -87,9 +75,6 @@ def execute_case(
             record = StepRecord(node_id=node.id, step_id=node.step_id, atom=node.atom,
                                 output=output)
             context[node.atom] = output.result
-            # path records ATOM names, not graph node ids: golden-suite expected_path must
-            # stay meaningful whether the workflow was compiled from the seeded graph or
-            # from the reference process (different ids, same semantics).
             result.path.append(node.atom or node.step_id or node.id)
             result.citations.extend(c.clause_id for c in output.citations)
 
@@ -132,7 +117,6 @@ def execute_case(
             result.records.append(record)
 
         elif node.kind == "hitl":
-            # compiler-forced gate: no atom output of its own, still needs a human
             result.escalated = True
             reason = node.hitl_reason or "forced human gate"
             result.escalation_reasons.append(reason)
@@ -155,7 +139,6 @@ def execute_case(
                 result.outcome = "rejected"
                 break
 
-        # guard nodes are recorded for the audit trail; control checks live in the atoms
         elif node.kind == "guard":
             result.records.append(StepRecord(node_id=node.id, step_id=node.step_id, atom=None))
 
@@ -165,9 +148,6 @@ def execute_case(
     if result.outcome == "in_progress":
         decision = context.get("final_onboarding_decision", {}).get("decision")
         result.outcome = decision or ("edd_escalated" if result.escalated else "approved")
-    # An EDD referral routes the case out of straight-through processing to human
-    # specialists — that IS an escalation, whether it came from a HITL gate mid-flow or
-    # from the final decision. Metrics depend on this being one consistent concept.
     if result.outcome == "edd_escalated":
         result.escalated = True
         if not result.escalation_reasons:

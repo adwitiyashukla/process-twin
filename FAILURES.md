@@ -1,175 +1,227 @@
-# FAILURES.md — running log of everything that broke
+# Things that broke
 
-First-class artifact per ground rule 4. Every schema validation failure, extraction miss,
-retrieval whiff, infra gotcha: date, what broke, how it was detected, the fix, the prevention.
-If this file is short at the end, something was hidden.
+I kept this file from the start of the project. Every time something broke I wrote down
+what happened, how I found it, what I changed, and what stops it happening again.
 
-Entry format:
-
-```
-## YYYY-MM-DD — <one-line title>
-**What broke:**
-**How it was detected:** (test? trace? eval regression? manual run?)
-**Fix:**
-**Prevention:**
-```
+I am keeping it in the repo on purpose. A project where nothing went wrong is a project
+where nobody looked. Most of the interesting engineering in this repo is in these entries
+rather than in the code that worked first time.
 
 ---
 
-## 2026-07-08 — Host↔sandbox file mount pinned edited files at stale byte length
-**What broke:** Three source files edited after creation appeared truncated (cut mid-token at
-their pre-edit byte size) when read through the build sandbox's mount, breaking ruff/pytest
-runs with bogus syntax errors — while the host copies were verifiably complete.
-**How it was detected:** `ruff` reported `F821 Undefined name 'Fa'` — the tail of
-`_client_initialized = False` cut at exactly the file's previous size. `wc -c` on both sides
-of the mount confirmed content synced but length didn't.
-**Fix:** Rewrote the affected files from the sandbox side (full-content heredoc), which
-write-back-synced to the host correctly; adopted "create via host tools, modify via
-sandbox-side full rewrite" for the rest of the session.
-**Prevention:** Verification runs now start with an `ast.parse` / `wc -c` sanity pass over
-edited files before interpreting any lint/test failure as real.
+## Two policy rules quietly stopped firing
 
-## 2026-07-08 — D5 case-log tags had no evidence in the case records
-**What broke:** Two tacit cases (T5, T12) carried D5 in the ground-truth sidecar, but the
-generator never wrote the D5 evidence (fresher-document note) into their records — the
-sidecar promised support the data couldn't show. The phase-3 pattern miner found 4
-supporting cases where the ledger claimed 6.
-**How it was detected:** Designing the miner↔ledger lockstep test: mining cases.jsonl
-alone (no sidecar) must reproduce every ledger support count. D5 came up short.
-**Fix:** Added the missing D5 branch to `build_tacit`; regenerated the committed corpus.
-**Prevention:** `test_miner_supports_match_ledger` now enforces that every ledger count is
-recoverable from the raw case records — tags without evidence can no longer hide.
+**What broke.** Two test cases came back approved that should have escalated. One was a
+beneficial owner holding 30% of an entity in a high-risk jurisdiction. The other was an
+entity with four owners spread across four countries. Both are written EDD triggers, so both
+should have gone to enhanced due diligence.
 
-## 2026-08-04 — Delta rules fired on error cases before trigger+response pairing
-**What broke:** Early pattern predicates matched on the trigger alone (e.g. "two address
-mismatches present"), so genuine-error case HC-059 — mismatches noted, no referral made —
-counted as support for the D3 tacit pattern. A mistake was being sold as a practice.
-**How it was detected:** `test_error_cases_do_not_leak_into_pattern_support`, written
-deliberately against the near-delta error cases seeded in phase 2.
-**Fix:** Every tacit-pattern predicate now requires BOTH the trigger and the practiced
-response (mismatch AND referral; callback skipped AND activity under the $10k band).
-**Prevention:** The error-leak test is permanent; new patterns must state their response
-condition, and phase-2 keeps near-delta error cases as standing precision traps.
+**How I found it.** The first full run of the 40-case suite. Outcome accuracy came out at
+0.725 and those two were in the failure list. My unit tests had not caught it because they
+tested each component on its own, where each one returned a risk score that looked perfectly
+reasonable in isolation.
 
-## 2026-08-04 — Determinism checker flagged its own docstring
-**What broke:** `scripts/check_determinism.py` (regex over raw file text) reported
-`workflows.py` as violating the Temporal determinism rule. The "violation" was the
-sentence in the module docstring stating that the module contains no `datetime.now()`
-calls — documenting the rule broke the rule's own check, and any explanatory comment
-would have done the same.
-**How it was detected:** First run of the new check, immediately after writing the
-workflow module — the reported line pointed at prose, not code.
-**Fix:** Rewrote the checker to parse the AST and inspect call targets only, so it
-verifies what the code *does* rather than what it *says*. Error output now names the
-line number and the reason, and points at activities.py as the fix.
-**Prevention:** Lint-style guards over source must analyze structure, not text. Same
-lesson applies to the citation guardrail: existence checks on a string are weaker than
-checks on meaning, which is exactly why that guardrail also reranks for relevance.
+**What was wrong.** I had implemented both triggers as contributions to an additive risk
+score. The 30% owner scored 3, which lands on "medium", and my EDD check only fired at
+"high". So a rule that policy states unconditionally was silently gated behind a threshold
+it never crossed.
 
-## 2026-08-04 — Guardrail ordering hid the atom's real escalation reason
-**What broke:** A beneficial-ownership boundary case (owner at 22% in a high-risk
-jurisdiction) escalated with the reason "confidence 0.50 < 0.7". True, but useless to a
-reviewer: the atom had a precise explanation — the case sits between the written 25% rule
-and the practised 20% threshold — and the generic confidence gate fired first and won.
-**How it was detected:** `test_boundary_case_escalates_and_never_auto_decides` asserted
-the reason mentioned the unresolved threshold and failed on the confidence string.
-**Fix:** Reordered `run_all` by how FUNDAMENTAL each problem is: delta guard → citation
-validity → the atom's own `needs_human` note → confidence gate as the catch-all. Low
-confidence is usually the *symptom* of the atom encoding an unresolved question, so the
-atom's note outranks it.
-**Prevention:** The ordering and its rationale are documented in the function docstring,
-and the boundary test asserts on the reason text, not just the fact of escalation.
+**The fix.** `determine_edd_requirement` now evaluates the written triggers directly against
+the case: is there an owner at or above 25% in a high-risk jurisdiction, is the ownership
+structure complex and multi-jurisdictional. Scores still rank overall risk, but a
+categorical policy rule is now a predicate on the case, never a number added to a total.
 
-## 2026-08-05 — Two written EDD triggers were folded into the risk score and vanished
-**What broke:** GC-026 (beneficial owner at 30% in a high-risk jurisdiction) and GC-027
-(four owners across four jurisdictions) were both APPROVED straight through. Both are
-written EDD triggers. They had been implemented as *contributions to an additive risk
-score*, and both landed at "medium" — below the score threshold that triggers EDD.
-**How it was detected:** First full golden-suite run: outcome accuracy 0.725, with those
-two cases in the failure list. Not caught earlier because the unit tests exercised the
-atoms individually, where each returned a defensible-looking risk score.
-**Fix:** `determine_edd_requirement` now evaluates written triggers DIRECTLY against the
-applicant (owner ≥25% in a high-risk jurisdiction; complex multi-jurisdiction ownership)
-instead of inferring them from an aggregate score. Scores rank risk; they must not be the
-only route by which a categorical policy rule fires.
-**Prevention:** Golden-suite cases exist for both triggers, and the rule is stated in the
-atom: a written trigger is a predicate over the case, never a threshold on a score.
+**What I learned.** If policy states a rule unconditionally, the code should state it
+unconditionally too. Turning a rule into a score contribution feels more sophisticated and
+quietly makes the rule optional.
 
-## 2026-08-05 — Path-fidelity metric punished correct escalations
-**What broke:** Path fidelity read 0.00 and then 0.65. The metric demanded every expected
-step execute, so any case that correctly halted at a human gate scored as a path failure —
-and the compiled workflow's extra steps (the callback control runs for all applicants;
-beneficial-ownership runs for individuals and returns "not applicable") also counted
-against cases that never listed them.
-**How it was detected:** 14 path failures on cases whose outcomes were all correct — a
-metric disagreeing with every other signal is usually the thing that's wrong.
-**Fix:** Redefined path fidelity: project the actual path onto the expected step set, then
-require exact equality for completed cases and an in-order PREFIX for cases that stopped
-early. Skips and reordering still fail; halting correctly and running extra steps do not.
-**Prevention:** Six unit tests pin the definition. The deeper lesson is in the docstring
-and eval-methodology.md: a metric that penalises correct escalation would, if optimised
-against, tune the whole system toward straight-through processing — the exact opposite of
-what a governance system is for.
+---
 
-## 2026-08-05 — Metrics with an empty population reported 0.0 and failed the run
-**What broke:** A suite subset containing no adversarial cases produced
-`escalation_recall_adversarial = 0/0 = 0.0`, which failed its 0.83 threshold and turned a
-passing run into NO-GO.
-**How it was detected:** `test_caught_policy_conflict_allows_go` used a small synthetic
-eval set and got NO-GO for a category it never contained.
-**Fix:** `compute_metrics` takes an explicit population size; an empty population yields
-`passed=None` and is reported as "n/a" rather than as a failure.
-**Prevention:** Division-by-zero in a metric is never zero — it is "not measured". A
-shrinking suite must not look like a degrading system.
+## My evaluation metric was punishing correct behaviour
 
-## 2026-08-05 — Three golden cases encoded the wrong governance stance
-**What broke:** GC-020 (no primary identity document), GC-032 (synthetic-identity signals)
-and GC-033 (document-tamper indicators) expected `rejected`. The runtime escalated all
-three to a human instead, and was marked wrong.
-**How it was detected:** Full golden-suite run; all three failures shared a shape — the
-system escalating where the suite wanted an autonomous rejection.
-**Fix:** The expectations were wrong, not the system, so they were corrected — and the
-stance behind them is now written down: **the runtime autonomously rejects only on
-unambiguous grounds (a hard sanctions match); everything else that fails verification goes
-to a human.** Auto-rejecting on tamper heuristics denies real customers on a model's
-say-so, and every one of those signals has a false-positive rate.
-**Prevention:** The stance is stated in docs/eval-methodology.md as a numbered rule, so
-future cases are written against a policy rather than an intuition. Recording it here
-rather than silently editing the YAML is the point: changing an expectation to make a test
-pass is only legitimate when the reasoning survives being written down.
+**What broke.** Path fidelity read 0.00, then 0.65 after a first attempt at fixing it. Every
+other signal said the system was behaving correctly.
 
-## 2026-08-05 — Publish script reported "lint and tests green" for checks that never ran
-**What broke:** `publish.ps1` guards publication behind `uv run ruff check` and
-`uv run pytest`. On a machine without `uv`, PowerShell raised CommandNotFoundException for
-both; `$LASTEXITCODE` retained its stale value from the previous successful command, so
-both `-ne 0` guards passed and the script printed "lint and tests green." The project was
-published with a verification step that had silently not executed.
-**How it was detected:** Reading the actual console output rather than the summary line —
-the CommandNotFoundException was visible directly above the green "lint and tests green."
-GitHub Actions independently confirmed the code itself was fine, but that was luck, not
-the guard working.
-**Fix:** The step now checks `Get-Command uv` first. If the tool is absent it says so
-loudly, states that the checks did NOT run, and points at the Actions tab — it never
-claims a pass it didn't observe.
-**Prevention:** A check must distinguish three states, not two: passed, failed, and
-*did not run*. Conflating the third with the first produces false confidence, which is
-strictly worse than no check at all. This is the same failure mode the project's own
-metrics guard against (FAILURES.md 2026-08-05: empty populations reported 0.0) and the
-same reason CI runs on a clean runner rather than trusting a developer machine.
+**How I found it.** Fourteen path failures on cases whose outcomes were all correct. When one
+metric disagrees with every other metric, the metric is usually the thing that is wrong.
 
-## 2026-08-05 — "Byte-identical regeneration" held only on Linux
-**What broke:** `test_committed_cases_match_regeneration_byte_for_byte` failed on Windows:
-`ground_truth_tags.json drifted from its generator`, diff at index 1, `b'\n' != b'\r'`.
-The generator wrote `cases.jsonl` through an explicit `open(..., newline="\n")` but wrote
-the two JSON sidecars via `Path.write_text()`, which applies the platform line-ending
-default. On Windows those files gained CRLF, so the reproducibility guarantee the README
-makes — and that the frozen delta ledger depends on — was true on Linux and false on
-Windows. Every CI run was green because CI runs Ubuntu.
-**How it was detected:** First execution of the suite on a Windows machine, minutes after
-the project was published. Nine phases of green CI never touched this, because the CI
-runner and the development sandbox were both Linux.
-**Fix:** Every artifact write in the generator now pins `newline="\n"` explicitly.
-**Prevention:** A determinism claim is only as strong as the platforms it was checked on.
-Single-OS CI cannot verify cross-platform reproducibility — the honest options are a test
-matrix (ubuntu + windows) or scoping the claim to one platform. Added to the roadmap;
-until then the claim is exercised on both by virtue of local runs on Windows.
+**What was wrong.** Two problems. My definition demanded that every expected step execute, so
+a case that correctly stopped at a human gate was scored as a path failure. And the compiled
+workflow legitimately runs steps a given case does not list, like the callback control which
+runs for everyone, so those extra steps counted against cases that never mentioned them.
+
+**The fix.** I project the actual path onto the expected step set, then require exact
+equality for completed cases and an in-order prefix for cases that stopped early. Skipped or
+reordered steps still fail. Halting correctly does not.
+
+**What I learned.** This is the one that worried me most. If I had tried to raise that number
+by changing the system instead of the metric, I would have been tuning it to stop escalating
+cases, which is precisely the behaviour this project exists to prevent. A badly defined
+metric does not just measure the wrong thing, it pulls the whole system in the wrong
+direction.
+
+---
+
+## A metric with no cases reported zero and failed the run
+
+**What broke.** A test using a small evaluation set got a NO-GO verdict because of
+`escalation_recall_adversarial`, even though that set contained no adversarial cases at all.
+
+**How I found it.** A unit test I wrote to check the hard gate behaviour failed for a
+completely unrelated reason.
+
+**What was wrong.** Zero adversarial cases meant zero divided by zero, which my code computed
+as 0.0, which then failed the 0.83 threshold.
+
+**The fix.** `compute_metrics` now takes the population size, and an empty population reports
+"not applicable" rather than a score.
+
+**What I learned.** A check has three possible states, not two: passed, failed, and not
+measured. Collapsing the third into either of the other two produces a wrong answer with no
+warning.
+
+---
+
+## Three of my own test cases encoded the wrong position
+
+**What broke.** Three cases expected the system to reject the applicant outright: no primary
+identity document, synthetic identity signals, and document tampering indicators. The system
+escalated all three to a human instead, and was scored wrong for it.
+
+**How I found it.** All three failures had the same shape, which made me stop and think about
+whether the system or the expectation was wrong.
+
+**What was wrong.** My expectations, not the system. Every one of those signals is a
+heuristic with a real false-positive rate. Auto-rejecting on them means denying a real
+customer an account because a document scanner was suspicious. The correct behaviour is to
+put it in front of a person.
+
+**The fix.** I updated the three cases and, more importantly, wrote the position down in
+docs/eval-methodology.md: the system only rejects autonomously on unambiguous grounds, which
+currently means a confirmed sanctions match. Everything else that fails goes to a human.
+
+**What I learned.** Changing a test to make it pass is usually a bad sign. It is legitimate
+only when the reasoning survives being written down where someone can disagree with it.
+Recording it here rather than quietly editing the YAML is the whole point.
+
+---
+
+## The guardrails hid the useful explanation
+
+**What broke.** A beneficial ownership boundary case, an owner at 22% in a high-risk
+jurisdiction, escalated with the reason "confidence 0.50 < 0.7". Technically true, useless to
+a reviewer.
+
+**How I found it.** A test asserting that the escalation reason mentions the unresolved
+threshold, which failed on the confidence string.
+
+**What was wrong.** The component had a precise explanation ready, that the case sits between
+the written 25% rule and the practised 20% one. The generic confidence gate ran first and
+its message won.
+
+**The fix.** Reordered the guardrails by how fundamental each problem is: delta guard,
+citation validity, the component's own stated reason, then confidence as the catch-all. Low
+confidence is usually a symptom of the component encoding an unresolved question, so the
+component's reason should outrank it.
+
+**What I learned.** When several checks can fail, the order determines what the human reads.
+That is a design decision, not an implementation detail.
+
+---
+
+## My reproducibility guarantee only held on Linux
+
+**What broke.** I have a test asserting the 60 case logs regenerate byte for byte from their
+generator. It failed the first time I ran the suite on my own Windows machine:
+`ground_truth_tags.json drifted from its generator`, difference at index 1, `\n` against
+`\r\n`.
+
+**How I found it.** Running the tests locally on Windows, minutes after publishing the repo.
+CI had been green nine times in a row.
+
+**What was wrong.** I wrote `cases.jsonl` through an explicit `open(..., newline="\n")` but
+wrote the two JSON sidecars with `Path.write_text()`, which uses the platform default. On
+Windows those two files got CRLF. So the reproducibility claim in my README was true on Linux
+and false on Windows, and CI runs Ubuntu so CI was never going to tell me.
+
+**The fix.** Every artefact write now pins `newline="\n"` explicitly.
+
+**What I learned.** Single-OS CI cannot verify a cross-platform claim. Nine green runs proved
+the code worked on Ubuntu, which was never the thing in doubt. A CI matrix is now on my
+roadmap for exactly this reason.
+
+---
+
+## The delta detector counted mistakes as evidence
+
+**What broke.** One of my deliberate error cases, where an analyst noted two address
+mismatches and approved the file anyway with no referral, was being counted as support for
+the tacit pattern that says two mismatches trigger an automatic referral.
+
+**How I found it.** A test I wrote specifically against the seven error cases I had planted
+in the synthetic data as traps.
+
+**What was wrong.** My pattern predicates matched on the trigger alone. Having the trigger
+present is not the same as the practised response happening.
+
+**The fix.** Every pattern now requires both the trigger and the response together: mismatch
+and referral, callback skipped and activity under the informal threshold.
+
+**What I learned.** A pattern needs supporting behaviour, not just a matching condition. One
+mistake is noise. Treating noise as a pattern means reporting an invented practice to a
+compliance officer, which is as bad as missing a real one.
+
+---
+
+## The ledger claimed evidence the data did not contain
+
+**What broke.** Two cases were tagged with delta D5 in my ground-truth file, but the
+generator never wrote the actual evidence into those case records. My pattern miner found
+four supporting cases where the ledger claimed six.
+
+**How I found it.** Writing a test that mines the raw case logs alone, with no access to the
+ground-truth tags, and checks that every count the ledger claims is recoverable from the data
+itself. D5 came up short.
+
+**The fix.** Added the missing branch to the generator and regenerated the corpus.
+
+**What I learned.** Ground truth that is not derivable from the data is not ground truth, it
+is a claim. The lockstep test now makes it impossible for a tag to exist without evidence
+behind it.
+
+---
+
+## The determinism checker flagged its own documentation
+
+**What broke.** My script that enforces the Temporal determinism rule reported the workflow
+file as violating it. The "violation" was the sentence in the module docstring saying the
+module contains no `datetime.now()` calls.
+
+**How I found it.** First run of the check. The reported line number pointed at prose.
+
+**The fix.** Rewrote it to parse the AST and inspect call targets instead of matching text.
+
+**What I learned.** A guard over source code should analyse structure, not text, so it checks
+what the code does rather than what it says. The same reasoning is why the citation guardrail
+checks relevance and not just whether a clause ID exists.
+
+---
+
+## A verification step reported a pass for checks that never ran
+
+**What broke.** My publish script runs lint and tests before pushing. On a machine without
+`uv` installed, both commands failed to launch, and the script printed "lint and tests green"
+anyway and pushed.
+
+**How I found it.** Reading the actual console output instead of the summary line. The
+CommandNotFoundException was visible directly above the green success message.
+
+**What was wrong.** PowerShell raised the exception, `$LASTEXITCODE` kept a stale zero from
+the previous successful command, and both of my `-ne 0` guards passed.
+
+**The fix.** The script checks that the tool exists first, and says SKIPPED explicitly when it
+does not.
+
+**What I learned.** Same lesson as the empty-population metric, in a different place: a check
+that cannot distinguish "passed" from "never ran" is worse than having no check, because it
+gets trusted.

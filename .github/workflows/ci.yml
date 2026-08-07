@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - name: Install (dev extra only — retrieval models are not needed for unit tests)
+      - name: Install (dev extra only - retrieval models are not needed for unit tests)
         run: uv sync --python 3.11 --extra dev
       - name: Lint
         run: uv run ruff check .

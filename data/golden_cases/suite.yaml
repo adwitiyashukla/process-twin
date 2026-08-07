@@ -1,4 +1,4 @@
-# Golden suite (brief §10.1) — 40 cases across the required taxonomy:
+# Golden suite (brief §10.1) - 40 cases across the required taxonomy:
 #   12 clean · 10 documentary edge · 8 risk/EDD · 6 adversarial · 4 policy-conflict
 #
 # expected_outcome uses the runtime vocabulary: approved | edd_escalated | rejected |
@@ -442,7 +442,7 @@ cases:
   targets_delta: D10
 - id: GC-018
   category: documentary_edge
-  description: Utility bill at 75 days — inside written 90, outside practiced 60 (D5)
+  description: Utility bill at 75 days - inside written 90, outside practiced 60 (D5)
   input:
     applicant_type: individual
     full_name: Tomas Nowak
@@ -488,7 +488,7 @@ cases:
   targets_delta: D9
 - id: GC-020
   category: documentary_edge
-  description: 'No acceptable primary identity document presented — expected: routed to a human, not auto-rejected'
+  description: 'No acceptable primary identity document presented - expected: routed to a human, not auto-rejected'
   input:
     applicant_type: individual
     full_name: Felix Andersen
@@ -535,7 +535,7 @@ cases:
   - missing_certification
 - id: GC-022
   category: documentary_edge
-  description: Small account under $10k — callback control still applies (D6)
+  description: Small account under $10k - callback control still applies (D6)
   input:
     applicant_type: individual
     full_name: Mia Tanaka
@@ -581,7 +581,7 @@ cases:
   - pep
 - id: GC-024
   category: risk_edd
-  description: PEP close associate — informal escalation territory (D7)
+  description: PEP close associate - informal escalation territory (D7)
   input:
     applicant_type: individual
     full_name: Yuki Tanaka
@@ -807,7 +807,7 @@ cases:
   - structuring
 - id: GC-032
   category: adversarial
-  description: 'Synthetic-identity signals: SSN/DOB inconsistency — expected: routed to a human, not auto-rejected'
+  description: 'Synthetic-identity signals: SSN/DOB inconsistency - expected: routed to a human, not auto-rejected'
   input:
     applicant_type: individual
     full_name: Jordan Blake
@@ -830,7 +830,7 @@ cases:
   - synthetic_identity
 - id: GC-033
   category: adversarial
-  description: 'Document-tamper indicators on the primary ID — expected: routed to a human, not auto-rejected'
+  description: 'Document-tamper indicators on the primary ID - expected: routed to a human, not auto-rejected'
   input:
     applicant_type: individual
     full_name: Elena Vasquez
@@ -946,7 +946,7 @@ cases:
   - purpose_mismatch
 - id: GC-037
   category: policy_conflict
-  description: Owner at 21% in high-risk jurisdiction — written 25% vs practiced 20% (D1)
+  description: Owner at 21% in high-risk jurisdiction - written 25% vs practiced 20% (D1)
   input:
     applicant_type: legal_entity
     full_name: Kavastan Ventures Ltd
@@ -977,7 +977,7 @@ cases:
   targets_delta: D1
 - id: GC-038
   category: policy_conflict
-  description: Expired passport + renewal receipt — policy silent, practice accepts (D2)
+  description: Expired passport + renewal receipt - policy silent, practice accepts (D2)
   input:
     applicant_type: individual
     full_name: Nadia Haddad
@@ -1001,7 +1001,7 @@ cases:
   targets_delta: D2
 - id: GC-039
   category: policy_conflict
-  description: PO-box address — QA rejects, frontline accepts (D10)
+  description: PO-box address - QA rejects, frontline accepts (D10)
   input:
     applicant_type: individual
     full_name: Tom Okafor
@@ -1025,7 +1025,7 @@ cases:
   targets_delta: D10
 - id: GC-040
   category: policy_conflict
-  description: Foreign-tax-ID-only applicant — no written procedure exists (D9)
+  description: Foreign-tax-ID-only applicant - no written procedure exists (D9)
   input:
     applicant_type: individual
     full_name: Fatima Noor

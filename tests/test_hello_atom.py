@@ -1,5 +1,4 @@
-"""Hello atom dry-run: the full atom pipe (input -> 'model' -> schema validation -> output)
-without network, API key, or the anthropic package being imported."""
+"""Hello atom dry-run: the full atom pipe (input -> 'model' -> schema validation -> output)"""
 
 from process_twin.runtime.atoms import get_atom, register_atom, run_hello_atom
 from process_twin.schemas.runtime import AtomInput, AtomOutput
@@ -11,7 +10,7 @@ def test_dry_run_produces_valid_atom_output():
     assert "greeting" in output.result
     assert 0.0 <= output.confidence <= 1.0
     assert output.needs_human is False
-    assert cost == 0.0  # dry run bills nothing
+    assert cost == 0.0
 
 
 def test_registry_rejects_duplicates_and_unknown_lookups():

@@ -7,7 +7,6 @@ from process_twin.observability import tracing
 
 @pytest.fixture(autouse=True)
 def _fresh_client_cache(monkeypatch):
-    # ensure keyless environment regardless of developer's .env
     monkeypatch.delenv("LANGFUSE_PUBLIC_KEY", raising=False)
     monkeypatch.delenv("LANGFUSE_SECRET_KEY", raising=False)
     from process_twin.config import get_settings
@@ -27,7 +26,7 @@ def test_trace_and_span_are_none_safe():
     trace = tracing.start_case_trace("CASE-X", model_tier="fast")
     assert trace is None
     with tracing.atom_span(trace, "step-1", {"a": 1}) as span:
-        assert span is None  # and no exception — the no-op guarantee
+        assert span is None
 
 
 def test_log_generation_returns_cost_even_in_noop_mode():
@@ -40,14 +39,12 @@ def test_log_generation_returns_cost_even_in_noop_mode():
         input_tokens=1000,
         output_tokens=1000,
     )
-    # 1k in @ $1/MTok + 1k out @ $5/MTok = $0.006 — prefix match must resolve dated snapshots
     assert cost == pytest.approx(0.006)
 
 
 def test_unknown_model_costs_zero_not_invented():
-    # ground rule 5: never invent numbers — unknown model => 0.0, not a guess
     assert tracing.estimate_cost_usd("some-future-model", 10_000, 10_000) == 0.0
 
 
 def test_flush_is_safe_without_client():
-    tracing.flush()  # must not raise
+    tracing.flush()

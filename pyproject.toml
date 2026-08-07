@@ -8,7 +8,7 @@ license = { text = "MIT" }
 authors = [{ name = "Adi Shukla", email = "ashukla_be21@thapar.edu" }]
 
 # Rationale (ground rule 2): every runtime dependency maps to one architectural layer
-# of the brief (§2). Nothing here is speculative — if a layer moves phases, its dep moves too.
+# of the brief (§2). Nothing here is speculative - if a layer moves phases, its dep moves too.
 dependencies = [
     "pydantic>=2.7",           # structured LLM output validation + self-correction loops (§6.1)
     "pydantic-settings>=2.2",  # 12-factor config; thresholds live in config, never in code

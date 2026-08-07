@@ -1,14 +1,4 @@
-"""Per-source LLM extraction with the MANDATORY self-correction loop (brief §6.1).
-
-The loop — call → Pydantic-validate → on ValidationError re-prompt with the error text
-and the offending output → max N attempts → dead-letter and continue — is the single
-most reused pattern in this project: runtime guardrails (§7.3) import THIS function
-rather than reimplementing it. Every retry is a Langfuse span event; every dead-letter
-is FAILURES.md material.
-
-Cost discipline (ground rule 6): extraction runs on the cheap tier by default;
-`--model-tier reasoning` exists to produce the quality-vs-cost comparison data point.
-"""
+"""Per-source LLM extraction with the MANDATORY self-correction loop (brief §6.1)."""
 
 from __future__ import annotations
 
@@ -23,7 +13,7 @@ from process_twin.config import get_settings
 from process_twin.observability import tracing
 from process_twin.schemas.process import ProcessElement
 
-ModelCall = Callable[[str, str], str]  # (system, user) -> raw text
+ModelCall = Callable[[str, str], str]
 
 
 class ElementBatch(BaseModel):
@@ -51,14 +41,14 @@ ProcessElement fields:
   actor: "human" | "agent" | "system" | null
   preconditions, evidence_required, controls_referenced, exception_triggers: string lists
   sequence_hint: integer order of the element within this source, or null
-  attributes: object of named parameters found in the text, values as strings —
+  attributes: object of named parameters found in the text, values as strings -
     use these exact keys when the concept appears:
       bo_threshold_pct (beneficial-ownership identification threshold),
       bo_scrutiny_pct (any stricter operational scrutiny threshold),
       utility_bill_max_age_days, callback_min_activity_usd,
       screening_match_tolerance, edd_trigger
   source_spans: list of {{"source_type": "{source_type}", "ref": "<exact id given>",
-    "quote": "<short supporting quote>"}} — refs MUST come from the ids provided
+    "quote": "<short supporting quote>"}} - refs MUST come from the ids provided
   extractor_confidence: float 0..1
 
 Extract only what the source actually supports. Do NOT invent policy. Ignore complaints
@@ -118,7 +108,7 @@ def _strip_fences(raw: str) -> str:
 
 
 def extract_batch(
-    items: list[tuple[str, str]],  # (ref_id, text)
+    items: list[tuple[str, str]],
     source_type: str,
     model_call: ModelCall,
     *,
@@ -126,7 +116,7 @@ def extract_batch(
     dead_letter_dir: Path | None = None,
     span=None,
 ) -> ExtractionOutcome:
-    """The self-correction loop. Never raises on model failure — dead-letters instead."""
+    """The self-correction loop. Never raises on model failure - dead-letters instead."""
     settings = get_settings()
     max_attempts = (max_retries or settings.max_schema_retries)
     dead_letter_dir = dead_letter_dir or settings.dead_letter_dir
@@ -148,12 +138,11 @@ def extract_batch(
             batch = ElementBatch.model_validate_json(_strip_fences(raw))
         except ValidationError as exc:
             error_chain.append(str(exc))
-            if span is not None:  # retries are trace events (§9) — the story of the case
+            if span is not None:
                 span.event(name=f"schema_retry_{attempt}", metadata={"error": str(exc)[:500]})
             continue
         return ExtractionOutcome(elements=batch.elements, attempts=attempt)
 
-    # exhausted: dead-letter with the full error chain and CONTINUE the pipeline
     dead_letter_dir.mkdir(parents=True, exist_ok=True)
     dl_path = dead_letter_dir / f"{source_type}-{int(time.time() * 1000)}.json"
     dl_path.write_text(json.dumps({
@@ -178,8 +167,7 @@ def extract_source(
     model_call: ModelCall | None = None,
     trace=None,
 ) -> list[ProcessElement]:
-    """Batch + cache wrapper. Cache makes seed-graph re-runs free (cost discipline) and,
-    once committed post-review, lets a fresh clone seed the graph without an API key."""
+    """Batch + cache wrapper. Cache makes seed-graph re-runs free (cost discipline) and,"""
     cache_path = cache_dir / f"{name}.jsonl"
     if cache_path.exists() and not force:
         return [

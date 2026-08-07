@@ -1,14 +1,4 @@
-"""Approvals inbox (brief §7.5).
-
-    GET  /approvals                 -> pending queue with full context
-    GET  /approvals/{id}            -> one request
-    POST /approvals/{id}/decide     -> {decision, reviewer, note}; resumes the workflow
-                                       via Temporal signal when a workflow_id is attached
-
-The signal is best-effort by design: the decision is PERSISTED FIRST, then signalled. If
-Temporal is unreachable the human's decision is not lost — the worker picks it up from
-the store on retry. Losing a reviewer's decision is worse than a delayed resume.
-"""
+"""Approvals inbox (brief §7.5)."""
 
 from __future__ import annotations
 
@@ -61,7 +51,7 @@ def decide(approval_id: str, body: DecideBody) -> dict:
 
             asyncio.run(signal_approval(workflow_id, body.decision, body.reviewer, body.note))
             signalled = True
-        except Exception:  # noqa: BLE001 — decision already persisted; worker retries
+        except Exception:  # noqa: BLE001 - decision already persisted; worker retries
             signalled = False
     return {"approval_id": approval_id, "decision": body.decision,
             "workflow_signalled": signalled,

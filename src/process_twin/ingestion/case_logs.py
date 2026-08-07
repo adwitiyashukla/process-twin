@@ -1,15 +1,4 @@
-"""Case-log loader + DETERMINISTIC pattern miner (brief §6.3 input side).
-
-The miner reads ONLY cases.jsonl — never the ground-truth sidecar — and turns recurring
-floor behavior into CaseLogPattern records with support counts ("seen in 11 of 60
-historical cases"). Deltas cite these patterns as PRACTICED_VIEW evidence. Each rule is
-a plain predicate over the record, so the evidence chain stays auditable: pattern ->
-case_ids -> raw records.
-
-Design note: rules requiring BOTH the trigger and the tacit response (e.g. mismatch AND
-referral) are what keep the 7 genuine-error cases out of pattern support — an error case
-has the trigger without the practiced response, or the response outside the tacit band.
-"""
+"""Case-log loader + DETERMINISTIC pattern miner (brief §6.3 input side)."""
 
 from __future__ import annotations
 
@@ -27,7 +16,7 @@ CASES_PATH = Path("data/case_logs/cases.jsonl")
 class CaseLogPattern(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    id: str  # "PAT-SEQ-SCREEN-FIRST"
+    id: str
     pattern_description: str
     support_count: int
     case_ids: list[str] = Field(default_factory=list)

@@ -1,9 +1,4 @@
-"""Write the reconciled process + deltas into Neo4j with FULL provenance (brief §5).
-
-Hard rule enforced here (not just in schema docs): an element with no provenance spans
-cannot enter the graph — `DERIVED_FROM` on every extracted node is the phase-3
-acceptance query, so the loader refuses to create unprovable nodes.
-"""
+"""Write the reconciled process + deltas into Neo4j with FULL provenance (brief §5)."""
 
 from __future__ import annotations
 
@@ -21,7 +16,7 @@ def load_graph(
     deltas: list[Delta],
     segments: list[TranscriptSegment],
     patterns: list[CaseLogPattern],
-    clause_meta: list[dict] | None = None,  # {clause_id, source_doc, section_path, checksum}
+    clause_meta: list[dict] | None = None,
 ) -> dict:
     ensure_schema(session)
     session.run(
@@ -54,7 +49,7 @@ def load_graph(
 
     provenance_edges = 0
     for el in canonicals:
-        if not el.provenance:  # unreachable via schema (min_length=1) — belt and braces
+        if not el.provenance:
             raise ValueError(f"{el.id}: element without provenance cannot enter the graph")
         label = LABEL_BY_TYPE[el.element_type]
         session.run(
@@ -82,7 +77,6 @@ def load_graph(
             )
             provenance_edges += 1
 
-    # NEXT chain from written sequence hints (decision-branch conditions arrive in phase 4)
     steps = sorted(
         (e for e in canonicals if e.element_type == "step" and e.sequence_hint is not None),
         key=lambda e: e.sequence_hint,

@@ -1,19 +1,4 @@
-"""Download the public policy corpus with pinned versions + checksums (brief §4.1).
-
-    python scripts/fetch_policies.py            # fetch all, write checksums.json
-    python scripts/fetch_policies.py --verify   # re-hash existing files, report drift
-    python scripts/fetch_policies.py --url-override ffiec_cip=https://…   # fix a moved page
-
-Pinning strategy: the CFR text comes from the eCFR versioner API AT A FIXED DATE, so
-re-fetches are byte-stable; FFIEC/FATF have no versioned API, so drift is *detected*
-(checksum mismatch on --verify) rather than prevented, and reviewed before re-indexing.
-
-NOTE (first local run): FFIEC page slugs and the FATF PDF path occasionally move.
-If a fetch 404s, locate the section under https://bsaaml.ffiec.gov/manual (chapter
-"Assessing Compliance with BSA Regulatory Requirements") or the consolidated
-recommendations PDF on fatf-gafi.org, then pass --url-override name=<new-url> and
-log the move in FAILURES.md.
-"""
+"""Download the public policy corpus with pinned versions + checksums (brief §4.1)."""
 
 from __future__ import annotations
 
@@ -27,7 +12,7 @@ from pathlib import Path
 import httpx
 
 RAW_DIR = Path("data/policies/raw")
-ECFR_AS_OF = "2026-01-01"  # pinned: reproducible CFR text run-to-run
+ECFR_AS_OF = "2026-01-01"
 
 SOURCES: dict[str, dict] = {
     "cfr_1010_230": {
@@ -38,28 +23,28 @@ SOURCES: dict[str, dict] = {
         "kind": "ecfr",
         "section": "1010.230",
         "filename": "cfr_1010_230.xml",
-        "title": "FinCEN CDD Final Rule — Beneficial Ownership (31 CFR 1010.230)",
+        "title": "FinCEN CDD Final Rule - Beneficial Ownership (31 CFR 1010.230)",
     },
     "ffiec_cip": {
         "url": "https://bsaaml.ffiec.gov/manual/AssessingComplianceWithBSARegulatoryRequirements/04",
         "kind": "html",
         "section_code": "CIP",
         "filename": "ffiec_cip.html",
-        "title": "FFIEC Manual — Customer Identification Program",
+        "title": "FFIEC Manual - Customer Identification Program",
     },
     "ffiec_cdd": {
         "url": "https://bsaaml.ffiec.gov/manual/AssessingComplianceWithBSARegulatoryRequirements/05",
         "kind": "html",
         "section_code": "CDD",
         "filename": "ffiec_cdd.html",
-        "title": "FFIEC Manual — Customer Due Diligence",
+        "title": "FFIEC Manual - Customer Due Diligence",
     },
     "ffiec_bo": {
         "url": "https://bsaaml.ffiec.gov/manual/AssessingComplianceWithBSARegulatoryRequirements/06",
         "kind": "html",
         "section_code": "BO",
         "filename": "ffiec_bo.html",
-        "title": "FFIEC Manual — Beneficial Ownership Requirements for Legal Entity Customers",
+        "title": "FFIEC Manual - Beneficial Ownership Requirements for Legal Entity Customers",
     },
     "fatf_r10": {
         "url": (
@@ -67,10 +52,9 @@ SOURCES: dict[str, dict] = {
             "FATF%20Recommendations%202012.pdf.coredownload.inline.pdf"
         ),
         "kind": "pdf",
-        # Interpretive note to R10 — verify page range on first local run (edition-dependent)
         "pages": [60, 75],
         "filename": "fatf_recommendations.pdf",
-        "title": "FATF Recommendation 10 — Interpretive Note (excerpts)",
+        "title": "FATF Recommendation 10 - Interpretive Note (excerpts)",
     },
 }
 
@@ -125,7 +109,7 @@ def fetch(args: argparse.Namespace) -> int:
 def verify() -> int:
     manifest_path = RAW_DIR / "checksums.json"
     if not manifest_path.exists():
-        print("Nothing to verify — run a fetch first.")
+        print("Nothing to verify - run a fetch first.")
         return 1
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     drift = 0
@@ -142,7 +126,7 @@ def verify() -> int:
         else:
             print(f"  [ok] {name}")
     if drift:
-        print(f"\n{drift} file(s) drifted — review upstream changes, then re-run `make parse`.")
+        print(f"\n{drift} file(s) drifted - review upstream changes, then re-run `make parse`.")
     return 1 if drift else 0
 
 

@@ -1,6 +1,4 @@
-"""Compiler contracts (§7.1). Each compile-time rule the brief names gets a test:
-cycles rejected, unreachable warned, missing evidence is a compile error, high-severity
-deltas force a HITL gate."""
+"""Compiler contracts (§7.1). Each compile-time rule the brief names gets a test:"""
 
 import pytest
 
@@ -39,7 +37,7 @@ def test_cycle_is_rejected_with_readable_path():
         compile_workflow(proc)
     msg = str(exc.value)
     assert "cycle" in msg and "->" in msg
-    assert "retry" in msg  # explains WHY v1 forbids cycles
+    assert "retry" in msg
 
 
 def test_missing_evidence_is_a_compile_error_not_a_runtime_surprise():
@@ -55,7 +53,7 @@ def test_unreachable_node_warns_but_compiles():
     proc["steps"].append(step("EL-orphan", "compute risk rating", 9))
     spec = compile_workflow(proc)
     assert any("unreachable" in w and "EL-orphan" in w for w in spec.warnings)
-    assert spec.node("EL-orphan")  # still compiled — data-quality signal, not fatal
+    assert spec.node("EL-orphan")
 
 
 def test_high_severity_delta_forces_hitl_gate():
@@ -67,7 +65,6 @@ def test_high_severity_delta_forces_hitl_gate():
     gate = spec.node("EL-verify::hitl")
     assert gate.kind == "hitl" and gate.forced_hitl
     assert "DET-001" in gate.hitl_reason
-    # the gate sits BETWEEN the step and its successor — it cannot be bypassed
     assert [e.target for e in spec.successors("EL-verify")] == ["EL-verify::hitl"]
     assert [e.target for e in spec.successors("EL-verify::hitl")] == ["EL-decide"]
 
@@ -106,5 +103,4 @@ def test_unmapped_step_falls_back_to_recorded_note():
                                  [{"target": "EL-verify", "condition": None}]))
     proc["steps"][0]["next"] = [{"target": "EL-weird", "condition": None}]
     spec = compile_workflow(proc)
-    # never silently dropped from the audit trail
     assert spec.node("EL-weird").atom == "record_step_note"

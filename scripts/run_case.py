@@ -1,12 +1,4 @@
-"""Run one case end to end through the compiled workflow (brief §3).
-
-    uv run python scripts/run_case.py --case GC-003            # golden-suite case
-    uv run python scripts/run_case.py --case GC-017 --auto-approve
-    uv run python scripts/run_case.py --case GC-003 --temporal  # durable execution
-
-Without --temporal this runs the standalone executor (same semantics, no infra needed) —
-which is also what the eval runner uses.
-"""
+"""Run one case end to end through the compiled workflow (brief §3)."""
 
 from __future__ import annotations
 
@@ -29,8 +21,7 @@ SUITE = Path("data/golden_cases/suite.yaml")
 
 
 def load_spec_and_deltas():
-    """Compile from data/derived (produced by `make seed`), else the documented fallback
-    process so `run-case` works before a full seed."""
+    """Compile from data/derived (produced by `make seed`), else the documented fallback"""
     from process_twin.runtime.compiler import compile_workflow
 
     derived = Path("data/derived")
@@ -82,7 +73,7 @@ def main() -> int:
                 CaseWorkflowInput(case_id=case["id"], applicant=case["input"]),
                 id=f"case-{case['id']}", task_queue=settings.temporal_task_queue,
             )
-            print(f"started workflow {handle.id} — watch http://localhost:8233")
+            print(f"started workflow {handle.id} - watch http://localhost:8233")
             return await handle.result()
 
         print(json.dumps(asyncio.run(go()), indent=2))

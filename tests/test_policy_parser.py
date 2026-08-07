@@ -1,5 +1,4 @@
-"""Clause parser tests. The property under test is STABILITY: identical source bytes
-must produce byte-identical clause records — the citation guardrail depends on it."""
+"""Clause parser tests. The property under test is STABILITY: identical source bytes"""
 
 from pathlib import Path
 
@@ -28,12 +27,10 @@ class TestEcfrParser:
         assert "CFR-1010.999(b)(2)(ii)" in ids
 
     def test_letter_i_after_h_is_letter_not_roman(self):
-        # the classic CFR ambiguity: (h) then (i) — must be top-level letter (i),
-        # NOT roman (h)(?)(i). 31 CFR 1010.230 really has paragraphs (a)–(j).
         ids = [r.clause_id for r in _ecfr_records()]
         assert "CFR-1010.999(i)" in ids
         assert not any("(h)" in cid and "(i)" in cid for cid in ids)
-        assert "CFR-1010.999(j)" in ids  # sequence continues normally after
+        assert "CFR-1010.999(j)" in ids
 
     def test_undesignated_paragraph_merges_into_current_clause(self):
         recs = {r.clause_id: r for r in _ecfr_records()}
@@ -43,7 +40,7 @@ class TestEcfrParser:
         p1, p2 = tmp_path / "a.jsonl", tmp_path / "b.jsonl"
         write_clauses_jsonl(_ecfr_records(), p1)
         write_clauses_jsonl(_ecfr_records(), p2)
-        assert p1.read_bytes() == p2.read_bytes()  # IDs, text, checksums — all stable
+        assert p1.read_bytes() == p2.read_bytes()
 
 
 class TestFfiecParser:
@@ -51,9 +48,9 @@ class TestFfiecParser:
         html = (FIXTURES / "ffiec_sample.html").read_text(encoding="utf-8")
         recs = parse_ffiec_html(html, "CIP", "Widget Identification Program")
         texts = " ".join(r.text for r in recs)
-        assert "InfoBase" not in texts  # header noise
-        assert "footer paragraph" not in texts  # footer noise
-        assert "Short crumb." not in texts  # length filter
+        assert "InfoBase" not in texts
+        assert "footer paragraph" not in texts
+        assert "Short crumb." not in texts
         assert recs[0].clause_id == "FFIEC-CIP-¶1"
         assert [r.clause_id for r in recs] == [f"FFIEC-CIP-¶{i}" for i in range(1, len(recs) + 1)]
 
@@ -61,7 +58,7 @@ class TestFfiecParser:
         html = (FIXTURES / "ffiec_sample.html").read_text(encoding="utf-8")
         recs = parse_ffiec_html(html, "CIP", "t")
         risk_based = [r for r in recs if "risk-based procedures" in r.text]
-        assert len(risk_based) == 1  # fixture repeats the paragraph on purpose
+        assert len(risk_based) == 1
 
 
 class TestSplitting:
@@ -74,7 +71,6 @@ class TestSplitting:
         out = split_long_clauses([rec])
         assert [r.clause_id for r in out][:2] == ["FFIEC-CDD-¶3a", "FFIEC-CDD-¶3b"]
         assert all(len(r.text) <= MAX_CLAUSE_CHARS for r in out)
-        # nothing lost: every sentence lands in exactly one chunk
         rebuilt = " ".join(r.text for r in out)
         assert "Sentence number 0" in rebuilt and "Sentence number 79" in rebuilt
 
@@ -85,5 +81,5 @@ class TestSplitting:
     def test_checksum_tracks_text_only(self):
         a = make_record("X-1", "doc", "sec", "Same   text  here")
         b = make_record("X-2", "other doc", "other sec", "Same text here")
-        assert a.checksum == b.checksum  # normalization collapses whitespace
+        assert a.checksum == b.checksum
         assert a.checksum != make_record("X-3", "doc", "sec", "Different text").checksum

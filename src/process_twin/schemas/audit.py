@@ -1,13 +1,4 @@
-"""Append-only, hash-chained audit log (brief §7.6).
-
-Every state transition is one event. Each event carries `prev_event_hash`, so the log is
-a chain: altering or deleting any historical event breaks every hash after it, and
-`verify_chain()` reports exactly where. Cheap to build, disproportionately valuable in a
-regulated domain — you can prove the trail wasn't edited after the fact.
-
-Inputs/outputs are stored as HASHES, not raw payloads: the log proves what was decided
-and on what basis without becoming a second copy of customer data.
-"""
+"""Append-only, hash-chained audit log (brief §7.6)."""
 
 from __future__ import annotations
 
@@ -27,7 +18,7 @@ class AuditEvent(BaseModel):
     ts: str
     case_id: str
     step_id: str
-    actor: str  # "agent" | "human" | "system"
+    actor: str
     event_type: str
     input_hash: str
     output_hash: str

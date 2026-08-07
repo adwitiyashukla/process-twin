@@ -1,4 +1,4 @@
-# secrets — never committed; .env.example documents every variable
+# secrets, never committed. .env.example documents every variable.
 .env
 
 # python
@@ -12,9 +12,9 @@ build/
 .pytest_cache/
 .ruff_cache/
 
-# data that is fetched or produced locally, never committed:
-# raw policy downloads are re-fetched with checksum verification (scripts/fetch_policies.py);
-# FATF-derived processed clauses are regenerated locally (copyright — see docs/architecture.md)
+# data fetched or produced locally, never committed. Raw policy downloads are re-fetched
+# with checksum verification (scripts/fetch_policies.py). FATF-derived processed clauses
+# are regenerated locally for copyright reasons, see docs/architecture.md.
 data/policies/raw/*
 !data/policies/raw/.gitkeep
 data/policies/processed/fatf_*.jsonl
@@ -26,11 +26,12 @@ data/dead_letter/*
 !data/dead_letter/.gitkeep
 reports/
 
-# local scaffolding — useful on this machine, noise in a public repo
+# local scaffolding, useful on this machine but noise in a public repo
 RUN-THIS.md
 publish.ps1
+fix_dashes.py
 
-# OS / editor noise
+# OS and editor noise
 .DS_Store
 Thumbs.db
 .idea/

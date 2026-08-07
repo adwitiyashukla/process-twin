@@ -1,10 +1,4 @@
-"""Extraction/graph contracts: ProcessElement, CanonicalElement, Delta (brief §5, §6.1).
-
-Every extractor (policy / interview / case log) emits the SAME ProcessElement shape —
-that single contract is what makes three very different sources reconcilable. Attributes
-carry tacit thresholds as strings ("bo_scrutiny_pct": "20") so schema stays stable while
-the attribute vocabulary grows.
-"""
+"""Extraction/graph contracts: ProcessElement, CanonicalElement, Delta (brief §5, §6.1)."""
 
 from __future__ import annotations
 
@@ -16,8 +10,6 @@ ElementType = Literal["step", "control", "exception", "evidence_requirement", "e
 SourceType = Literal["policy", "interview", "case_log"]
 Actor = Literal["human", "agent", "system"]
 Severity = Literal["low", "medium", "high"]
-# The seven delta kinds are the §5 closed set — SYNTHETIC.md's prose kinds map onto these
-# (D2 "undocumented acceptance" -> unwritten_rule, D8 "tooling workaround" -> unwritten_rule…)
 DeltaKind = Literal[
     "threshold", "gap", "unwritten_rule", "sequence",
     "stricter_practice", "skipped_step", "practitioner_conflict",
@@ -32,13 +24,12 @@ class SourceSpan(StrictModel):
     """Exact provenance pointer: clause_id / transcript segment id / case id / pattern id."""
 
     source_type: SourceType
-    ref: str  # e.g. "CFR-1010.230(b)(1)", "P1-S3", "HC-041", "PAT-SEQ-SCREEN-FIRST"
+    ref: str
     quote: str | None = None
 
 
 class ProcessElement(StrictModel):
-    """What every per-source extractor emits (§6.1). source_spans is the non-negotiable:
-    an element with no provenance cannot enter the graph (loader enforces it too)."""
+    """What every per-source extractor emits (§6.1). source_spans is the non-negotiable:"""
 
     element_type: ElementType
     name: str
@@ -48,8 +39,8 @@ class ProcessElement(StrictModel):
     evidence_required: list[str] = Field(default_factory=list)
     controls_referenced: list[str] = Field(default_factory=list)
     exception_triggers: list[str] = Field(default_factory=list)
-    sequence_hint: int | None = None  # order within its source, for sequence-delta detection
-    attributes: dict[str, str] = Field(default_factory=dict)  # thresholds, limits, params
+    sequence_hint: int | None = None
+    attributes: dict[str, str] = Field(default_factory=dict)
     source_spans: list[SourceSpan] = Field(min_length=1)
     extractor_confidence: float = Field(ge=0.0, le=1.0)
 
@@ -62,11 +53,11 @@ class CanonicalElement(StrictModel):
     name: str
     description: str
     actor: Actor | None = None
-    attributes: dict[str, str] = Field(default_factory=dict)  # written value wins conflicts
+    attributes: dict[str, str] = Field(default_factory=dict)
     sequence_hint: int | None = None
     confidence: float = Field(ge=0.0, le=1.0)
     provenance: list[SourceSpan] = Field(min_length=1)
-    merged_names: list[str] = Field(default_factory=list)  # aliases from other sources
+    merged_names: list[str] = Field(default_factory=list)
 
 
 class AttributeConflict(StrictModel):
@@ -82,14 +73,14 @@ class AttributeConflict(StrictModel):
 
 
 class Delta(StrictModel):
-    """First-class divergence node (§5) — the thesis of the project."""
+    """First-class divergence node (§5) - the thesis of the project."""
 
     id: str
     kind: DeltaKind
     severity: Severity
     description: str
     about_element_id: str
-    written_view: list[str] = Field(default_factory=list)  # clause_ids
-    practiced_view: list[str] = Field(default_factory=list)  # segment/pattern refs
+    written_view: list[str] = Field(default_factory=list)
+    practiced_view: list[str] = Field(default_factory=list)
     recommendation: str
-    support_count: int = 0  # from case-log patterns: "seen in N of 60 historical cases"
+    support_count: int = 0

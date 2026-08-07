@@ -1,4 +1,4 @@
-# process-twin local environment — one command: `docker compose up -d` (or `make up`).
+# process-twin local environment - one command: `docker compose up -d` (or `make up`).
 #
 # Topology decisions (rationale per ground rule 2, expanded in docs/architecture.md):
 #   * Langfuse v2, not v3: v3 self-host needs clickhouse+redis+minio (6+ containers);
@@ -66,7 +66,7 @@ services:
     depends_on:
       - temporal
     ports:
-      - "8233:8080"   # http://localhost:8233 — 8233 mirrors temporal dev-server convention
+      - "8233:8080"   # http://localhost:8233 - 8233 mirrors temporal dev-server convention
     environment:
       TEMPORAL_ADDRESS: temporal:7233
 

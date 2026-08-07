@@ -1,174 +1,234 @@
 # process-twin
 
-[![CI](https://github.com/adwitiyashukla/process-twin/actions/workflows/ci.yml/badge.svg)](https://github.com/adwitiyashukla/process-twin/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+A KYC onboarding agent that knows the difference between what the policy says and what
+people actually do, and refuses to guess when the two disagree.
 
-**From written SOP to governed agent workflow — with pre-production evaluation and full audit trails.**
+I am a masters student and I built this to learn how AI agents get deployed in places
+where a wrong answer is expensive. Most agent projects I found online stop at "it works on
+my machine". I wanted to go further and find out what it actually takes to say an agent is
+safe to put in front of real customers.
 
-Institutional knowledge lives in people's heads. Written policy drifts from what
-practitioners actually do. Deploying an agent against either source alone is how regulated
-automation fails — quietly, with a clean-looking audit trail.
+## The problem I started with
 
-`process-twin` ingests three knowledge sources about one banking process — **KYC/CDD
-customer onboarding** — reconciles them into an inspectable process graph where
-*disagreements become first-class nodes*, compiles that graph into a governed agent
-workflow, and refuses to call anything production-ready until a 40-case evaluation says so.
+I read a lot about why AI projects fail in banks and finance. The reason that came up
+again and again was not that the model was bad. It was that the written procedure and the
+real procedure are two different things.
 
-```mermaid
-flowchart LR
-    A["<b>Diagnostics</b><br/>policy clauses · expert interviews · case logs<br/>extraction → reconciliation → delta detection"]
-    B["<b>Process twin</b><br/>Neo4j graph with full provenance<br/>+ Delta nodes where practice ≠ policy"]
-    C["<b>Governed runtime</b><br/>graph-compiled workflow · citation guardrails<br/>HITL gates · Temporal durability · hash-chained audit"]
-    D["<b>Readiness report</b><br/>40-case golden suite<br/>go/no-go thresholds · Langfuse traces"]
-    A --> B --> C --> D
-```
+The manual says one thing. The analyst who has been doing the job for eight years does
+something slightly different, and usually for a good reason that never made it into any
+document. If you train or prompt an agent on only the manual, it will be wrong in practice.
+If you build it from only what people do, you have automated an undocumented rule, and now
+nobody can defend it in an audit.
 
-## The two demos
+So I picked one real process, KYC customer onboarding at a bank, and tried to build a
+system that handles both sources honestly instead of picking one.
 
-### Demo 1 — the tacit-vs-written diff
+## What the project does
 
-The system finds where practice has quietly diverged from written policy, and shows both
-sides of each divergence with evidence. Ten divergences, every one traceable to the clause
-it contradicts, the practitioner who described it, and the historical cases that back it up:
+It reads three kinds of input about the same process:
 
-| Delta | Written policy says | Practice does | Seen in | Severity |
+1. Real published policy: the FFIEC BSA/AML manual sections, the FinCEN CDD rule
+   (31 CFR 1010.230), and FATF Recommendation 10.
+2. Interview transcripts from six practitioner personas. These are synthetic and I say so
+   clearly everywhere, because I do not have access to real KYC analysts.
+3. Sixty historical case logs, also synthetic, showing how cases were actually handled.
+
+It pulls process steps out of all three, matches up the ones that describe the same thing,
+and builds a graph in Neo4j. When the sources disagree, it does not average them or pick a
+winner. It creates a Delta node that records both sides with the evidence for each.
+
+Then it compiles that graph into a runnable workflow and runs test cases through it, with
+guardrails that stop it from doing anything it cannot justify.
+
+## Demo 1: finding where practice and policy disagree
+
+This is the part I am most happy with. The system found ten divergences. Here are six:
+
+| Delta | What the policy says | What people actually do | Cases | Severity |
 |---|---|---|---|---|
-| **D1** threshold | Identify beneficial owners at **25%** (31 CFR 1010.230) | Full scrutiny from **20%** for high-risk jurisdictions | 11/60 cases | 🔴 high |
-| **D6** skipped step | Callback verification is a written control | Skipped below **$10k** expected activity | 6/60 | 🔴 high |
-| **D8** unwritten rule | Screening at standard match tolerance | Tolerance **manually widened** for transliterated names | 4/60 | 🔴 high |
-| **D2** undocumented acceptance | Silent on expired ID + renewal receipt | Accepted with a 30-day follow-up task | 5/60 | 🟠 medium |
-| **D3** unwritten rule | No such trigger exists in policy | Two address mismatches → automatic EDD referral | 5/60 | 🟠 medium |
-| **D10** practitioner conflict | Policy silent on PO-box addresses | QA **rejects**; frontline **accepts** with one extra document | 4/60 | 🟠 medium |
+| D1 | Identify beneficial owners at 25% (31 CFR 1010.230) | Analysts apply full scrutiny from 20% for high-risk jurisdictions | 11 of 60 | high |
+| D6 | Callback verification is a required control | Skipped for accounts under $10k expected activity | 6 of 60 | high |
+| D8 | Screening runs at the standard match tolerance | Tolerance is widened by hand for transliterated names | 4 of 60 | high |
+| D2 | Nothing written about expired ID plus a renewal receipt | Accepted, with a 30-day follow-up task | 5 of 60 | medium |
+| D3 | No such rule exists in the policy at all | Two address mismatches means an automatic EDD referral | 5 of 60 | medium |
+| D10 | Policy says nothing about PO-box addresses | QA rejects them, the frontline accepts them with one extra document | 4 of 60 | medium |
 
-*(D4, D5, D7, D9 in [`data/interviews/SYNTHETIC.md`](data/interviews/SYNTHETIC.md) — the full ledger.)*
+The rest are in [data/interviews/SYNTHETIC.md](data/interviews/SYNTHETIC.md).
 
-**D10 is the one to look at.** Two customers, identical facts, opposite outcomes depending
-on who opened the file. Most systems would average that away during extraction. This one
-keeps it as a `Delta` node with both stances attached — because a conflict the institution
-hasn't resolved is not a data-quality problem to be smoothed over, it's a governance
-finding to be escalated.
+D10 is my favourite one. It is not policy versus practice, it is two employees who
+disagree with each other. Same customer, same facts, different answer depending on whose
+desk the file lands on. When I first designed the extraction step I was going to just pick
+whichever version appeared more often. Then I realised that is exactly the wrong thing to
+do, because the disagreement is the finding. A compliance officer would want to know about
+it. So the system keeps both sides.
 
 ```bash
-make diff          # markdown diff report
-make api           # interactive explorer at localhost:8000/explorer
+make diff          # prints the diff as markdown
+make api           # opens an interactive graph explorer at localhost:8000/explorer
 ```
 
-### Demo 2 — the pre-production readiness report
+## Demo 2: deciding whether it is safe to deploy
 
-`make report` runs 40 golden cases through the compiled workflow and emits an HTML +
-Markdown report with an explicit go/no-go verdict. **Latest run — VERDICT: GO:**
+I did not want to just say "the agent works". I wanted a number I could defend. So I wrote
+40 test cases covering clean applications, messy documents, real risk triggers, adversarial
+attempts, and four cases that land exactly on the unresolved policy questions above.
 
-| Metric | Value | Threshold | |
+`make report` runs all 40 and produces a report with a go or no-go verdict. Current run:
+
+| Metric | Result | Threshold | Pass? |
 |---|---|---|---|
-| Outcome accuracy | **1.000** | ≥ 0.85 | ✅ |
-| Path fidelity | **1.000** | ≥ 0.90 | ✅ |
-| Escalation recall — policy conflict | **1.000** | = 1.00 | ✅ 🔒 **hard gate** |
-| Escalation recall — adversarial | **1.000** | ≥ 0.83 | ✅ |
-| Escalation precision | **1.000** | ≥ 0.80 | ✅ |
-| Citation validity | **1.000** | ≥ 0.95 | ✅ |
-| Retrieval hit@5 | **0.950** | ≥ 0.90 | ✅ |
-| Confidence calibration | Brier **0.033** | reported | — |
+| Outcome accuracy | 1.000 | 0.85 or higher | yes |
+| Path fidelity | 1.000 | 0.90 or higher | yes |
+| Escalation recall on policy-conflict cases | 1.000 | must be exactly 1.00 | yes |
+| Escalation recall on adversarial cases | 1.000 | 0.83 or higher | yes |
+| Escalation precision | 1.000 | 0.80 or higher | yes |
+| Citation validity | 1.000 | 0.95 or higher | yes |
+| Retrieval hit@5 | 0.950 | 0.90 or higher | yes |
 
-Real numbers, regenerated by `make report` — a committed sample lives at [`docs/sample-report/report.md`](docs/sample-report/report.md) ([summary.json](docs/sample-report/summary.json) has the per-case detail). Getting here
-took five real bugs — all of them in [`FAILURES.md`](FAILURES.md), including two written
-EDD triggers that had vanished into an additive risk score.
+A sample report is committed at [docs/sample-report/report.md](docs/sample-report/report.md)
+so you can read it without running anything.
 
-**Why is one threshold 1.0 when outcome accuracy is only 0.85?** Because the failures have
-different shapes. A wrongly-decided ordinary case is a quality defect: measurable,
-improvable, catchable in review. But a case sitting exactly on an unresolved policy
-question — written rule says 25%, the floor practises 20%, nobody has decided which governs
-— that case must never be auto-decided. Resolving it silently produces a confidently-wrong
-decision with a clean audit trail, on a real customer's file, with the system having
-invented policy it had no authority to invent. That's not a quality defect; it's the system
-exceeding its remit. So it gates the release outright.
+### The one threshold I set to 100%
 
-## Governance features
+Every metric above tolerates some error except one. Escalation on policy-conflict cases has
+to be perfect, and I want to explain why I made that choice, because it is the design
+decision I thought hardest about.
 
-- **Citation-validated decisions** — every decision cites clauses that must *exist* in the
-  clause store and be *relevant* (cross-encoder scored). Catches both fabricated citations
-  and real-but-irrelevant ones.
-- **Human-in-the-loop gates** — low confidence, uncited decisions, and atom-flagged
-  ambiguity all route to an approvals inbox with full context. No reviewer available means
-  the case **halts**; an unattended system never approves on a human's behalf.
-- **Delta guards** — any step carrying an unresolved high-severity delta gets a forced HITL
-  gate the compiler places *between* the step and its successor. Model confidence cannot
-  override it: confidence measures self-certainty, not which side of an open policy
-  question is correct.
-- **Hash-chained audit log** — append-only, each event carrying the previous event's hash.
-  Tampering and deletion are both detectable, and any case replays from the log alone.
-- **Durable interrupt-and-resume** — Temporal workflow per case. A case waiting on a human
-  sleeps for days holding no process; kill the worker mid-case and it resumes at the same
-  step with no duplicate audit events.
-- **Observable** — one Langfuse trace per case, one span per atom, cost per call, guardrail
-  rejections and schema retries as span events.
+If the agent gets an ordinary case wrong, that is bad but it is a normal quality problem.
+You measure it, you improve it, a reviewer can catch it.
 
-## Quickstart
+But if a case lands exactly on a question the bank itself has not answered, where the rule
+book says 25% and the floor says 20% and nobody has decided which one wins, and the agent
+just picks one, then it has invented policy. It produces a confident decision with a clean
+audit trail on a real customer's file, and the audit trail makes it look correct. There is
+no way to catch that later. So the system is not allowed to do it at all, and if even one
+of those four cases slips through, the whole run fails.
+
+## What broke while I was building it
+
+I kept a file called [FAILURES.md](FAILURES.md) with every bug I hit, how I found it, and
+what I changed. There are ten entries. Three I would actually talk about in an interview:
+
+**Two policy rules quietly stopped working.** I had implemented EDD triggers as
+contributions to an overall risk score. A case with a beneficial owner at 30% in a
+high-risk country scored "medium" and got approved straight through, even though the
+written rule clearly requires escalation. The lesson I took from it: a categorical rule
+should be a direct check on the case, not a number added to a total that might not cross a
+threshold.
+
+**My evaluation metric was punishing correct behaviour.** Path fidelity was showing 0.00
+while every other signal said the system was fine. The metric demanded every step run, so
+any case that correctly stopped at a human gate was scored as a failure. If I had tuned the
+system to raise that number I would have been training it to stop escalating, which is the
+opposite of the point. I rewrote the metric definition instead.
+
+**My "reproducible" data was only reproducible on Linux.** I have a test asserting the case
+logs regenerate byte for byte. It passed in CI nine times. Then I ran it on my own Windows
+machine and it failed immediately: Python's `write_text()` had been silently using CRLF for
+two of the three files. CI runs Ubuntu, so CI was never going to catch it. Single-OS CI
+cannot verify a cross-platform claim.
+
+## Running it
 
 ```bash
 git clone https://github.com/adwitiyashukla/process-twin && cd process-twin
 uv sync --all-extras
-cp .env.example .env                    # add ANTHROPIC_API_KEY for phases 3+
+cp .env.example .env                    # add your ANTHROPIC_API_KEY here
 docker compose up -d && python scripts/wait_healthy.py
 
-make test                               # 126 tests, no infra needed
-make report                             # Demo 2 — readiness report with real numbers
-make fetch parse index probe            # policy corpus → clause store → retrieval hit@5
-make seed                               # extraction → graph → deltas (needs API key)
-make diff                               # Demo 1 — tacit-vs-written diff
-make api                                # explorer + approvals inbox at :8000
-make demo-durability                    # kill/restart the worker, prove the case resumes
+make test                               # 126 tests, no Docker or API key needed
+make report                             # Demo 2, the readiness report
+make fetch parse index probe            # download policy docs, build the clause store
+make seed                               # extraction and graph building (needs API key)
+make diff                               # Demo 1, the policy-vs-practice diff
+make api                                # explorer and approvals inbox
+make demo-durability                    # kill the worker mid-case, watch it resume
 ```
 
-## How it works
+## How it is built
 
-**Diagnostics.** Policy clauses are parsed with *stable IDs* derived from document
-structure (`CFR-1010.230(b)(1)`, `FFIEC-CDD-¶12`) — not chunk offsets, because the citation
-guardrail compares those strings and a silently re-pointed ID means a silently wrong audit.
-Interviews and case logs go through the same `ProcessElement` contract. LLM extraction runs
-a self-correction loop: validate → re-prompt with the error *and* the offending output →
-three attempts → dead-letter with the full chain and keep going.
+**Reading the policy.** Clauses get IDs from the document structure itself, like
+`CFR-1010.230(b)(1)`, not from where a chunk happens to start. This matters because the
+citation checker compares those strings. If an ID silently points somewhere new after a
+re-parse, every audit record referencing it becomes wrong without anyone noticing. Getting
+this right was harder than I expected. CFR paragraphs go (a), (b) ... (h), (i), and that
+(i) is the letter i, not roman numeral one, so a naive parser corrupts every ID after that
+point.
 
-**Reconciliation.** Entity resolution merges the same real-world step described three
-different ways. Where sources agree, confidence rises. Where they disagree, **the written
-value stays canonical and the disagreement becomes a `Delta`** — never averaged away. That
-single rule is the thesis of the project.
+**Extraction.** The LLM is asked for structured output, Pydantic validates it, and if
+validation fails the error message and the bad output are fed back to the model to try
+again. Three attempts, then the batch is written to a dead-letter file with the full error
+chain and the pipeline keeps going instead of crashing.
 
-**Composition.** The graph compiles to a workflow spec: controls become guard nodes, high-
-severity deltas become forced HITL gates, cycles are rejected at compile time, and a step
-requiring evidence no atom can supply is a build error rather than a 3 a.m. runtime failure.
-The graph is the source of truth, so a process change is a re-compile, not a code change.
+**Reconciliation.** Same real-world step described three different ways gets merged. Where
+sources agree, confidence goes up. Where they disagree, the written value stays canonical
+and the disagreement becomes a Delta.
 
-**Runtime.** GraphRAG retrieval — the graph tells you *where to look* (clauses linked to
-this step, plus one hop), the vectors tell you *what's similar*. Guardrails run in order of
-how fundamental the problem is. Every transition appends to the hash chain.
+**The compiler.** The graph compiles into a workflow. Controls become checkpoints,
+high-severity deltas become mandatory human gates, cycles are rejected at compile time, and
+a step needing evidence that no component can produce is a build error rather than a
+failure at 3am. The graph is the source of truth, so changing the process is a re-compile,
+not a code rewrite.
 
-## Honest limitations
+**Guardrails.** Every decision must cite a clause that exists and is actually relevant,
+checked with a cross-encoder. Low confidence sends the case to a human. An unresolved
+high-severity delta sends it to a human regardless of how confident the model is, because
+confidence tells you how sure the model is about its own reasoning, not which side of an
+open question is correct.
 
-- **Interview transcripts and case logs are synthetic and labelled as such.** Generation
-  method, the full ground-truth delta ledger, and the argument for why this doesn't
-  invalidate the delta-detection evaluation (plus what *would*) are in
-  [`SYNTHETIC.md`](data/interviews/SYNTHETIC.md). Policy sources are real and public.
-- **One process, one jurisdiction.** Depth over breadth, deliberately.
-- **No real PII**, no multi-tenancy, no fine-tuning, single-node scale.
-- **v1 delta detection is a transparent rule table**, not an LLM judgment call — every
-  delta traces to the exact rule and evidence that fired. LLM-assisted candidate generation
-  is roadmap.
-- High-risk jurisdictions in the synthetic data are **fictional** (Kavastan, Zubaria, Port
-  Meridian) so nothing couples to live FATF list churn or mislabels a real country.
+**Durability.** Each case is a Temporal workflow. A case waiting for a human sleeps without
+holding a process, and if you kill the worker mid-case it resumes at the same step. All the
+non-deterministic work lives in activities, never in workflow code, and there is a script in
+CI that checks this by parsing the file rather than trusting me to remember.
 
-## Roadmap
+**Audit.** Every state change appends to a hash-chained log. Each entry carries the previous
+entry's hash, so editing or deleting history breaks the chain and the checker says exactly
+where.
 
-Go/gRPC worker for deterministic activities · a second process (healthcare prior-auth) to
-test what generalises · Ragas-style semantic eval · policy-update diffing over time.
+## What this project does not do
 
-## Docs
+The interview transcripts and case logs are **synthetic**. I generated them, and I documented
+exactly how in [SYNTHETIC.md](data/interviews/SYNTHETIC.md), including an argument for why
+this does not make the delta-detection evaluation meaningless and what would. I am a
+student, I do not have access to real KYC analysts or real customer files. The policy
+documents are real and public.
 
-[architecture decisions](docs/architecture.md) · [graph schema](docs/graph-schema.md) ·
-[eval methodology](docs/eval-methodology.md) · [phase reviews](docs/phase-reviews/) ·
-[FAILURES.md](FAILURES.md) · [local setup](docs/local-setup.md)
+The evaluation measures the governance machinery, not LLM judgment quality. The v1
+decision components are deterministic on purpose so an examiner could re-derive every
+threshold by hand. That means those 1.000 scores say the guardrails and gates and routing
+work correctly. They do not say an LLM makes good KYC decisions.
 
----
+One process, one jurisdiction, no real personal data, single machine, no fine-tuning.
 
-MIT licensed. Built by Adi Shukla. Stack: Python 3.11, Pydantic v2, LangGraph, Neo4j, Qdrant + BGE,
-Temporal, Langfuse, FastAPI, pytest/ruff, Docker Compose.
+Delta detection is a rule table, not an LLM making judgment calls, so every delta traces to
+the exact rule that produced it. LLM-assisted detection is something I would like to try next.
+
+High-risk countries in the synthetic data are made up (Kavastan, Zubaria, Port Meridian) so
+nothing here mislabels a real country or breaks when FATF updates its lists.
+
+## What I would do next
+
+Move two of the deterministic activities to a Go worker over gRPC, mostly to learn the
+cross-language Temporal story. Point the whole thing at a second process, probably
+healthcare prior-authorisation, to find out how much of this generalises and how much I
+overfit to KYC. Add semantic evaluation. Add a Windows and Linux CI matrix, since I now
+know from experience why that matters.
+
+## More detail
+
+[Design decisions and why I made them](docs/architecture.md)
+
+[The graph schema](docs/graph-schema.md)
+
+[How the evaluation works](docs/eval-methodology.md)
+
+[Build notes I kept as I went](docs/build-notes.md)
+
+[Things that broke](FAILURES.md)
+
+## Built with
+
+Python 3.11, Pydantic v2, LangGraph, Neo4j, Qdrant with BGE embeddings, Temporal, Langfuse,
+FastAPI, pytest, ruff, Docker Compose.
+
+MIT licensed. Built by Adi Shukla.

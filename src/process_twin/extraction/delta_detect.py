@@ -1,14 +1,4 @@
-"""Delta detection: conflicts + mined patterns + provenance gaps -> typed Delta nodes
-(brief §6.3), plus the precision/recall scorer against the SYNTHETIC.md/ledger.yaml
-ground truth (target >= 0.7 / >= 0.7).
-
-v1 is a DELIBERATELY transparent rule table (attribute keys, pattern ids, keyword
-routes) rather than an LLM judgment call: every produced delta can be traced to the
-exact rule and evidence that fired, which is what a model-risk reviewer asks for first.
-LLM-assisted candidate generation is roadmap, not v1 (docs/architecture.md).
-
-Severity rubric (brief §6.3): regulatory exposure > customer impact > efficiency.
-"""
+"""Delta detection: conflicts + mined patterns + provenance gaps -> typed Delta nodes"""
 
 from __future__ import annotations
 
@@ -19,16 +9,13 @@ import yaml
 from process_twin.ingestion.case_logs import CaseLogPattern
 from process_twin.schemas.process import AttributeConflict, CanonicalElement, Delta
 
-# keyword -> (kind, severity, recommendation) for practice-only elements/attributes.
-# High severity = a control's reliability is affected (screening tolerance, skipped
-# verification); medium = consistency/audit-trail exposure; low = efficiency/order.
 PRESENCE_ROUTES: list[tuple[tuple[str, ...], str, str, str]] = [
     (("address mismatch",), "unwritten_rule", "medium",
-     "Encode the exception: the two-mismatch EDD trigger is good control design — write it down."),
+     "Encode the exception: the two-mismatch EDD trigger is good control design - write it down."),
     (("renewal receipt", "expired passport"), "unwritten_rule", "medium",
      "Align policy: codify the renewal-receipt acceptance with its 30-day follow-up task."),
     (("verbal", "pep"), "unwritten_rule", "medium",
-     "Retrain: formal EDD ticket first, discussion second — the trail must start on the record."),
+     "Retrain: formal EDD ticket first, discussion second - the trail must start on the record."),
     (("foreign tax",), "gap", "medium",
      "Align policy: write the foreign-tax-ID-only procedure the EDD specialist already runs."),
     (("tolerance", "transliterat"), "unwritten_rule", "high",
@@ -71,21 +58,19 @@ def detect_deltas(
 
     attrs_all = {a for c in canonicals for a in c.attributes}
 
-    # --- attribute-conflict rules -------------------------------------------------
     for cf in sorted(conflicts, key=lambda c: (c.element_id, c.attribute)):
         written_refs = sorted({s.ref for s in cf.written_spans})
         practiced_refs = sorted({s.ref for s in cf.practiced_spans})
 
         if (cf.attribute == "bo_scrutiny_pct" and cf.written_value is None
                 and "bo_threshold_pct" in attrs_all):
-            # practice runs its own scrutiny threshold NEXT TO the certified 25% rule
             n, pats = _support(pat_by_id, "threshold:bo")
             add("threshold", "high",
                 f"Beneficial-ownership scrutiny applied from {cf.practiced_value}% for "
                 "high-risk jurisdictions, below the written 25% certification threshold.",
                 cf.element_id, written_refs, practiced_refs + pats,
                 "Encode the exception (document the 20% high-risk practice) or align to "
-                "25% and retrain — an undocumented threshold is an exam finding.", n)
+                "25% and retrain - an undocumented threshold is an exam finding.", n)
             continue
 
         if (cf.attribute == "utility_bill_max_age_days" and cf.written_value
@@ -103,17 +88,17 @@ def detect_deltas(
             n, pats = _support(pat_by_id, "skipped_step:callback")
             add("skipped_step", "high",
                 f"Callback verification skipped below ${cf.practiced_value} expected activity "
-                "— an invented floor threshold on a written control.",
+                "- an invented floor threshold on a written control.",
                 cf.element_id, written_refs, practiced_refs + pats,
                 "Retrain staff, or replace the control with a documented risk-based threshold "
-                "— a rule nobody follows plus a practice nobody wrote down is the worst of both.",
+                "- a rule nobody follows plus a practice nobody wrote down is the worst of both.",
                 n)
             continue
 
         if cf.attribute == "screening_match_tolerance" and cf.written_value is None:
             n, pats = _support(pat_by_id, "unwritten:tolerance")
             add("unwritten_rule", "high",
-                "Screening match tolerance manually widened for transliterated names — "
+                "Screening match tolerance manually widened for transliterated names - "
                 "per-analyst overrides on a screening control.",
                 cf.element_id, written_refs, practiced_refs + pats,
                 "Fix tooling: transliteration support belongs in the matcher natively.", n)
@@ -126,7 +111,6 @@ def detect_deltas(
                 cf.element_id, written_refs, practiced_refs,
                 "Reconcile the parameter and document the chosen value.")
 
-    # --- presence rules: elements with zero policy provenance ----------------------
     for canon in canonicals:
         if canon.element_type not in {"exception", "escalation", "control"}:
             continue
@@ -143,7 +127,6 @@ def detect_deltas(
                     canon.id, [], refs + pats, rec, n)
                 break
 
-    # --- sequence rule --------------------------------------------------------------
     if "PAT-SEQ-SCREEN-FIRST" in pat_by_id:
         screen = next((c for c in canonicals if "screen" in c.name.lower()), None)
         verify = next((c for c in canonicals if "verify" in c.name.lower()), None)
@@ -154,17 +137,16 @@ def detect_deltas(
                 "written flow implies verification first.",
                 screen.id,
                 sorted({s.ref for s in verify.provenance if s.source_type == "policy"}),
-                [pat.id], "Align policy: fail-fast sequencing is defensible — update the "
+                [pat.id], "Align policy: fail-fast sequencing is defensible - update the "
                 "written order to match (same controls, same evidence, better order).",
                 pat.support_count)
 
-    # --- practitioner conflict ------------------------------------------------------
     acc, rej = pat_by_id.get("PAT-PO-BOX-ACCEPTED"), pat_by_id.get("PAT-PO-BOX-REJECTED")
     if acc and rej:
         about = next((c.id for c in canonicals if "address" in c.name.lower()), "EL-address_policy")
         add("practitioner_conflict", "medium",
             "PO box addresses: QA rejects outright while frontline accepts with a supplemental "
-            "document — same facts, opposite outcomes, policy silent.",
+            "document - same facts, opposite outcomes, policy silent.",
             about, [], [acc.id, rej.id],
             "Align policy: pick a rule. Two customers with identical facts getting different "
             "outcomes is indefensible in review.", acc.support_count + rej.support_count)
@@ -172,13 +154,10 @@ def detect_deltas(
     return deltas
 
 
-# ------------------------------------------------------------------ ledger scoring
-
 def score_against_ledger(
     detected: list[Delta], ledger_path: Path = Path("data/interviews/ledger.yaml")
 ) -> dict:
-    """Greedy 1:1 match: a detected delta hits a ledger row when kinds agree and any
-    row keyword appears in the description. P = TP/detected, R = TP/10 (§6.3)."""
+    """Greedy 1:1 match: a detected delta hits a ledger row when kinds agree and any"""
     rows = yaml.safe_load(ledger_path.read_text(encoding="utf-8"))["deltas"]
     matched: dict[str, str] = {}
     used: set[str] = set()

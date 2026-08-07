@@ -1,5 +1,4 @@
-"""Guardrail tests (§7.3). Every guardrail has at least one test proving it BLOCKS what
-it must block — the brief's ground rule 7."""
+"""Guardrail tests (§7.3). Every guardrail has at least one test proving it BLOCKS what"""
 
 from process_twin.runtime.guardrails import (
     CitationValidator,
@@ -19,8 +18,7 @@ TEXTS = {
 
 
 class KeywordReranker:
-    """Stand-in cross-encoder: word overlap. Enough to prove the relevance PLUMBING;
-    real relevance quality is measured by `make probe` with the BGE reranker."""
+    """Stand-in cross-encoder: word overlap. Enough to prove the relevance PLUMBING;"""
 
     def score(self, query, texts):
         q = set(query.lower().split())
@@ -39,13 +37,11 @@ class TestCitationValidator:
         assert not r.passed and r.needs_human and r.reason == "uncited decision"
 
     def test_blocks_fabricated_clause_id(self):
-        # failure mode 1: the model invents a plausible-looking citation
         r = CitationValidator(KNOWN).validate(out(["CFR-9999.111(z)"]))
         assert not r.passed
         assert any("citation_unknown_clause" in v for v in r.violations)
 
     def test_blocks_real_but_irrelevant_citation(self):
-        # failure mode 2 — the subtle one: the clause EXISTS but doesn't support the decision
         v = CitationValidator(KNOWN, KeywordReranker(), TEXTS, threshold=0.3)
         r = v.validate(out(["FFIEC-CDD-¶2"]),
                        decision_text="beneficial owner ownership percentage equity threshold")
@@ -88,8 +84,6 @@ class TestDeltaGuard:
         assert not r.passed and r.needs_human and "DET-001" in r.reason
 
     def test_high_confidence_cannot_override_delta_guard(self):
-        # confidence measures self-certainty, NOT which side of an open policy question
-        # is right — so a 0.99 atom on a high-severity delta step still goes to a human
         r = run_all(out(["FFIEC-CIP-¶2"], confidence=0.99), "EL-callback", self.DELTAS)
         assert r.needs_human and "DET-001" in r.reason
 
@@ -105,7 +99,7 @@ class TestRunAll:
         deltas = [{"id": "DET-001", "severity": "high", "about_element_id": "EL-x",
                    "description": "d"}]
         r = run_all(out(["FFIEC-CIP-¶2"], confidence=0.1), "EL-x", deltas)
-        assert "DET-001" in r.reason  # most fundamental problem surfaces to the reviewer
+        assert "DET-001" in r.reason
 
     def test_atom_requested_review_is_honored_even_when_all_guardrails_pass(self):
         r = run_all(out(["FFIEC-CIP-¶2"], confidence=0.95, needs_human=True), "EL-x", [])

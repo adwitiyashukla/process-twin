@@ -1,4 +1,4 @@
-# process-twin — task runner.
+# process-twin - task runner.
 # Windows note: run these from WSL2 (recommended, Docker Desktop integrates with it)
 # or Git Bash with make installed. Every target is also a plain command you can copy.
 

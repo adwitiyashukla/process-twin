@@ -1,10 +1,4 @@
-"""Block until every docker-compose service answers, or fail with a per-service diagnosis.
-
-stdlib-only on purpose: this runs right after `docker compose up -d`, possibly before
-`uv sync` — it must not depend on the project's own dependencies being installed.
-Qdrant gets its readiness check here because its distroless image cannot run an
-in-container healthcheck (see docker-compose.yml header note).
-"""
+"""Block until every docker-compose service answers, or fail with a per-service diagnosis."""
 
 from __future__ import annotations
 

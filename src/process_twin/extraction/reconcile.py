@@ -1,14 +1,4 @@
-"""Entity resolution across sources -> canonical nodes + conflict candidates (brief §6.2).
-
-Merge policy, verbatim from the brief: where sources agree the canonical value is kept
-and confidence is boosted; where sources DISAGREE the written value stays canonical and
-the disagreement becomes a delta candidate. Conflicts are never averaged away — that
-single rule is the thesis of the project (docs/architecture.md).
-
-v1 resolution is embedding-similarity clustering with two thresholds: >= HI merges,
-<= LO separates, and the band between goes to an optional LLM adjudicator (seed_graph
-wires one on the reasoning tier; offline runs stay conservative and keep pairs separate).
-"""
+"""Entity resolution across sources -> canonical nodes + conflict candidates (brief §6.2)."""
 
 from __future__ import annotations
 
@@ -25,7 +15,7 @@ from process_twin.schemas.process import (
 
 HI_SIM = 0.80
 LO_SIM = 0.55
-Adjudicator = Callable[[ProcessElement, CanonicalElement], bool]  # True = same element
+Adjudicator = Callable[[ProcessElement, CanonicalElement], bool]
 
 
 def _slug(name: str) -> str:
@@ -33,7 +23,7 @@ def _slug(name: str) -> str:
 
 
 def _cos(a: list[float], b: list[float]) -> float:
-    return sum(x * y for x, y in zip(a, b, strict=True))  # embedder vectors are L2-normed
+    return sum(x * y for x, y in zip(a, b, strict=True))
 
 
 def _is_written(span: SourceSpan) -> bool:
@@ -49,7 +39,6 @@ def reconcile(
 ) -> tuple[list[CanonicalElement], list[AttributeConflict]]:
     canonicals: list[CanonicalElement] = []
     vectors: list[list[float]] = []
-    # raw attribute claims per canonical: attr -> list[(value, spans, is_written)]
     claims: list[dict[str, list[tuple[str, list[SourceSpan], bool]]]] = []
 
     for el in sorted(elements, key=lambda e: (e.element_type, e.name.lower())):
@@ -89,15 +78,14 @@ def reconcile(
             if el.name.lower() != canon.name.lower():
                 prior = canon.provenance[: -len(el.source_spans)]
                 if el_written and not any(_is_written(s) for s in prior):
-                    canon.merged_names.append(canon.name)  # written name takes over
+                    canon.merged_names.append(canon.name)
                     canon.name = el.name
                     canon.id = f"EL-{_slug(el.name)}"
                 elif el.name not in canon.merged_names:
                     canon.merged_names.append(el.name)
-            # agreement across sources boosts confidence (capped) — disagreement never averages
             canon.confidence = min(0.98, max(canon.confidence, el.extractor_confidence) + 0.05)
             if el.sequence_hint is not None and el_written:
-                canon.sequence_hint = el.sequence_hint  # written order is canonical order
+                canon.sequence_hint = el.sequence_hint
 
         for attr, value in el.attributes.items():
             claims[target_idx].setdefault(attr, []).append(
@@ -112,9 +100,9 @@ def reconcile(
             w_val = written[0][0] if written else None
             p_val = practiced[0][0] if practiced else None
             if w_val is not None:
-                canon.attributes[attr] = w_val  # written wins, always
+                canon.attributes[attr] = w_val
             elif p_val is not None:
-                canon.attributes[attr] = p_val  # practice-only parameter (flagged below)
+                canon.attributes[attr] = p_val
             if (w_val and p_val and w_val != p_val) or (w_val is None and p_val is not None):
                 conflicts.append(AttributeConflict(
                     element_id=canon.id, element_name=canon.name, attribute=attr,
@@ -132,7 +120,7 @@ def llm_adjudicator(model_call) -> Adjudicator:
         raw = model_call(
             "You resolve entity identity for process elements. Answer with a JSON object "
             '{"same": true|false, "why": "<one line>"} and nothing else.',
-            f"A: {el.name} — {el.description}\nB: {canon.name} — {canon.description}\n"
+            f"A: {el.name} - {el.description}\nB: {canon.name} - {canon.description}\n"
             "Are A and B the same real-world process element?",
         )
         import json
@@ -141,6 +129,6 @@ def llm_adjudicator(model_call) -> Adjudicator:
             verdict = json.loads(raw.strip().strip("`"))
             return bool(verdict.get("same"))
         except (ValueError, AttributeError):
-            return False  # unparseable -> conservative: keep separate
+            return False
 
     return adjudicate

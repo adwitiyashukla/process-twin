@@ -1,15 +1,4 @@
-"""Policy corpus -> clause-level records with STABLE IDs (brief §4.1).
-
-Name kept from the brief's tree; it handles three source kinds, only one of which is PDF:
-  * eCFR structured XML (31 CFR 1010.230)   -> IDs like CFR-1010.230(b)(1)(ii)
-  * FFIEC manual HTML pages (CIP/CDD/BO)    -> IDs like FFIEC-CDD-¶12
-  * FATF R10 interpretive note (PDF)        -> IDs like FATF-R10-IN-¶7
-
-Why IDs come from document structure, never chunk offsets: the citation guardrail (§7.3)
-and every eval `must_cite` check compare against these strings. Re-parsing identical
-source bytes MUST yield byte-identical output — enforced by tests. A clause that grows
-past the size cap splits deterministically with suffixed IDs (…¶3a, …¶3b).
-"""
+"""Policy corpus -> clause-level records with STABLE IDs (brief §4.1)."""
 
 from __future__ import annotations
 
@@ -21,8 +10,6 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-# ~400 tokens ≈ 1600 chars: citations must map to a human-checkable span, so we split
-# oversized clauses rather than embed walls of text (brief §4.1).
 MAX_CLAUSE_CHARS = 1600
 
 _ROMAN = {
@@ -39,7 +26,7 @@ class ClauseRecord(BaseModel):
     section_path: str
     text: str
     page: int | None = None
-    checksum: str  # sha256[:16] of normalized text — drift detector across re-fetches
+    checksum: str
 
 
 def normalize_text(text: str) -> str:
@@ -64,20 +51,12 @@ def make_record(
     )
 
 
-# --------------------------------------------------------------------------- eCFR XML
-
 _MARKER_PREFIX = re.compile(r"^\s*((?:\([a-zA-Z0-9]{1,4}\))+)")
 _MARKER_EACH = re.compile(r"\(([a-zA-Z0-9]{1,4})\)")
 
 
 class _CfrHierarchy:
-    """Tracks (letter)(number)(roman) nesting for inline CFR paragraph markers.
-
-    The classic ambiguity: after (h) comes (i) — a LETTER, even though 'i' is also a
-    roman numeral. Rule: a marker that continues the letter sequence wins over the
-    roman reading; romans are only accepted while a numbered level is open.
-    (This exact case exists in 31 CFR 1010.230, which has paragraphs (a) through (j).)
-    """
+    """Tracks (letter)(number)(roman) nesting for inline CFR paragraph markers."""
 
     def __init__(self) -> None:
         self.letter: str | None = None
@@ -93,13 +72,13 @@ class _CfrHierarchy:
         low = marker.lower()
         if marker.islower():
             if marker == self._next_letter():
-                return "letter"  # (h) -> (i): letter continuation beats roman reading
+                return "letter"
             if low in _ROMAN and self.number is not None:
                 return "roman"
             if len(marker) == 1 or (self.letter is None and low not in _ROMAN):
                 return "letter"
             return "roman" if low in _ROMAN else "letter"
-        return None  # upper-case / unexpected — caller warns and treats as continuation
+        return None
 
     def apply(self, marker: str) -> bool:
         kind = self.classify(marker)
@@ -119,18 +98,14 @@ class _CfrHierarchy:
 
 
 def parse_ecfr_xml(xml_bytes: bytes, section: str = "1010.230") -> list[ClauseRecord]:
-    """eCFR versioner XML -> one record per designated paragraph.
-
-    Structured XML instead of PDF scraping: the (b)(1)(ii) hierarchy is in the document
-    itself, so stable IDs fall out by construction (docs/architecture.md, phase 1).
-    """
+    """eCFR versioner XML -> one record per designated paragraph."""
     import xml.etree.ElementTree as ET
 
     root = ET.fromstring(xml_bytes)
     section_divs = [
         div for div in root.iter("DIV8") if section in (div.get("N") or "").replace(" ", "")
     ]
-    paras: list[tuple[str, str]] = []  # (clause_id, text) in document order
+    paras: list[tuple[str, str]] = []
     hier = _CfrHierarchy()
     warnings: list[str] = []
 
@@ -148,7 +123,7 @@ def parse_ecfr_xml(xml_bytes: bytes, section: str = "1010.230") -> list[ClauseRe
                     warnings.append(f"unclassifiable marker in: {text[:60]}…")
                 paras.append((hier.clause_id(section), text))
             elif paras:
-                cid, prev = paras[-1]  # undesignated paragraph -> continuation of current
+                cid, prev = paras[-1]
                 paras[-1] = (cid, f"{prev} {text}")
             else:
                 paras.append((f"CFR-{section}", text))
@@ -159,7 +134,7 @@ def parse_ecfr_xml(xml_bytes: bytes, section: str = "1010.230") -> list[ClauseRe
     merged: dict[str, str] = {}
     order: list[str] = []
     for cid, text in paras:
-        if cid in merged:  # same designation continued across <P> tags
+        if cid in merged:
             merged[cid] = f"{merged[cid]} {text}"
         else:
             merged[cid] = text
@@ -171,18 +146,11 @@ def parse_ecfr_xml(xml_bytes: bytes, section: str = "1010.230") -> list[ClauseRe
     ]
 
 
-# --------------------------------------------------------------------------- FFIEC HTML
-
 _NOISE_TAGS = {"script", "style", "nav", "header", "footer", "aside", "form", "button"}
 
 
 def parse_ffiec_html(html: str, section_code: str, section_title: str) -> list[ClauseRecord]:
-    """FFIEC BSA/AML manual page -> FFIEC-<CODE>-¶n records, numbered in document order.
-
-    ¶ numbering is stable because it derives from the page's paragraph sequence; the
-    checksum field catches upstream edits (a re-fetch that changes text shows up as a
-    checksum diff, reviewed before re-indexing — IDs never silently re-point).
-    """
+    """FFIEC BSA/AML manual page -> FFIEC-<CODE>-¶n records, numbered in document order."""
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html, "html.parser")
@@ -197,7 +165,7 @@ def parse_ffiec_html(html: str, section_code: str, section_title: str) -> list[C
     n = 0
     for el in main.find_all(["p", "li"]):
         text = normalize_text(el.get_text(" "))
-        if len(text) < 60 or text in seen:  # drop nav crumbs, dedupe boilerplate
+        if len(text) < 60 or text in seen:
             continue
         seen.add(text)
         n += 1
@@ -212,17 +180,11 @@ def parse_ffiec_html(html: str, section_code: str, section_title: str) -> list[C
     return records
 
 
-# --------------------------------------------------------------------------- FATF PDF
-
 _FATF_PARA = re.compile(r"^\s*(\d{1,2})\.\s+", re.M)
 
 
 def parse_fatf_pdf(pdf_bytes: bytes, page_range: tuple[int, int]) -> list[ClauseRecord]:
-    """FATF R10 interpretive note pages -> FATF-R10-IN-¶<n> records.
-
-    IDs use the note's own printed paragraph numbers (not a running counter), so a
-    slightly-off page range shifts coverage but never renumbers existing clauses.
-    """
+    """FATF R10 interpretive note pages -> FATF-R10-IN-¶<n> records."""
     import io
 
     from pypdf import PdfReader
@@ -236,7 +198,6 @@ def parse_fatf_pdf(pdf_bytes: bytes, page_range: tuple[int, int]) -> list[Clause
     records: list[ClauseRecord] = []
     for page_no, text in chunks:
         pieces = _FATF_PARA.split(text)
-        # pieces = [preamble, num1, body1, num2, body2, ...]
         for num, body in zip(pieces[1::2], pieces[2::2], strict=False):
             body = normalize_text(body)
             if len(body) < 40:
@@ -244,7 +205,7 @@ def parse_fatf_pdf(pdf_bytes: bytes, page_range: tuple[int, int]) -> list[Clause
             records.append(
                 make_record(
                     f"FATF-R10-IN-¶{num}",
-                    "FATF Recommendation 10 — Interpretive Note",
+                    "FATF Recommendation 10 - Interpretive Note",
                     "Customer Due Diligence",
                     body,
                     page=page_no,
@@ -252,8 +213,6 @@ def parse_fatf_pdf(pdf_bytes: bytes, page_range: tuple[int, int]) -> list[Clause
             )
     return records
 
-
-# --------------------------------------------------------------------------- shared
 
 def split_long_clauses(records: list[ClauseRecord]) -> list[ClauseRecord]:
     """Deterministic split of oversized clauses with suffixed IDs (…¶3a, …¶3b)."""
@@ -286,7 +245,7 @@ def split_long_clauses(records: list[ClauseRecord]) -> list[ClauseRecord]:
 def write_clauses_jsonl(records: list[ClauseRecord], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="\n") as f:
-        for rec in records:  # document order preserved; determinism comes from the source
+        for rec in records:
             f.write(json.dumps(rec.model_dump(), ensure_ascii=False, sort_keys=True) + "\n")
 
 
@@ -331,10 +290,10 @@ def main() -> int:
         out = processed / f"{name}.jsonl"
         write_clauses_jsonl(recs, out)
         total += len(recs)
-        sample = recs[0].clause_id if recs else "—"
+        sample = recs[0].clause_id if recs else "-"
         print(f"  [ok] {name}: {len(recs)} clauses -> {out} (first: {sample})")
         if len(recs) < 5:
-            print(f"  [WARNING] {name}: suspiciously few clauses — inspect the raw file")
+            print(f"  [WARNING] {name}: suspiciously few clauses - inspect the raw file")
     print(f"Done: {total} clauses total.")
     return 0 if total else 1
 

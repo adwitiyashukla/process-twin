@@ -1,7 +1,4 @@
-"""The self-correction loop (§6.1) — the most reused pattern in the project.
-
-Interview question #2 lives here: 'walk through what happens, line by line, when an
-atom's LLM output fails schema validation three times.'"""
+"""The self-correction loop (§6.1) - the most reused pattern in the project."""
 
 import json
 
@@ -48,11 +45,9 @@ def test_fail_twice_then_succeed_feeds_errors_back(tmp_path):
     model = ScriptedModel([INVALID_ENUM, INVALID_EXTRA, VALID])
     out = extract_batch(ITEMS, "policy", model, dead_letter_dir=tmp_path)
     assert out.attempts == 3 and not out.dead_lettered
-    # the re-prompt must contain the validation error AND the offending output —
-    # that specificity is what makes self-correction converge
     assert "element_type" in model.prompts[1] and "stepp" in model.prompts[1]
     assert "hallucinated" in model.prompts[2]
-    assert list(tmp_path.iterdir()) == []  # no dead letter on eventual success
+    assert list(tmp_path.iterdir()) == []
 
 
 def test_exhaustion_dead_letters_and_continues(tmp_path):
@@ -61,7 +56,7 @@ def test_exhaustion_dead_letters_and_continues(tmp_path):
     assert out.dead_lettered and out.attempts == 3 and out.elements == []
     dl = json.loads(next(tmp_path.glob("policy-*.json")).read_text(encoding="utf-8"))
     assert dl["item_refs"] == ["FFIEC-CIP-¶2"]
-    assert len(dl["error_chain"]) == 3  # the full chain, for FAILURES.md analysis
+    assert len(dl["error_chain"]) == 3
 
 
 def test_markdown_fences_are_tolerated(tmp_path):
@@ -74,7 +69,6 @@ def test_extract_source_caches_and_reuses(tmp_path):
     model = ScriptedModel([VALID])
     first = extract_source("probe", ITEMS, "policy", cache_dir=tmp_path, model_call=model)
     assert len(first) == 1 and (tmp_path / "probe.jsonl").exists()
-    # second run must NOT call the model (cost discipline): scripted model is empty now
     second = extract_source("probe", ITEMS, "policy", cache_dir=tmp_path, model_call=model)
     assert [e.model_dump() for e in second] == [e.model_dump() for e in first]
 

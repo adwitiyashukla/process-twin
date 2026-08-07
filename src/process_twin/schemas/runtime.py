@@ -1,9 +1,4 @@
-"""Runtime contracts: AtomInput/AtomOutput, Citation, ApprovalRequest (brief §7.2, §7.5).
-
-`extra="forbid"` everywhere is deliberate: the self-correction loop (§6.1) depends on
-Pydantic rejecting malformed LLM output loudly and specifically — a permissive schema
-would silently swallow exactly the failures we want to catch, re-prompt on, and count.
-"""
+"""Runtime contracts: AtomInput/AtomOutput, Citation, ApprovalRequest (brief §7.2, §7.5)."""
 
 from __future__ import annotations
 
@@ -17,12 +12,11 @@ class StrictModel(BaseModel):
 
 
 class Citation(StrictModel):
-    """A clause the decision relied on. clause_id must map to a human-checkable location
-    in the clause store — the entire citation guardrail (§7.3) hangs on that stability."""
+    """A clause the decision relied on. clause_id must map to a human-checkable location"""
 
     clause_id: str
-    quote: str | None = None  # optional exact span, for the approvals UI
-    relevance_score: float | None = None  # set by the citation validator's reranker pass
+    quote: str | None = None
+    relevance_score: float | None = None
 
     @field_validator("clause_id")
     @classmethod
@@ -35,13 +29,12 @@ class Citation(StrictModel):
 class AtomInput(StrictModel):
     case_id: str
     step_id: str
-    payload: dict = Field(default_factory=dict)  # step-specific inputs (applicant data etc.)
-    context: dict = Field(default_factory=dict)  # accumulated case state from prior atoms
+    payload: dict = Field(default_factory=dict)
+    context: dict = Field(default_factory=dict)
 
 
 class AtomOutput(StrictModel):
-    """Every atom returns exactly this (§7.2). Guardrails read citations/confidence;
-    the compiler reads needs_human; the audit log hashes the whole object."""
+    """Every atom returns exactly this (§7.2). Guardrails read citations/confidence;"""
 
     result: dict
     citations: list[Citation] = Field(default_factory=list)
@@ -56,10 +49,8 @@ class ApprovalRequest(StrictModel):
     approval_id: str
     case_id: str
     step_id: str
-    # reason examples: "confidence 0.55 < 0.7", "high-severity delta D1", "uncited decision"
     reason: str
     atom_output: AtomOutput
-    # timezone.utc (not datetime.UTC): sandbox verification runs py3.10; target stays 3.11+
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)  # noqa: UP017
     )

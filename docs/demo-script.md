@@ -1,64 +1,69 @@
-# Demo video script (3 minutes)
+# Demo video plan
 
-Record with OBS or the Windows Game Bar (Win+G). Terminal at ~16pt, browser at 110% zoom.
-Do a silent dry run first — the beats are tight.
+Three minutes. Notes for what to show and roughly what to say, so I do not ramble.
 
-**Setup before recording:** `make up` healthy, `make seed` done, `make api` running in one
-terminal, `make worker` in another, a third terminal free.
+Before recording: services up, seed done, the API running in one terminal, a Temporal worker
+in another, and a third terminal free.
 
----
+**Opening, about 20 seconds.** Show the architecture diagram.
 
-**0:00–0:20 — the problem.** Camera on the README diagram.
-> "Two things are true in every regulated bank: the written procedure and what people
-> actually do. They are never the same document. Deploying an agent against either one
-> alone is how automated compliance fails. This system finds the gap, then governs it."
+Two things are true in every bank. There is a written procedure, and there is what people
+actually do. They are never the same document. Building an agent on either one alone is how
+automated compliance goes wrong. This finds the gap and then governs it.
 
-**0:20–1:00 — Demo 1, the delta explorer.** Browser at `localhost:8000/explorer`.
-Toggle *diff mode* — the graph collapses to deltas and the steps they touch. Click **D1**.
-> "The rule says identify beneficial owners at twenty-five percent. Analysts apply full
-> scrutiny from twenty for high-risk jurisdictions. The system found that in the interviews,
-> confirmed it in eleven of sixty historical cases, and kept it as a first-class node — with
-> the clause on one side and the practitioner evidence on the other."
+**Demo 1, up to about a minute.** Browser at localhost:8000/explorer. Turn on diff mode, so
+the graph collapses down to just the divergences and the steps they touch. Click D1.
 
-Click **D10**.
-> "This one is a conflict *between practitioners*. QA rejects PO-box addresses; the frontline
-> accepts them with an extra document. Same facts, opposite outcomes. Most pipelines average
-> that away during extraction. Averaging it away is how you ship an undocumented rule."
+The rule says identify beneficial owners at twenty-five percent. Analysts apply full scrutiny
+from twenty for high-risk jurisdictions. The system found that in the interviews, confirmed it
+in eleven of sixty historical cases, and kept it as its own node with the clause on one side
+and the practitioner evidence on the other.
 
-**1:00–1:50 — governed runtime, live.** Terminal:
-```
-make run-case CASE=GC-037
-```
-> "This applicant has a beneficial owner at twenty-one percent in a high-risk jurisdiction —
-> exactly the unresolved question. Watch what it does *not* do."
+Click D10.
 
-Show the halt and the reason. Switch to `localhost:8000/approvals`.
-> "It stopped, with full context: the clause, the practised threshold, the evidence, and why
-> it refused to decide. The confidence gate isn't what stopped it — the delta guard did, and
-> confidence can't override that. A machine must not pick a side of a question the
-> institution hasn't answered."
+This one is a disagreement between two employees, not between policy and practice. QA rejects
+PO-box addresses, the frontline accepts them with an extra document. Same customer, opposite
+answers. Most pipelines would average that away during extraction, and averaging it away is
+how you end up shipping an undocumented rule.
 
-`POST` the approval, show the case resuming and completing.
+**The runtime, up to about 1:50.** Run `make run-case CASE=GC-037`.
 
-**1:50–2:20 — durability.** Terminal: `make demo-durability`.
-> "Kill the worker mid-case. Restart. Temporal replays history, activity results are read
-> back rather than recomputed, and the case picks up at the same step. The audit trail has
-> no gap and no duplicate — the writes are idempotent on case and step."
+This applicant has a beneficial owner at twenty-one percent in a high-risk jurisdiction, which
+is exactly the unresolved question. Watch what it does not do.
 
-Show the replay output and the intact hash chain.
+Show the halt and the reason. Switch to localhost:8000/approvals.
 
-**2:20–2:50 — Demo 2, the readiness report.** `make report`, then open the HTML.
-> "Forty golden cases. Verdict at the top, thresholds underneath. Note the asymmetry:
-> outcome accuracy passes at eighty-five percent, but escalation recall on policy-conflict
-> cases is a hard gate at one hundred. Getting an ordinary case wrong is a quality problem.
-> Silently resolving a policy question nobody has resolved produces a confidently-wrong
-> decision with a clean audit trail. That one gates the release."
+It stopped with full context: the clause, the practised threshold, the evidence, and why it
+refused. The confidence gate is not what stopped it, the delta guard did, and confidence
+cannot override that. A machine should not pick a side of a question the bank itself has not
+answered.
 
-Scroll to the calibration table.
-> "Calibration is reported because the confidence gate routes on it — systematic
-> overconfidence would disable the gate while every other number still looked green."
+Post the approval, show the case resuming and finishing.
 
-**2:50–3:00 — close on the audit log.** `make replay CASE=GC-037`.
-> "Every decision, its citations, its confidence, who decided it — reconstructed from an
-> append-only hash chain. That's the difference between an agent that works and an agent you
-> can deploy."
+**Durability, up to about 2:20.** Run `make demo-durability`.
+
+Kill the worker mid-case, restart it. Temporal replays the history, activity results get read
+back instead of recomputed, and the case picks up at the same step. The audit trail has no gap
+and no duplicate, because the writes are keyed on case and step.
+
+Show the replay output and the intact chain.
+
+**Demo 2, up to about 2:50.** Run `make report`, open the HTML.
+
+Forty cases, verdict at the top, thresholds underneath. Point at the asymmetry: outcome
+accuracy passes at eighty-five percent, but escalation on policy-conflict cases is a hard gate
+at one hundred. Getting an ordinary case wrong is a quality problem. Silently resolving a
+question nobody has resolved produces a confident wrong answer with a clean audit trail, and
+that one gates the release.
+
+Scroll to calibration.
+
+Calibration is reported because the confidence gate routes on it. If the system were
+systematically overconfident, the gate would stop working while every other number still
+looked fine.
+
+**Close, last ten seconds.** Run `make replay CASE=GC-037`.
+
+Every decision, its citations, its confidence, who decided it, reconstructed from an
+append-only hash chain. That is the difference between an agent that works and an agent you
+could actually deploy.

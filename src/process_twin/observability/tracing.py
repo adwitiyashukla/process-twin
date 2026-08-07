@@ -1,12 +1,4 @@
-"""Langfuse bootstrap (brief §9): one trace per case, one span per atom, a generation
-object per LLM call with model/tokens/latency/cost. Live from phase 0 (ground rule 6).
-
-Two deliberate properties:
-  * No-op without credentials. Tests, CI, and keyless dev must never fail because
-    observability is unconfigured. Every helper returns None/passes through instead of raising.
-  * Lazy import. `import langfuse` costs ~1s and is pointless for --dry-run paths and
-    unit tests; we import only when credentials exist.
-"""
+"""Langfuse bootstrap (brief §9): one trace per case, one span per atom, a generation"""
 
 from __future__ import annotations
 
@@ -15,9 +7,6 @@ from typing import Any
 
 from process_twin.config import get_settings
 
-# USD per million tokens (input, output). Used when Langfuse's model registry doesn't
-# know a model name. Update alongside https://docs.claude.com pricing; these are
-# config-of-last-resort, matched by prefix so dated snapshots resolve too.
 MODEL_COSTS_USD_PER_MTOK: dict[str, tuple[float, float]] = {
     "claude-haiku-4-5": (1.00, 5.00),
     "claude-sonnet-5": (3.00, 15.00),
@@ -28,8 +17,7 @@ _client_initialized = False
 
 
 def estimate_cost_usd(model: str, input_tokens: int, output_tokens: int) -> float:
-    """Prefix-match the price table; unknown models cost 0.0 (never invent numbers —
-    ground rule 5 — but never crash the pipeline over pricing either)."""
+    """Prefix-match the price table; unknown models cost 0.0 (never invent numbers -"""
     for prefix, (in_rate, out_rate) in MODEL_COSTS_USD_PER_MTOK.items():
         if model.startswith(prefix):
             return (input_tokens * in_rate + output_tokens * out_rate) / 1_000_000
@@ -46,7 +34,7 @@ def get_client() -> Any | None:
     if not (s.langfuse_public_key and s.langfuse_secret_key):
         _client = None
         return None
-    from langfuse import Langfuse  # lazy: see module docstring
+    from langfuse import Langfuse
 
     _client = Langfuse(
         public_key=s.langfuse_public_key,
@@ -57,8 +45,7 @@ def get_client() -> Any | None:
 
 
 def start_case_trace(case_id: str, **tags: Any) -> Any | None:
-    """One trace per case, tagged for filtering (§9): case_id, golden_case_id,
-    model_tier, git_sha."""
+    """One trace per case, tagged for filtering (§9): case_id, golden_case_id,"""
     client = get_client()
     if client is None:
         return None
@@ -88,8 +75,7 @@ def log_generation(
     input_tokens: int,
     output_tokens: int,
 ) -> float:
-    """Attach a generation (LLM call) to a span/trace. Returns estimated cost in USD
-    so callers can print/aggregate it even in no-op mode."""
+    """Attach a generation (LLM call) to a span/trace. Returns estimated cost in USD"""
     cost = estimate_cost_usd(model, input_tokens, output_tokens)
     if parent is not None:
         parent.generation(

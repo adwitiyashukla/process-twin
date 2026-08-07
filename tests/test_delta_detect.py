@@ -1,10 +1,4 @@
-"""Reconciliation + delta-detection mechanics.
-
-The detection test feeds fixture canonicals/conflicts shaped like real extraction
-output PLUS the real mined patterns from the committed case corpus, and expects every
-ledger row recovered. That proves the RULES; the headline P/R number in the README
-comes only from the full run with real LLM extraction (Adi's machine, seed_graph).
-"""
+"""Reconciliation + delta-detection mechanics."""
 
 from pathlib import Path
 
@@ -44,10 +38,10 @@ class TestReconcile:
         ]
         canon, _ = reconcile(els, HashingEmbedder())
         assert len(canon) == 1
-        assert canon[0].name == "verify identity documents"  # written wins the name
-        assert canon[0].sequence_hint == 2  # written order is canonical order
+        assert canon[0].name == "verify identity documents"
+        assert canon[0].sequence_hint == 2
         assert {s.source_type for s in canon[0].provenance} == {"interview", "policy"}
-        assert canon[0].confidence > 0.85  # agreement boosts, never averages
+        assert canon[0].confidence > 0.85
 
     def test_distinct_elements_stay_separate(self):
         els = [
@@ -66,7 +60,7 @@ class TestReconcile:
                "interview", "P1-S3", attrs={"utility_bill_max_age_days": "60"}),
         ]
         canon, conflicts = reconcile(els, HashingEmbedder())
-        assert canon[0].attributes["utility_bill_max_age_days"] == "90"  # never averaged
+        assert canon[0].attributes["utility_bill_max_age_days"] == "90"
         assert len(conflicts) == 1
         cf = conflicts[0]
         assert (cf.written_value, cf.practiced_value) == ("90", "60")
@@ -120,7 +114,7 @@ def _fixture_inputs():
            [span("interview", "P5-S5"), span("case_log", "PAT-FOREIGN-TAX-ID-ADHOC")]),
         ce("EL-red_herring_notes", "step", "retype lost case notes",
            "The case system loses free-text notes on session timeout.",
-           [span("interview", "P1-S7")]),  # must NOT become a delta
+           [span("interview", "P1-S7")]),
     ]
     conflicts = [
         AttributeConflict(
@@ -157,26 +151,26 @@ class TestDeltaDetection:
         score = score_against_ledger(deltas, ROOT / "data/interviews/ledger.yaml")
         assert score["missed_rows"] == [], score
         assert score["recall"] == 1.0
-        assert score["precision"] == 1.0, score  # red herring must not produce a delta
+        assert score["precision"] == 1.0, score
 
     def test_severities_follow_the_rubric(self):
         canonicals, conflicts, patterns = _fixture_inputs()
         detected = detect_deltas(canonicals, conflicts, patterns)
         by_kind_desc = {(d.kind, d.severity) for d in detected}
-        assert ("threshold", "high") in by_kind_desc  # regulatory threshold -> high
-        assert ("skipped_step", "high") in by_kind_desc  # skipped control -> high
-        assert ("sequence", "low") in by_kind_desc  # ordering/efficiency -> low
+        assert ("threshold", "high") in by_kind_desc
+        assert ("skipped_step", "high") in by_kind_desc
+        assert ("sequence", "low") in by_kind_desc
 
     def test_support_counts_come_from_mined_patterns(self):
         canonicals, conflicts, patterns = _fixture_inputs()
         deltas = detect_deltas(canonicals, conflicts, patterns)
         d1 = next(d for d in deltas if d.kind == "threshold" and "25%" in d.description)
-        assert d1.support_count == 11  # "seen in 11 of 60 historical cases"
+        assert d1.support_count == 11
         d10 = next(d for d in deltas if d.kind == "practitioner_conflict")
         assert d10.support_count == 4
 
     def test_every_delta_has_evidence_and_recommendation(self):
         canonicals, conflicts, patterns = _fixture_inputs()
         for d in detect_deltas(canonicals, conflicts, patterns):
-            assert d.practiced_view, d.id  # a delta with no practiced evidence is a bug
+            assert d.practiced_view, d.id
             assert d.recommendation

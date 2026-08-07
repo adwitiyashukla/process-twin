@@ -1,8 +1,4 @@
-"""Qdrant collection build from processed clauses (brief §7.4).
-
-Chunk = clause, verbatim. We never re-chunk: a search hit IS a citable clause with a
-stable ID, which is what keeps citations human-checkable end to end (§4.1).
-"""
+"""Qdrant collection build from processed clauses (brief §7.4)."""
 
 from __future__ import annotations
 
@@ -30,7 +26,7 @@ def ensure_collection(client, name: str, dim: int) -> None:
         current_dim = info.config.params.vectors.size
         if current_dim != dim:
             raise RuntimeError(
-                f"collection {name!r} has dim {current_dim}, embedder produces {dim} — "
+                f"collection {name!r} has dim {current_dim}, embedder produces {dim} - "
                 "either drop the collection or fix EMBEDDING_MODEL (refusing to mix spaces)"
             )
         return

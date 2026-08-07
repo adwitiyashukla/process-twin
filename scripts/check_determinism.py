@@ -1,14 +1,4 @@
-"""CI guard for the Temporal determinism rule (brief §8).
-
-Workflow code must contain no LLM calls, clock reads, randomness, or I/O — those belong
-in activities, whose results Temporal reads back from history on replay. This is the #1
-Temporal interview topic, so the rule is enforced mechanically, not by memory.
-
-Implementation note: the scan walks the AST and inspects CALL TARGETS ONLY. A regex over
-raw text flags this very module's own docstring (see FAILURES.md 2026-08-04) — and worse,
-a comment explaining the rule would "violate" it. Analyzing calls means we check what the
-code DOES, not what it says.
-"""
+"""CI guard for the Temporal determinism rule (brief §8)."""
 
 from __future__ import annotations
 
@@ -18,7 +8,6 @@ from pathlib import Path
 
 WORKFLOW_FILE = Path("src/process_twin/durability/workflows.py")
 
-# dotted call target -> why it breaks replay determinism
 FORBIDDEN_CALLS = {
     "datetime.now": "clock read (use workflow.now(), or move it into an activity)",
     "datetime.utcnow": "clock read",
@@ -57,7 +46,7 @@ def main() -> int:
         name = dotted_name(node.func)
         for forbidden, reason in FORBIDDEN_CALLS.items():
             if name == forbidden or name.endswith("." + forbidden):
-                violations.append(f"line {node.lineno}: {name}() — {reason}")
+                violations.append(f"line {node.lineno}: {name}() - {reason}")
     if violations:
         print(f"DETERMINISM RULE VIOLATED in {WORKFLOW_FILE}:")
         for v in violations:
@@ -66,7 +55,7 @@ def main() -> int:
               "workflow code from history, so anything non-deterministic must be recorded "
               "as an activity result instead of recomputed.")
         return 1
-    print(f"determinism rule OK — {WORKFLOW_FILE} makes no non-deterministic calls")
+    print(f"determinism rule OK - {WORKFLOW_FILE} makes no non-deterministic calls")
     return 0
 
 

@@ -1,9 +1,4 @@
-"""Case schemas (brief §3): ApplicantProfile, CaseInput, CaseOutcome, CaseLog.
-
-CaseLog mirrors what a bank's case-management export would actually contain — which is
-why it carries NO delta labels: ground truth lives in a sidecar file so phase-3 pattern
-mining can't grade itself on leaked answers (see data/interviews/SYNTHETIC.md).
-"""
+"""Case schemas (brief §3): ApplicantProfile, CaseInput, CaseOutcome, CaseLog."""
 
 from __future__ import annotations
 
@@ -34,8 +29,8 @@ class BeneficialOwner(StrictModel):
 
 class ApplicantProfile(StrictModel):
     applicant_type: Literal["individual", "legal_entity"]
-    full_name: str  # individual name or legal entity name
-    date_of_birth: str | None = None  # individuals only; ISO date string
+    full_name: str
+    date_of_birth: str | None = None
     jurisdiction: str
     jurisdiction_risk: JurisdictionRisk
     address: str
@@ -44,10 +39,7 @@ class ApplicantProfile(StrictModel):
     tax_id_type: Literal["domestic", "foreign", "none"] = "domestic"
     expected_activity_usd: int = Field(ge=0)
     pep_status: Literal["none", "direct", "close_associate"] = "none"
-    beneficial_owners: list[BeneficialOwner] = Field(default_factory=list)  # entities only
-    # Signals supplied by upstream tooling (document forensics, identity vendors, adverse
-    # media, transaction monitoring). Modelled explicitly rather than inferred from prose:
-    # the runtime must react to them, and the eval must be able to set them precisely.
+    beneficial_owners: list[BeneficialOwner] = Field(default_factory=list)
     risk_signals: list[str] = Field(default_factory=list)
 
 
@@ -59,14 +51,14 @@ class CaseInput(StrictModel):
 
 
 class CaseLog(StrictModel):
-    """One historical case record — data/case_logs/cases.jsonl (brief §4.3)."""
+    """One historical case record - data/case_logs/cases.jsonl (brief §4.3)."""
 
     case_id: str
     applicant_profile: ApplicantProfile
     documents_presented: list[str]
-    steps_taken: list[str]  # in execution order — sequence deltas live here
+    steps_taken: list[str]
     exceptions: list[str]
     escalations: list[str]
     outcome: Outcome
-    analyst_notes: str  # free text — where tacit thresholds leak into the record
+    analyst_notes: str
     duration_days: int = Field(ge=0)

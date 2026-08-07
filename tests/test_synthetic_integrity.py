@@ -1,9 +1,4 @@
-"""Cross-artifact integrity of the synthetic corpus (brief §4.2–4.3, ground rule 3).
-
-The delta ledger (SYNTHETIC.md) is evaluation ground truth, so three artifacts must
-agree at all times: the ledger table, the transcripts, and the case-log sidecar.
-These tests are the tripwire against silent drift in any one of them.
-"""
+"""Cross-artifact integrity of the synthetic corpus (brief §4.2-4.3, ground rule 3)."""
 
 import json
 import re
@@ -36,7 +31,6 @@ def test_ledger_table_parses_all_ten_deltas():
 
 
 def test_committed_cases_match_regeneration_byte_for_byte(tmp_path):
-    # determinism is the reproducibility guarantee the README makes (ground rule 3)
     import generate_case_logs as gen
 
     gen.write_outputs(tmp_path)
@@ -62,12 +56,10 @@ def test_delta_support_matches_ledger_exactly():
         assert support.get(delta) == expected, (
             f"{delta}: ledger says {expected}, case logs give {support.get(delta)}"
         )
-    # D10 must exist on BOTH sides of the practitioner conflict
     assert support["D10_reject"] >= 1 and support["D10_accept"] >= 1
 
 
 def test_no_ground_truth_leaks_into_case_records():
-    # the extractor's input may never contain labels — else eval grades leaked answers
     raw = (CASE_DIR / "cases.jsonl").read_text(encoding="utf-8")
     assert not re.search(r'"D\d+"', raw)
     for forbidden in ["delta", "tacit_pattern", "policy_consistent", "ground_truth"]:
@@ -89,14 +81,12 @@ def test_every_case_validates_against_schema():
     cases = [CaseLog.model_validate_json(line) for line in lines if line.strip()]
     assert len(cases) == 60
     ids = [c.case_id for c in cases]
-    assert len(set(ids)) == 60  # unique
-    assert ids == sorted(ids)  # ordered HC-001..HC-060
+    assert len(set(ids)) == 60
+    assert ids == sorted(ids)
 
 
 def test_d1_cases_sit_in_the_2025_boundary_band():
-    """Every D1-tagged case must actually exhibit the pattern: legal entity, high-risk
-    jurisdiction owner BELOW 25% but AT/ABOVE 20% — the statistical signature the
-    phase-3 detector is supposed to find."""
+    """Every D1-tagged case must actually exhibit the pattern: legal entity, high-risk"""
     from process_twin.schemas.case import CaseLog
 
     tags = json.loads((CASE_DIR / "ground_truth_tags.json").read_text(encoding="utf-8"))
@@ -111,7 +101,7 @@ def test_d1_cases_sit_in_the_2025_boundary_band():
         assert c.applicant_profile.applicant_type == "legal_entity"
         band = [o for o in c.applicant_profile.beneficial_owners
                 if o.jurisdiction_risk == "high" and 20.0 <= o.ownership_pct < 25.0]
-        assert band, f"{cid}: no high-risk owner in the 20–25% band"
+        assert band, f"{cid}: no high-risk owner in the 20-25% band"
 
 
 def test_transcript_check_passes():

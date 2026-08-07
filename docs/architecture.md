@@ -1,139 +1,179 @@
-# Architecture decisions & trade-offs
+# Design decisions
 
-Running decision log. Each entry: what was decided, what was rejected, and why — written
-when the decision was made, not reconstructed later. The §12-mandated deep-dive writeups
-(graph vs flat retrieval, compiled vs hand-written workflows, Delta nodes vs merge-averaging,
-Temporal vs job queue, clause-ID stability, 10k-cases/day scaling) get their full sections
-as their phases land.
+These are the choices I made while building this and why. I wrote each one down when I
+made it, not afterwards, so a few of them are wrong in hindsight and I have said so where
+that is the case.
 
-## Phase 0
+## Why a graph and not just a vector store
 
-### Langfuse v2 (self-hosted) instead of v3
-v3's self-host stack needs clickhouse + redis + minio + worker — six-plus containers on a dev
-laptop, for zero additional benefit at our scale (traces, spans, generations, costs, eval scores
-all exist in v2). The python SDK is pinned `<3` in pyproject.toml because the tracing wrapper
-targets the v2 API. Revisit only if eval-score UX in v3 becomes compelling.
+My first instinct was to put everything in a vector database and let retrieval sort it out.
+The reason I did not is that I need to answer questions like "show me every step that came
+from a source with no written policy behind it" and "for this step, list every place the
+information came from". Those are graph traversals. In a flat vector store you can only ask
+"what is similar to this", which does not help when the whole point is tracking where a
+piece of knowledge originated.
 
-### Two postgres instances (temporal, langfuse) instead of one shared
-Isolation of failure/restart/upgrade domains beats saving ~50MB idle RAM. `docker compose down`
-on one subsystem can never corrupt the other's state, and either can be nuked independently
-while debugging.
+The graph also makes the delta idea possible at all. A Delta is a node connected to the
+step it is about, the clause it contradicts, and the evidence for the practised version.
+That shape does not exist in a vector index.
 
-### Qdrant readiness checked host-side, not by container healthcheck
-The qdrant image is distroless — no shell, no curl, so compose healthchecks can't run inside it.
-`scripts/wait_healthy.py` (stdlib-only, so it works before `uv sync`) polls every service from
-the host instead, and gives per-service diagnostics on timeout.
+## Why disagreements become nodes instead of being resolved
 
-### Model tiering lives in config, not code
-`MODEL_FAST` (Haiku-class) for bulk extraction and synthetic data; `MODEL_REASONING`
-(Sonnet-class) for runtime decisions and reconciliation (ground rule 6). Pinned model strings so
-eval numbers are reproducible; swapping tiers for cost/quality comparison is an env change,
-which later gives the "extraction quality vs cost by tier" interview data point for free.
+This is the decision the whole project rests on.
 
-### Tracing is no-op-safe and lazily imported
-Every tracing helper degrades to a no-op without Langfuse credentials. Tests, CI, and keyless
-dev never fail because observability is unconfigured — and the same seam lets unit tests assert
-tracing behavior without network. `import langfuse` happens only when keys exist.
+When three sources describe the same step differently, the obvious move is to pick the most
+common version or average the values. I nearly did that. The problem is that both ways of
+resolving it are wrong:
 
-### `--dry-run` is a first-class path, not a test hack
-The hello atom (and later, every LLM-touching component) has a canned-response path. This is
-what CI runs, and it is the seam phase-4 compiler tests will use to execute whole workflows
-deterministically without a single API call.
+If you side with practice, you have taken an undocumented rule and made it the system's
+official behaviour. Nobody approved that, and there is now no record that it was ever a
+question.
 
-### Strict schemas (`extra="forbid"`)
-The self-correction loop (§6.1) works by feeding Pydantic's specific complaints back to the
-model. A permissive schema would silently accept malformed output — the exact failure class
-this project exists to catch.
+If you side with policy, you throw away the reason the practice exists. Analysts widened
+the screening tolerance for transliterated names because the matcher was missing real hits.
+Deleting that knowledge makes the system worse, not more compliant.
 
-## Phase 1
+So the written value stays canonical, and the disagreement becomes a Delta node with both
+sides attached. A human decides. The system's job is to surface the question clearly, not to
+answer it.
 
-### Clause IDs are load-bearing (citation guardrail depends on them)
-IDs like `CFR-1010.230(b)(1)` and `FFIEC-CDD-¶12` are derived from the *document structure*
-(regulatory paragraph hierarchy / section paragraph index), never from chunk offsets. Re-running
-ingestion on the same source bytes must yield byte-identical IDs — enforced by a determinism
-test. Chunking for retrieval happens at clause granularity; oversized clauses split with
-suffixed IDs (`…-¶3a`), keeping every citation human-checkable against the source.
+## Why the workflow is compiled from the graph
 
-### eCFR structured XML over PDF scraping for the CDD Rule
-31 CFR 1010.230 is fetched from the eCFR versioner API **pinned to an as-of date** rather than
-parsed out of a PDF. The paragraph hierarchy `(b)(1)(ii)` comes straight from the document
-structure — stable IDs by construction instead of by regex heroics. FFIEC manual sections are
-parsed from their HTML pages for the same reason. FATF R10 has no structured source, so its
-interpretive-note paragraphs are the one place we parse PDF text.
+I could have written the KYC workflow by hand in LangGraph. Compiling it from the graph
+means the graph is the single source of truth: when extraction finds a new control or a new
+delta, the workflow changes on the next compile without anyone editing Python.
 
-### Data licensing split
-FFIEC and CFR are US-government public domain → processed clauses are committed (reproducible
-clone-and-run). FATF text is copyrighted → gitignored, regenerated locally via
-`make fetch parse`; probe/eval cases that must always work cite CFR/FFIEC clauses.
+It also makes the compile step a place to enforce rules. Missing evidence becomes a build
+error instead of a runtime failure. A newly detected high-severity delta automatically gets
+a human gate. If the workflow were hand-written, both of those would depend on someone
+remembering.
 
-### fastembed (ONNX) instead of sentence-transformers (torch)
-BGE-small embeddings + BGE reranker via fastembed run on any CPU laptop with no torch install
-(~2GB saved) and no API cost per embed. The embedder is behind a small protocol; tests use a
-deterministic hashing embedder (clearly marked non-semantic) so retrieval *mechanics* are
-unit-testable without model downloads; semantic quality is measured by the 20-probe acceptance
-run (`make probe`), not by unit tests.
+## Why the compiler emits a plain data structure
 
-## Phase 2
+`compile_workflow` returns a `WorkflowSpec`, which is just Pydantic models. Turning that
+into an actual LangGraph object is a separate function.
 
-### Synthetic corpus is authored + committed, generator is reproducibility tooling
-Transcripts and case logs are committed artifacts generated once (method documented in
-`data/interviews/SYNTHETIC.md`), not regenerated on every clone: delta-detection evaluation
-needs a *frozen* ground truth, and regeneration drift would silently invalidate the ledger.
-`scripts/generate_interviews.py --check` verifies the committed transcripts still voice every
-ledger delta; case-log regeneration is seeded and byte-deterministic, enforced by test.
+I split it this way so I could unit test every compile rule without importing LangGraph at
+all. The cycle detection, the evidence checks, the gate placement, all of it is testable
+against plain dicts. The evaluation runner also executes the spec directly, which means the
+eval and the runtime share one execution path instead of drifting apart.
 
-### Ground-truth labels live outside the data files
-`cases.jsonl` contains nothing that names a delta; the delta tags live in a sidecar
-(`ground_truth_tags.json`) used only by evaluation. If labels rode along inside the case
-records, phase-3 extraction would be grading itself on leaked answers — the delta-detection
-P/R numbers would be meaningless.
+## Why cycles are rejected
 
-## Phase 4–6
+A process graph with a loop makes path fidelity meaningless and gives no termination
+guarantee. The thing people usually want a loop for is retrying a failed step, and that
+belongs in Temporal's retry policy where it gets backoff, a cap, and visibility. So the
+compiler rejects cycles and prints the offending path.
 
-### Compile workflows from the graph instead of hand-writing them
-The graph is the source of truth. A process change — a new control, a newly detected delta,
-a re-sequenced step — becomes a re-compile, not a code change and a deploy. This is what
-makes the Diagnostics → Composition → Runtime loop a loop rather than three scripts.
+## Why the decision components are deterministic
 
-### `WorkflowSpec` as a plain data structure, LangGraph as a materialization step
-Every compile rule (cycle rejection, evidence prerequisites, forced HITL placement) is
-unit-testable without importing LangGraph, and the eval runner executes the spec directly.
-Coupling the compiler to the graph library would have made the rules testable only through
-the runtime.
+The thresholds, the ownership arithmetic, the list logic: all of it is plain Python, not
+model output. Two reasons. An examiner should be able to re-derive any threshold decision by
+hand. And evaluation numbers should not move because a model sampled differently today.
 
-### Cycles rejected in v1
-A cyclic process makes path fidelity and termination guarantees meaningless. The legitimate
-use case people reach for cycles for — retry — belongs in the Temporal retry policy, where
-it gets exponential backoff, a cap, and visibility. Documented in the compiler docstring
-because "why won't it compile" is the first question a reader will have.
+The trade-off is real and I say so in the README: this means the evaluation measures the
+governance machinery, not LLM judgment. The LLM seam exists for the parts that genuinely
+need judgment.
 
-### Deterministic atoms wherever auditability demands it
-Thresholds, ownership arithmetic and list logic are code. An examiner can re-derive every
-threshold decision by hand, and eval numbers don't move with model sampling. The LLM seam
-exists for genuine judgment, not for arithmetic that must be reproducible.
+## Why clause IDs come from document structure
 
-### Guardrails ordered by how fundamental the problem is
-delta guard → citation validity → the atom's own reason → confidence gate. The reason the
-reviewer sees should be the most fundamental problem, not the last check that happened to
-run. Low confidence is usually a *symptom* of the atom encoding an unresolved question.
+IDs like `CFR-1010.230(b)(1)` are built from the regulation's own paragraph hierarchy, never
+from chunk offsets. The citation guardrail compares those strings, so if re-parsing the same
+document produced different IDs, every stored citation would silently point somewhere new
+and every audit record would become wrong without any error appearing.
 
-### Temporal over a job queue
-Three things a queue doesn't give you: signals (a case sleeps for days awaiting a human
-while holding no process), replay-based recovery (kill the worker, resume mid-case), and
-durable timers. The cost is the determinism constraint, enforced in CI by AST analysis.
+This was harder than I expected. CFR paragraphs run (a), (b) ... (h), (i), (j), and that (i)
+is the letter i, not roman numeral one. A parser that assumes roman numerals corrupts every
+ID from that point on. 31 CFR 1010.230 really does go up to (j), so this was not
+hypothetical. The rule I settled on: a marker that continues the letter sequence wins over
+the roman reading.
 
-### Audit log independent of Temporal
-Temporal history is an execution record; the audit log is *governance evidence* — append-
-only, hash-chained, replayable, and readable by someone who has never heard of Temporal.
-Keeping them separate means the compliance artifact doesn't depend on the orchestration
-choice. Idempotency keyed on (case_id, step_id, event_type) is what keeps retries from
-writing the same event twice.
+## Why I fetch the CFR from the eCFR API instead of a PDF
 
-### What breaks at 10,000 cases/day, in order
-1. **Activity fan-out on a single worker** → partition workers by task queue, scale out.
-2. **Audit-log append is a read-modify-write** (it reads the whole file to get the previous
-   hash) → keep the chain head in memory/Redis, checkpoint periodically, shard by case
-   prefix with per-shard chains.
-3. **Retrieval latency per atom** → cache embeddings per clause set; the clause corpus is
-   nearly static, so a warm cache serves almost every case.
-Then: Neo4j read replicas for the graph-expansion queries.
+The eCFR versioner API serves structured XML with the paragraph hierarchy already marked up,
+and it accepts an as-of date so re-fetching gives identical bytes. Parsing a PDF would have
+meant reconstructing that hierarchy with regexes. FFIEC sections come from their HTML pages
+for the same reason. FATF is the one source with no structured version, so it is the only
+place I parse PDF text.
+
+## Why some processed clauses are committed and others are not
+
+FFIEC and CFR are US government works in the public domain, so the processed clause files
+are committed and a fresh clone works immediately. FATF text is copyrighted, so those files
+are gitignored and regenerated locally. Every probe and evaluation case that has to work out
+of the box cites CFR or FFIEC.
+
+## Why fastembed instead of sentence-transformers
+
+sentence-transformers pulls in torch, which is about 2GB. fastembed runs the same BGE models
+through ONNX on CPU with no torch and no API cost per embedding. On a student laptop that
+matters.
+
+Tests use a deterministic hashing embedder instead, clearly marked as non-semantic. It
+measures character overlap, not meaning, so it can verify that indexing and search and the
+k-limits work without downloading anything. Actual retrieval quality is measured by
+`make probe` against the real corpus with the real models, which is the only honest way to
+measure it.
+
+## Why guardrails run in a specific order
+
+Delta guard, then citation validity, then the component's own reason, then the confidence
+gate. The order is by how fundamental the problem is, because the first failure supplies the
+reason the reviewer sees.
+
+I got this wrong initially. A boundary case escalated with the message "confidence 0.50 <
+0.7", which is true but useless. The component had a precise explanation ready, that the case
+sits between the written 25% rule and the practised 20% one, and the generic confidence check
+fired first and won. Low confidence is usually a symptom of the component encoding an
+unresolved question, so the component's own reason should outrank it.
+
+## Why Temporal instead of a job queue
+
+Three things a queue does not give you. Signals, so a case can sleep for days waiting on a
+human without holding a process. Replay-based recovery, so killing the worker mid-case
+resumes at the same step. Durable timers.
+
+The cost is the determinism constraint: workflow code gets replayed against recorded
+history, so it cannot call an LLM or read the clock or generate a UUID. All of that lives in
+activities, whose results are read back from history rather than recomputed. I enforce this
+with a script that parses the workflow file and checks the call targets, running in CI,
+because this is exactly the kind of rule that gets broken six months later by someone who
+did not know about it.
+
+The first version of that script used a regex over the file text and flagged its own
+docstring, which mentioned `datetime.now()` while explaining that the module does not call
+it. Analysing the AST checks what the code does rather than what it says.
+
+## Why the audit log is separate from Temporal
+
+Temporal history is an execution record. The audit log is compliance evidence: append-only,
+hash-chained, replayable, and readable by someone who has never heard of Temporal. Keeping
+them separate means the compliance artefact does not depend on which orchestrator I picked.
+
+Duplicate entries would come from an activity that wrote its event and then failed before
+acknowledging, so Temporal retried it. The write is keyed on case, step and event type, and
+a retry returns the existing hash instead of appending again.
+
+## Why the explorer talks to FastAPI instead of Neo4j directly
+
+The obvious approach with neovis.js is to give the browser the database connection. That
+means shipping database credentials to the client. Serving graph JSON from FastAPI instead
+keeps credentials server-side, and it let me add a fallback that reads from the derived JSON
+files so the explorer works even when Neo4j is not running.
+
+## What breaks at 10,000 cases a day
+
+I have not run this at scale, so this is reasoning rather than measurement.
+
+First, activity fan-out against a single worker. Fix: partition workers by task queue and
+scale out.
+
+Second, the audit log append, which currently reads the whole file to find the previous
+hash. That is fine at a few hundred events and quadratic beyond it. Fix: keep the chain head
+in memory or Redis with periodic checkpointing, and shard by case prefix with a chain per
+shard.
+
+Third, retrieval latency per component. The clause corpus barely changes, so a warm
+embedding cache would serve almost every case.
+
+After those, Neo4j read replicas for the graph expansion queries.

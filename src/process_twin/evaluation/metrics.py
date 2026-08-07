@@ -1,11 +1,4 @@
-"""Readiness metrics + go/no-go thresholds (brief §10.2).
-
-Every threshold is justified in docs/eval-methodology.md. The asymmetry to defend in an
-interview: outcome accuracy is 0.85 but policy-conflict escalation recall is **1.0**.
-Being wrong about an ordinary case is a quality problem you can measure and improve;
-silently resolving an unresolved policy question is a governance failure that produces a
-confidently-wrong decision with a clean audit trail. That is unrecoverable, so it gates.
-"""
+"""Readiness metrics + go/no-go thresholds (brief §10.2)."""
 
 from __future__ import annotations
 
@@ -14,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 THRESHOLDS = {
     "outcome_accuracy": 0.85,
     "path_fidelity": 0.90,
-    "escalation_recall_policy_conflict": 1.0,  # HARD GATE
+    "escalation_recall_policy_conflict": 1.0,
     "escalation_recall_adversarial": 0.83,
     "escalation_precision": 0.80,
     "citation_validity": 0.95,
@@ -59,23 +52,7 @@ class MetricResult(BaseModel):
 
 
 def path_fidelity(expected: list[str], actual: list[str], stopped_early: bool = False) -> bool:
-    """Did the case walk the expected route?
-
-    Measured over the EXPECTED steps only: the compiled workflow legitimately runs steps a
-    given case does not care about (the callback control runs for everyone; beneficial-
-    ownership runs for individuals and returns "not applicable"). Extra steps are the
-    process being complete, not a fidelity violation — so we project the actual path onto
-    the expected set and compare that.
-
-    Two regimes, because a governed workflow that halts at a human gate has not failed:
-      * ran to completion -> the projection must equal the expected route exactly.
-      * stopped early     -> the projection must be an in-order PREFIX of it.
-
-    This still catches the real failures — a skipped step, or steps executed out of order —
-    while refusing to score a correct escalation as a path failure. Defining it any other
-    way would tune the thresholds toward rewarding straight-through processing, which is
-    exactly backwards for a governance system (see FAILURES.md 2026-08-04).
-    """
+    """Did the case walk the expected route?"""
     if not expected:
         return True
     expected_set = set(expected)
@@ -93,13 +70,10 @@ def compute_metrics(evals: list[CaseEvaluation]) -> list[MetricResult]:
     results: list[MetricResult] = []
 
     def add(name, value, threshold=None, detail="", population=1):
-        # A metric with an EMPTY population is not-applicable, never a failure. Reporting
-        # 0/0 as 0.0 would fail a run for a category it never contained — and worse, it
-        # would make a shrinking suite look like a degrading system (FAILURES.md).
         if population == 0:
             results.append(MetricResult(name=name, value=0.0, threshold=threshold,
                                         passed=None, hard_gate=name in HARD_GATES,
-                                        detail=detail + " — no cases in this category (n/a)"))
+                                        detail=detail + " - no cases in this category (n/a)"))
             return
         passed = None if threshold is None else value >= threshold
         results.append(MetricResult(name=name, value=value, threshold=threshold,
@@ -162,10 +136,7 @@ def compute_metrics(evals: list[CaseEvaluation]) -> list[MetricResult]:
 
 
 def confidence_calibration(evals: list[CaseEvaluation]) -> dict:
-    """Bucketed accuracy vs stated confidence + Brier score (§10.2).
-
-    A well-calibrated system is worth more than a merely accurate one: the confidence gate
-    routes on this number, so systematic overconfidence silently disables the gate."""
+    """Bucketed accuracy vs stated confidence + Brier score (§10.2)."""
     buckets = {"0.0-0.5": [], "0.5-0.7": [], "0.7-0.9": [], "0.9-1.0": []}
     brier_terms = []
     for e in evals:

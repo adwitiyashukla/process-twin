@@ -1,10 +1,4 @@
-"""Retriever v1: vector search + cross-encoder rerank (brief §7.4).
-
-The third leg — graph expansion (pull clauses already linked DERIVED_FROM the current
-step, plus 1-hop neighbors) — lands in phase 3 once the graph exists. The seam is the
-`extra_clause_ids` parameter, which the runtime will feed from Neo4j; "the graph tells
-you where to look, the vectors tell you what's similar."
-"""
+"""Retriever v1: vector search + cross-encoder rerank (brief §7.4)."""
 
 from __future__ import annotations
 
@@ -20,8 +14,8 @@ class RetrievedClause(BaseModel):
     text: str
     source_doc: str
     section_path: str
-    vector_score: float | None = None  # None when injected via graph expansion
-    rerank_score: float | None = None  # None when the reranker is unavailable
+    vector_score: float | None = None
+    rerank_score: float | None = None
 
 
 class Retriever:
@@ -63,7 +57,7 @@ class Retriever:
             for h in hits
         ]
 
-        if extra_clause_ids:  # phase-3 graph expansion enters here
+        if extra_clause_ids:
             present = {c.clause_id for c in candidates}
             extras = [cid for cid in extra_clause_ids if cid not in present]
             if extras:

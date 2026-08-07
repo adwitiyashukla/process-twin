@@ -1,13 +1,4 @@
-"""Human-in-the-loop gates and approval resume (brief §7.5).
-
-Pending approvals are persisted with FULL context — case snapshot, atom output,
-citations, why-escalated — because a reviewer who has to go hunting for context makes
-worse decisions, and because the approval itself becomes an audit event.
-
-Storage is a JSON file store: durable across restarts, trivially inspectable, and
-sufficient at project scale. Temporal owns workflow state (§8); this owns the human
-queue. Every decision is signalled back to the waiting workflow.
-"""
+"""Human-in-the-loop gates and approval resume (brief §7.5)."""
 
 from __future__ import annotations
 
@@ -80,7 +71,6 @@ class ApprovalStore:
         if record is None:
             raise KeyError(f"unknown approval {approval_id!r}")
         if record.decision is not None:
-            # idempotency: a double-click must not produce two audit events or two signals
             return record
         record.decision = ApprovalDecision(decision=decision, reviewer=reviewer, note=note)
         self._path(approval_id).write_text(record.model_dump_json(indent=2), encoding="utf-8")

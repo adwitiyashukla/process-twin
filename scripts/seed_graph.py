@@ -1,17 +1,4 @@
-"""Phase-3 orchestrator: ingestion -> extraction -> reconcile -> delta detect -> Neo4j.
-
-    uv run python scripts/seed_graph.py                 # full run (needs API key + make up)
-    uv run python scripts/seed_graph.py --skip-graph    # everything except Neo4j load
-    uv run python scripts/seed_graph.py --force-extract # ignore the extraction cache
-
-Prints the two phase-3 acceptance results at the end:
-  * provenance coverage — every element in the graph must have >= 1 DERIVED_FROM (0 orphans)
-  * delta detection P/R vs the frozen ledger — target >= 0.7 / >= 0.7 (brief §13)
-
-Extraction is cached in data/extracted/ (cost discipline; commit the cache after review
-so a fresh clone can seed without an API key). Deltas/canonicals are also dumped to
-data/derived/ — diff_report.py and the explorer's offline fallback read those.
-"""
+"""Phase-3 orchestrator: ingestion -> extraction -> reconcile -> delta detect -> Neo4j."""
 
 from __future__ import annotations
 
@@ -45,11 +32,10 @@ def main() -> int:
     args = ap.parse_args()
     settings = get_settings()
 
-    # 1) sources
     processed = Path("data/policies/processed")
     clause_files = sorted(processed.glob("*.jsonl"))
     if not clause_files:
-        print("No processed clauses found — run `make fetch` then `make parse` first.")
+        print("No processed clauses found - run `make fetch` then `make parse` first.")
         return 1
     clauses = [c for f in clause_files for c in read_clauses_jsonl(f)]
     segments = load_all_transcripts()
@@ -58,12 +44,11 @@ def main() -> int:
     print(f"sources: {len(clauses)} clauses, {len(segments)} interview segments, "
           f"{len(cases)} cases -> {len(patterns)} mined patterns")
 
-    # 2) extraction (cached)
     if not settings.anthropic_api_key and not args.force_extract:
         cache_ok = all((Path("data/extracted") / f"{n}.jsonl").exists()
                        for n in ("policy", "interviews", "case_patterns"))
         if not cache_ok:
-            print("No ANTHROPIC_API_KEY and no extraction cache — add the key to .env first.")
+            print("No ANTHROPIC_API_KEY and no extraction cache - add the key to .env first.")
             return 1
 
     trace = tracing.start_case_trace("SEED", phase="3", model_tier=args.model_tier)
@@ -91,7 +76,6 @@ def main() -> int:
     print(f"extraction: {len(elements)} elements "
           f"(cache: data/extracted/, dead letters: data/dead_letter/)")
 
-    # 3) reconcile (+ reasoning-tier adjudicator for the ambiguous band)
     from process_twin.retrieval.embedder import get_embedder
 
     embedder = get_embedder(use_test_embedder=args.test_embedder)
@@ -101,7 +85,6 @@ def main() -> int:
     canonicals, conflicts = reconcile(elements, embedder, adjudicate)
     print(f"reconcile: {len(canonicals)} canonical elements, {len(conflicts)} conflicts")
 
-    # 4) deltas + acceptance metric
     deltas = detect_deltas(canonicals, conflicts, patterns)
     score = score_against_ledger(deltas)
     print(f"deltas: {len(deltas)} detected")
@@ -110,7 +93,6 @@ def main() -> int:
     if score["missed_rows"] or score["precision"] < 0.7:
         print("  -> analyze misses/false positives in FAILURES.md (ground rule 4)")
 
-    # 5) derived artifacts for diff_report + explorer fallback
     DERIVED.mkdir(parents=True, exist_ok=True)
     dumps = {
         "canonicals.json": [c.model_dump() for c in canonicals],
@@ -126,7 +108,6 @@ def main() -> int:
         )
     print(f"derived artifacts -> {DERIVED}/")
 
-    # 6) graph load + provenance acceptance
     if args.skip_graph:
         tracing.flush()
         print("(--skip-graph: Neo4j load skipped)")
@@ -146,7 +127,7 @@ def main() -> int:
 
     print(f"graph: {stats}")
     print(f"provenance coverage: {cov['elements']} elements, {cov['orphans']} orphans "
-          f"{'PASS' if cov['orphans'] == 0 else 'FAIL — investigate before proceeding'}")
+          f"{'PASS' if cov['orphans'] == 0 else 'FAIL - investigate before proceeding'}")
     print(f"delta sample: {sample}")
     print("explorer: make api  ->  http://localhost:8000/explorer")
     return 0 if cov["orphans"] == 0 else 1

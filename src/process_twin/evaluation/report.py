@@ -1,11 +1,4 @@
-"""Pre-production readiness report — Demo 2 (brief §10.3).
-
-HTML + Markdown, versioned per run under reports/<date>_<gitsha>/. Written to look like
-something a model-risk team would actually read: headline go/no-go first, then the
-thresholds it was judged against, then every failed case with expected-vs-actual and a
-trace link, then calibration and cost. Regression diff against the previous run is
-included so a reviewer can see what moved.
-"""
+"""Pre-production readiness report - Demo 2 (brief §10.3)."""
 
 from __future__ import annotations
 
@@ -30,7 +23,7 @@ def git_sha() -> str:
     try:
         return subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True,
                               text=True, check=True).stdout.strip()
-    except Exception:  # noqa: BLE001 — a report must never fail over version metadata
+    except Exception:  # noqa: BLE001 - a report must never fail over version metadata
         return "nogit"
 
 
@@ -66,8 +59,8 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
     lines = [
         "# Pre-production readiness report",
         "",
-        f"**Verdict: {status}**" + (f" — failed: {', '.join(failures)}" if failures else
-                                    " — every threshold met."),
+        f"**Verdict: {status}**" + (f" - failed: {', '.join(failures)}" if failures else
+                                    " - every threshold met."),
         "",
         f"Suite: {len(evals)} golden cases · commit `{sha}` · generated {generated}",
         "",
@@ -79,9 +72,9 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
     for m in metrics:
         if m.threshold is None:
             continue
-        mark = "✅ pass" if m.passed else "❌ **FAIL**"
-        gate = " 🔒 hard gate" if m.hard_gate else ""
-        lines.append(f"| {m.name} | {m.value:.3f} | ≥ {m.threshold} | {mark}{gate} | {m.detail} |")
+        mark = "pass pass" if m.passed else "FAIL **FAIL**"
+        gate = " hard gate hard gate" if m.hard_gate else ""
+        lines.append(f"| {m.name} | {m.value:.3f} | >= {m.threshold} | {mark}{gate} | {m.detail} |")
 
     lines += ["", "## Operational metrics", "",
               "| Metric | Value |", "|---|---|"]
@@ -98,23 +91,24 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
               f"Brier score: **{calib['brier_score']}** (lower is better; 0 = perfect)", "",
               "| Confidence bucket | Cases | Accuracy |", "|---|---|---|"]
     for bucket, row in calib["buckets"].items():
-        acc = "—" if row["accuracy"] is None else f"{row['accuracy']:.3f}"
+        acc = "-" if row["accuracy"] is None else f"{row['accuracy']:.3f}"
         lines.append(f"| {bucket} | {row['n']} | {acc} |")
     lines += ["", "Calibration matters operationally: the confidence gate routes on this "
               "number, so systematic overconfidence would silently disable the gate.", ""]
 
     lines += ["## Failed cases", ""]
     if not failed:
-        lines.append("None — every case matched its expected outcome and path.")
+        lines.append("None - every case matched its expected outcome and path.")
     else:
         lines += ["| Case | Category | Expected | Actual | Path OK | Escalation reasons | Trace |",
                   "|---|---|---|---|---|---|---|"]
         for e in failed:
-            trace = f"[trace]({e.trace_url})" if e.trace_url else "—"
+            trace = f"[trace]({e.trace_url})" if e.trace_url else "-"
+            path_ok = "pass" if e.path_correct else "FAIL"
+            reasons = "; ".join(e.escalation_reasons) or "-"
             lines.append(
-                f"| {e.case_id} | {e.category} | {e.expected_outcome} | {e.actual_outcome} | "
-                f"{'✅' if e.path_correct else '❌'} | {'; '.join(e.escalation_reasons) or '—'} "
-                f"| {trace} |"
+                f"| {e.case_id} | {e.category} | {e.expected_outcome} | {e.actual_outcome} "
+                f"| {path_ok} | {reasons} | {trace} |"
             )
 
     rows = _regression_rows(metrics, previous)
@@ -132,7 +126,7 @@ def build_markdown(evals: list[CaseEvaluation], metrics: list[MetricResult],
               "| Case | Category | Expected | Actual | Escalated | Citations |",
               "|---|---|---|---|---|---|"]
     for e in evals:
-        mark = "✅" if e.outcome_correct else "❌"
+        mark = "pass" if e.outcome_correct else "FAIL"
         lines.append(f"| {mark} {e.case_id} | {e.category} | {e.expected_outcome} | "
                      f"{e.actual_outcome} | {'yes' if e.actual_escalation else 'no'} | "
                      f"{len(e.cited)} |")

@@ -42,7 +42,7 @@ class TestSuiteIntegrity:
             if c["category"] == "policy_conflict":
                 assert c["expected_escalation"] is True
                 assert c["expected_outcome"] == "edd_escalated"
-                assert "targets_delta" in c  # must land on a REAL ledger delta
+                assert "targets_delta" in c
 
     def test_clean_cases_expect_no_escalation(self):
         """Clean cases are what measure false-positive escalation."""
@@ -64,17 +64,16 @@ class TestPathFidelity:
 
     def test_completed_case_needs_every_step_in_order(self):
         assert path_fidelity(self.EXPECTED, ["a", "b", "c", "d"])
-        assert not path_fidelity(self.EXPECTED, ["a", "c", "b", "d"])  # reordered
-        assert not path_fidelity(self.EXPECTED, ["a", "b", "d"])  # skipped
+        assert not path_fidelity(self.EXPECTED, ["a", "c", "b", "d"])
+        assert not path_fidelity(self.EXPECTED, ["a", "b", "d"])
 
     def test_extra_steps_are_not_a_violation(self):
-        # the compiled process runs steps a given case doesn't care about
         assert path_fidelity(self.EXPECTED, ["a", "x", "b", "y", "c", "d"])
 
     def test_escalated_case_only_needs_a_prefix(self):
         assert path_fidelity(self.EXPECTED, ["a", "b"], stopped_early=True)
-        assert not path_fidelity(self.EXPECTED, ["b", "a"], stopped_early=True)  # out of order
-        assert not path_fidelity(self.EXPECTED, ["a", "c"], stopped_early=True)  # skipped b
+        assert not path_fidelity(self.EXPECTED, ["b", "a"], stopped_early=True)
+        assert not path_fidelity(self.EXPECTED, ["a", "c"], stopped_early=True)
 
 
 class TestHardGate:
@@ -102,7 +101,6 @@ class TestHardGate:
         assert verdict(compute_metrics(self._evals(conflict_escalated=True)))[0] == "GO"
 
     def test_threshold_asymmetry_is_intentional(self):
-        # outcome accuracy tolerates error; the policy-conflict gate does not
         assert THRESHOLDS["escalation_recall_policy_conflict"] == 1.0
         assert THRESHOLDS["outcome_accuracy"] < 1.0
 

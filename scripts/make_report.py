@@ -24,7 +24,7 @@ def main() -> int:
         if m.threshold is not None:
             print(f"  {'PASS' if m.passed else 'FAIL'}  {m.name:38} {m.value:.3f} "
                   f"(>= {m.threshold}){'  [HARD GATE]' if m.hard_gate else ''}")
-    print(f"\nVERDICT: {status}" + (f" — failed: {', '.join(failures)}" if failures else ""))
+    print(f"\nVERDICT: {status}" + (f" - failed: {', '.join(failures)}" if failures else ""))
     print(f"report: {run_dir}/report.html  (+ report.md, summary.json)")
     return 0 if status == "GO" else 1
 

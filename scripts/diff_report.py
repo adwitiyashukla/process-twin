@@ -1,11 +1,4 @@
-"""Demo 1, CLI twin (brief §11): tacit-vs-written diff as Markdown.
-
-    uv run python scripts/diff_report.py --format md          # after seed_graph
-    uv run python scripts/diff_report.py --format md --out docs/diff-report.md
-
-Reads data/derived/ (dumped by seed_graph) so it works with or without Neo4j running —
-the explorer shows the same content interactively.
-"""
+"""Demo 1, CLI twin (brief §11): tacit-vs-written diff as Markdown."""
 
 from __future__ import annotations
 
@@ -16,7 +9,7 @@ from pathlib import Path
 
 DERIVED = Path("data/derived")
 SEV_ORDER = {"high": 0, "medium": 1, "low": 2}
-SEV_BADGE = {"high": "🔴 high", "medium": "🟠 medium", "low": "🟡 low"}
+SEV_BADGE = {"high": "high high", "medium": "medium medium", "low": "low low"}
 
 
 def build_markdown() -> str:
@@ -37,7 +30,7 @@ def build_markdown() -> str:
         "|---|------|----------|------------|---------------|----------------|",
     ]
     for d in deltas:
-        support = f"{d['support_count']}/60" if d["support_count"] else "—"
+        support = f"{d['support_count']}/60" if d["support_count"] else "-"
         lines.append(
             f"| {d['id']} | {d['kind']} | {SEV_BADGE[d['severity']]} | {d['description']} "
             f"| {support} | {d['recommendation']} |"
@@ -47,13 +40,13 @@ def build_markdown() -> str:
     for d in deltas:
         about = canonicals.get(d["about_element_id"], {})
         lines += [
-            f"### {d['id']} — {d['kind']} ({d['severity']})",
+            f"### {d['id']} - {d['kind']} ({d['severity']})",
             "",
             d["description"],
             "",
             f"* **About:** {about.get('name', d['about_element_id'])}",
             "* **Written view:** "
-            + (', '.join(d['written_view']) or '(policy silent — that is the point)'),
+            + (', '.join(d['written_view']) or '(policy silent - that is the point)'),
             f"* **Practiced view:** {', '.join(d['practiced_view'])}",
             f"* **Case-log support:** {d['support_count']} of 60 historical cases",
             f"* **Recommendation:** {d['recommendation']}",
@@ -68,7 +61,7 @@ def main() -> int:
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     if not (DERIVED / "deltas.json").exists():
-        print("No derived artifacts — run seed_graph first (make seed).")
+        print("No derived artifacts - run seed_graph first (make seed).")
         return 1
     md = build_markdown()
     if args.out:

@@ -1,18 +1,4 @@
-"""Synthetic interview tooling (brief §4.2).
-
-The committed transcripts were authored ONCE (method: data/interviews/SYNTHETIC.md) and
-are frozen — they are evaluation ground truth. This script therefore has two jobs:
-
-    python scripts/generate_interviews.py --check
-        Verify the frozen corpus is still internally consistent: every ledger delta is
-        voiced (per CHECK_PHRASES) in every transcript assigned via personas.yaml, and
-        the D10 conflict actually reads as a conflict. Run by the test suite.
-
-    python scripts/generate_interviews.py --regenerate
-        Print the exact authoring prompt per persona (for re-creation with an LLM, e.g.
-        the cheap model tier). Deliberately does NOT call the API by default: silently
-        replacing frozen ground truth would invalidate every delta-detection metric.
-"""
+"""Synthetic interview tooling (brief §4.2)."""
 
 from __future__ import annotations
 
@@ -25,10 +11,6 @@ import yaml
 INTERVIEWS_DIR = Path("data/interviews")
 TRANSCRIPTS_DIR = INTERVIEWS_DIR / "transcripts"
 
-# Any-of phrase evidence per delta (lowercase). A delta counts as "voiced" in a
-# transcript when at least one phrase appears. Kept deliberately concrete — if a future
-# edit rewords a transcript past recognition, the check SHOULD fail and force a
-# ledger review, not silently pass.
 CHECK_PHRASES: dict[str, list[str]] = {
     "D1": ["at 20", "20 percent"],
     "D2": ["renewal receipt"],
@@ -80,13 +62,12 @@ def check() -> int:
             phrases = CHECK_PHRASES[delta]
             if not any(p in text for p in phrases):
                 failures.append(
-                    f"{persona['id']} ({persona['name']}): {delta} not voiced — "
+                    f"{persona['id']} ({persona['name']}): {delta} not voiced - "
                     f"expected one of {phrases}"
                 )
             else:
                 print(f"  [ok] {persona['id']} voices {delta}")
 
-    # D10 is a conflict BETWEEN practitioners — both sides must read as opposite stances
     qa = _transcript_for("P2").read_text(encoding="utf-8").lower()
     fl = _transcript_for("P4").read_text(encoding="utf-8").lower()
     if "reject" not in qa:
@@ -118,7 +99,7 @@ def regenerate() -> int:
         ))
     print("=" * 78)
     print("NOTE: regenerating and committing new transcripts REQUIRES re-reviewing the")
-    print("ledger and re-running delta-detection evals — frozen ground truth changed.")
+    print("ledger and re-running delta-detection evals - frozen ground truth changed.")
     return 0
 
 

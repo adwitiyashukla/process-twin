@@ -1,14 +1,4 @@
-"""Golden-suite executor (brief §10).
-
-Runs all 40 cases through the SAME executor the runtime uses (`runtime/executor.py`) —
-not a parallel evaluation path. If eval and production used different execution code, the
-report would be measuring something that never ships.
-
-Reviewer policy during eval: gates are recorded as escalations and the case STOPS there.
-We do not auto-approve to "see what would have happened" — the escalation IS the outcome
-being measured, and inventing a reviewer decision would inflate outcome accuracy with
-decisions no human made.
-"""
+"""Golden-suite executor (brief §10)."""
 
 from __future__ import annotations
 
@@ -27,8 +17,6 @@ from process_twin.schemas.audit import AuditLog
 SUITE_PATH = Path("data/golden_cases/suite.yaml")
 DERIVED = Path("data/derived")
 
-# Reference process: the written KYC/CDD flow. Used when data/derived is absent (fresh
-# clone, no API key) so `make report` always runs. The seeded graph overrides it.
 REFERENCE_STEPS = [
     ("EL-collect", "collect customer information", 1),
     ("EL-verify", "verify identity documents", 2),
@@ -77,7 +65,7 @@ def known_clause_ids() -> set[str]:
         for line in f.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 ids.add(json.loads(line)["clause_id"])
-    if not ids:  # no corpus fetched yet: fall back to the atoms' own clause vocabulary
+    if not ids:
         from process_twin.runtime.atoms import CLAUSES
 
         ids = set(CLAUSES.values())
@@ -123,7 +111,7 @@ def run_suite(suite_path: Path = SUITE_PATH, audit_path: Path | None = None,
             must_cite_retrieved=all(m in cited for m in must) if must else True,
             confidence=(sum(confidences) / len(confidences)) if confidences else None,
             latency_ms=round(elapsed_ms, 2),
-            cost_usd=0.0,  # deterministic atoms: no LLM spend. Populated when atoms use the model.
+            cost_usd=0.0,
             escalation_reasons=result.escalation_reasons,
             trace_url=f"{trace_base}?caseId={case['id']}" if trace_base else None,
         ))

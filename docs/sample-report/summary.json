@@ -1,8 +1,8 @@
 {
   "verdict": "GO",
   "failures": [],
-  "git_sha": "a374cbb",
-  "generated": "2026-08-05 02:59 UTC",
+  "git_sha": "76362d0",
+  "generated": "2026-08-07 04:38 UTC",
   "metrics": [
     {
       "name": "outcome_accuracy",
@@ -62,7 +62,7 @@
     },
     {
       "name": "latency_p50_ms",
-      "value": 465.0,
+      "value": 0.32,
       "threshold": null,
       "passed": null,
       "hard_gate": false,
@@ -70,7 +70,7 @@
     },
     {
       "name": "latency_p95_ms",
-      "value": 1031.55,
+      "value": 1.49,
       "threshold": null,
       "passed": null,
       "hard_gate": false,
@@ -138,10 +138,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 1031.55,
+      "latency_ms": 1.49,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-001"
+      "trace_url": null
     },
     {
       "case_id": "GC-002",
@@ -187,10 +187,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 447.94,
+      "latency_ms": 0.33,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-002"
+      "trace_url": null
     },
     {
       "case_id": "GC-003",
@@ -236,10 +236,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 682.4,
+      "latency_ms": 0.65,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-003"
+      "trace_url": null
     },
     {
       "case_id": "GC-004",
@@ -285,10 +285,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 465.0,
+      "latency_ms": 0.47,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-004"
+      "trace_url": null
     },
     {
       "case_id": "GC-005",
@@ -334,10 +334,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 418.26,
+      "latency_ms": 0.43,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-005"
+      "trace_url": null
     },
     {
       "case_id": "GC-006",
@@ -383,10 +383,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 1746.08,
+      "latency_ms": 0.3,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-006"
+      "trace_url": null
     },
     {
       "case_id": "GC-007",
@@ -433,10 +433,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9211111111111112,
-      "latency_ms": 875.63,
+      "latency_ms": 0.33,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-007"
+      "trace_url": null
     },
     {
       "case_id": "GC-008",
@@ -483,10 +483,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9211111111111112,
-      "latency_ms": 522.29,
+      "latency_ms": 0.48,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-008"
+      "trace_url": null
     },
     {
       "case_id": "GC-009",
@@ -533,10 +533,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9211111111111112,
-      "latency_ms": 547.62,
+      "latency_ms": 0.42,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-009"
+      "trace_url": null
     },
     {
       "case_id": "GC-010",
@@ -583,10 +583,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9211111111111112,
-      "latency_ms": 632.47,
+      "latency_ms": 0.37,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-010"
+      "trace_url": null
     },
     {
       "case_id": "GC-011",
@@ -632,10 +632,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 482.85,
+      "latency_ms": 0.42,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-011"
+      "trace_url": null
     },
     {
       "case_id": "GC-012",
@@ -681,10 +681,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 588.93,
+      "latency_ms": 0.32,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-012"
+      "trace_url": null
     },
     {
       "case_id": "GC-013",
@@ -718,12 +718,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.72,
-      "latency_ms": 141.78,
+      "latency_ms": 0.11,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "expired primary ID + renewal receipt: written policy silent (floor practice accepts with 30-day follow-up) -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-013"
+      "trace_url": null
     },
     {
       "case_id": "GC-014",
@@ -768,10 +768,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 451.7,
+      "latency_ms": 0.33,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-014"
+      "trace_url": null
     },
     {
       "case_id": "GC-015",
@@ -816,10 +816,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 453.24,
+      "latency_ms": 0.46,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-015"
+      "trace_url": null
     },
     {
       "case_id": "GC-016",
@@ -864,10 +864,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 678.88,
+      "latency_ms": 0.3,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-016"
+      "trace_url": null
     },
     {
       "case_id": "GC-017",
@@ -901,12 +901,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.6950000000000001,
-      "latency_ms": 210.26,
+      "latency_ms": 0.07,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "PO-box address: unresolved practitioner conflict -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-017"
+      "trace_url": null
     },
     {
       "case_id": "GC-018",
@@ -951,10 +951,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 614.65,
+      "latency_ms": 0.26,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-018"
+      "trace_url": null
     },
     {
       "case_id": "GC-019",
@@ -986,12 +986,12 @@
       "citations_valid": true,
       "must_cite_retrieved": false,
       "confidence": 0.4,
-      "latency_ms": 94.81,
+      "latency_ms": 0.04,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "applicant presents a foreign tax ID only: written policy has no procedure for this (documented gap) -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-019"
+      "trace_url": null
     },
     {
       "case_id": "GC-020",
@@ -1026,12 +1026,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.895,
-      "latency_ms": 362.29,
+      "latency_ms": 0.07,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "no acceptable primary ID presented"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-020"
+      "trace_url": null
     },
     {
       "case_id": "GC-021",
@@ -1075,12 +1075,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9233333333333332,
-      "latency_ms": 503.12,
+      "latency_ms": 0.42,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "owner at/above 25% without certification on file"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-021"
+      "trace_url": null
     },
     {
       "case_id": "GC-022",
@@ -1125,10 +1125,10 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9311111111111112,
-      "latency_ms": 977.77,
+      "latency_ms": 0.31,
       "cost_usd": 0.0,
       "escalation_reasons": [],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-022"
+      "trace_url": null
     },
     {
       "case_id": "GC-023",
@@ -1166,12 +1166,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.8925,
-      "latency_ms": 243.37,
+      "latency_ms": 0.15,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "hits: ['pep_direct_match']"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-023"
+      "trace_url": null
     },
     {
       "case_id": "GC-024",
@@ -1216,12 +1216,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9033333333333334,
-      "latency_ms": 626.38,
+      "latency_ms": 0.31,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, screening_hits"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-024"
+      "trace_url": null
     },
     {
       "case_id": "GC-025",
@@ -1265,12 +1265,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.8649999999999999,
-      "latency_ms": 698.15,
+      "latency_ms": 0.24,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "owner(s) at [22.0]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-025"
+      "trace_url": null
     },
     {
       "case_id": "GC-026",
@@ -1317,12 +1317,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9155555555555556,
-      "latency_ms": 912.74,
+      "latency_ms": 0.33,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-026"
+      "trace_url": null
     },
     {
       "case_id": "GC-027",
@@ -1368,12 +1368,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9155555555555556,
-      "latency_ms": 622.38,
+      "latency_ms": 0.34,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: complex_multi_jurisdiction_ownership"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-027"
+      "trace_url": null
     },
     {
       "case_id": "GC-028",
@@ -1418,12 +1418,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9033333333333334,
-      "latency_ms": 452.67,
+      "latency_ms": 0.37,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, screening_hits"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-028"
+      "trace_url": null
     },
     {
       "case_id": "GC-029",
@@ -1470,12 +1470,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9155555555555556,
-      "latency_ms": 371.19,
+      "latency_ms": 0.31,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-029"
+      "trace_url": null
     },
     {
       "case_id": "GC-030",
@@ -1521,12 +1521,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9155555555555556,
-      "latency_ms": 414.2,
+      "latency_ms": 0.31,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, beneficial_owner_at_or_above_25pct_in_high_risk_jurisdiction"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-030"
+      "trace_url": null
     },
     {
       "case_id": "GC-031",
@@ -1571,12 +1571,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9033333333333334,
-      "latency_ms": 352.78,
+      "latency_ms": 2.67,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, screening_hits"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-031"
+      "trace_url": null
     },
     {
       "case_id": "GC-032",
@@ -1610,12 +1610,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9450000000000001,
-      "latency_ms": 242.11,
+      "latency_ms": 0.23,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "document/identity integrity signal (identity_inconsistency): verification cannot be relied on -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-032"
+      "trace_url": null
     },
     {
       "case_id": "GC-033",
@@ -1649,12 +1649,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9450000000000001,
-      "latency_ms": 180.57,
+      "latency_ms": 0.11,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "document/identity integrity signal (document_tamper_indicators): verification cannot be relied on -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-033"
+      "trace_url": null
     },
     {
       "case_id": "GC-034",
@@ -1697,12 +1697,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.8649999999999999,
-      "latency_ms": 295.17,
+      "latency_ms": 0.38,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "owner(s) at [24.9, 24.9, 24.9]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-034"
+      "trace_url": null
     },
     {
       "case_id": "GC-035",
@@ -1747,12 +1747,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.9033333333333334,
-      "latency_ms": 392.61,
+      "latency_ms": 0.38,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, screening_hits"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-035"
+      "trace_url": null
     },
     {
       "case_id": "GC-036",
@@ -1798,12 +1798,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.8933333333333334,
-      "latency_ms": 671.49,
+      "latency_ms": 0.31,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "EDD required: risk_rating_high, screening_hits"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-036"
+      "trace_url": null
     },
     {
       "case_id": "GC-037",
@@ -1846,12 +1846,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.8649999999999999,
-      "latency_ms": 642.67,
+      "latency_ms": 0.22,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "owner(s) at [21.0]% in a high-risk jurisdiction: below the written 25% line but inside the undocumented 20% scrutiny practice -> unresolved, human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-037"
+      "trace_url": null
     },
     {
       "case_id": "GC-038",
@@ -1885,12 +1885,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.72,
-      "latency_ms": 109.73,
+      "latency_ms": 0.19,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "expired primary ID + renewal receipt: written policy silent (floor practice accepts with 30-day follow-up) -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-038"
+      "trace_url": null
     },
     {
       "case_id": "GC-039",
@@ -1924,12 +1924,12 @@
       "citations_valid": true,
       "must_cite_retrieved": true,
       "confidence": 0.6950000000000001,
-      "latency_ms": 121.57,
+      "latency_ms": 0.08,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "PO-box address: unresolved practitioner conflict -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-039"
+      "trace_url": null
     },
     {
       "case_id": "GC-040",
@@ -1961,12 +1961,12 @@
       "citations_valid": true,
       "must_cite_retrieved": false,
       "confidence": 0.4,
-      "latency_ms": 76.0,
+      "latency_ms": 0.04,
       "cost_usd": 0.0,
       "escalation_reasons": [
         "applicant presents a foreign tax ID only: written policy has no procedure for this (documented gap) -> human decides"
       ],
-      "trace_url": "http://localhost:3000/traces?caseId=GC-040"
+      "trace_url": null
     }
   ]
 }

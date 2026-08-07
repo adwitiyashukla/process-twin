@@ -1,8 +1,4 @@
-"""Phase-0 acceptance check: run the hello-world atom end to end.
-
-    python scripts/hello_atom.py            # real Haiku call; trace + cost in Langfuse
-    python scripts/hello_atom.py --dry-run  # no API key / services needed
-"""
+"""Phase-0 acceptance check: run the hello-world atom end to end."""
 
 from __future__ import annotations
 
@@ -21,7 +17,7 @@ def main() -> int:
 
     settings = get_settings()
     if not args.dry_run and not settings.anthropic_api_key:
-        print("No ANTHROPIC_API_KEY in .env — run with --dry-run, or add the key first.")
+        print("No ANTHROPIC_API_KEY in .env - run with --dry-run, or add the key first.")
         return 2
 
     trace = tracing.start_case_trace("CASE-HELLO", model_tier="fast", phase="0")

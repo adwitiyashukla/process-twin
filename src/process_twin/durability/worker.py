@@ -1,11 +1,4 @@
-"""Temporal worker entrypoint (brief §8).
-
-    uv run python -m process_twin.durability.worker
-
-Kill it mid-case and start it again: Temporal replays workflow history, completed
-activity results are read back from history instead of re-executed, and the case resumes
-at the step it was on. That is what scripts/demo_durability.sh demonstrates.
-"""
+"""Temporal worker entrypoint (brief §8)."""
 
 from __future__ import annotations
 

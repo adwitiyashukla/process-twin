@@ -1,5 +1,4 @@
-"""FastAPI app. /health from phase 0; explorer endpoints from phase 3; the approvals
-inbox (§7.5) mounts here in phase 4."""
+"""FastAPI app. /health from phase 0; explorer endpoints from phase 3; the approvals"""
 
 from __future__ import annotations
 

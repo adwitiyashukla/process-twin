@@ -1,10 +1,4 @@
-"""Embedding + reranking behind a tiny protocol (brief §7.4, §2).
-
-fastembed (ONNX) instead of sentence-transformers: BGE models on CPU with no torch
-install and no per-embed API cost — the whole point of choosing BGE for a laptop-scale
-project (docs/architecture.md, phase 1). Imports are lazy so unit tests and CI never
-pay the model-download cost.
-"""
+"""Embedding + reranking behind a tiny protocol (brief §7.4, §2)."""
 
 from __future__ import annotations
 
@@ -23,7 +17,7 @@ class FastEmbedEmbedder:
     """BGE dense embeddings via fastembed (downloads the model on first use, ~130MB)."""
 
     def __init__(self, model_name: str) -> None:
-        from fastembed import TextEmbedding  # lazy: see module docstring
+        from fastembed import TextEmbedding
 
         self._model = TextEmbedding(model_name=model_name)
         self.model_name = model_name
@@ -34,13 +28,7 @@ class FastEmbedEmbedder:
 
 
 class HashingEmbedder:
-    """TEST-ONLY deterministic embedder: character-trigram hashing, L2-normalized.
-
-    NOT semantic — it measures lexical overlap. It exists so retrieval *mechanics*
-    (indexing, search, rerank plumbing, k-limits) are unit-testable offline with zero
-    model downloads. Semantic quality is measured only by `make probe` against the
-    real corpus with real BGE models. Never wire this into production paths.
-    """
+    """TEST-ONLY deterministic embedder: character-trigram hashing, L2-normalized."""
 
     def __init__(self, dim: int = 256) -> None:
         self.dim = dim
@@ -60,14 +48,10 @@ class HashingEmbedder:
 
 
 class Reranker:
-    """Cross-encoder wrapper. score(query, texts) -> relevance per text (higher=better).
-
-    Also reused by the phase-4 citation validator: (decision text, cited clause) must
-    score above `citation_relevance_threshold` — same model, same code path.
-    """
+    """Cross-encoder wrapper. score(query, texts) -> relevance per text (higher=better)."""
 
     def __init__(self, model_name: str) -> None:
-        from fastembed.rerank.cross_encoder import TextCrossEncoder  # lazy
+        from fastembed.rerank.cross_encoder import TextCrossEncoder
 
         self._model = TextCrossEncoder(model_name=model_name)
         self.model_name = model_name
@@ -85,13 +69,12 @@ def get_embedder(use_test_embedder: bool = False) -> Embedder:
 
 
 def get_reranker() -> Reranker | None:
-    """None when fastembed (or the model download) is unavailable — retrieval degrades
-    to vector order and says so, rather than failing the whole pipeline."""
+    """None when fastembed (or the model download) is unavailable - retrieval degrades"""
     from process_twin.config import get_settings
 
     try:
         return Reranker(get_settings().reranker_model)
-    except Exception as exc:  # noqa: BLE001 — degradation point, logged loudly
+    except Exception as exc:  # noqa: BLE001 - degradation point, logged loudly
         print(f"  [warn] reranker unavailable ({exc.__class__.__name__}: {exc}); "
               "falling back to vector order")
         return None

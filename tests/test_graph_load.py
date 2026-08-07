@@ -1,6 +1,4 @@
-"""Graph loader mechanics against a recording fake session — proves the Cypher shape
-(constraints, provenance edge per span, delta wiring) without a Neo4j server. The live
-acceptance query (PROVENANCE_COVERAGE: zero orphans) runs in seed_graph on real infra."""
+"""Graph loader mechanics against a recording fake session - proves the Cypher shape"""
 
 from process_twin.extraction.delta_detect import detect_deltas
 from process_twin.graph.loader import load_graph
@@ -67,10 +65,9 @@ def test_every_element_gets_node_and_all_provenance_edges():
     session = FakeSession()
     stats = load_graph(session, *_inputs())
     assert stats["elements"] == 3
-    assert stats["provenance_edges"] == 5  # 2 + 1 + 2 spans
+    assert stats["provenance_edges"] == 5
     derived = [q for q, _ in session.calls if "DERIVED_FROM" in q]
     assert len(derived) == 5
-    # provenance targets typed correctly by source
     assert any("Clause" in q and p.get("ref") == "FFIEC-CIP-¶2"
                for q, p in session.calls if "DERIVED_FROM" in q)
     assert any("CaseLogPattern" in q and p.get("ref") == "PAT-CALLBACK-SKIPPED-SMALL"
@@ -80,7 +77,7 @@ def test_every_element_gets_node_and_all_provenance_edges():
 def test_next_chain_follows_written_sequence():
     session = FakeSession()
     stats = load_graph(session, *_inputs())
-    assert stats["next_edges"] == 1  # EL-verify(2) -> EL-screen(3)
+    assert stats["next_edges"] == 1
     next_calls = [p for q, p in session.calls if "MERGE (a)-[:NEXT]->(b)" in q]
     assert next_calls == [{"a": "EL-verify", "b": "EL-screen"}]
 

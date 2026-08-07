@@ -1,5 +1,4 @@
-"""Neo4j constraints + indexes (brief §5). Uniqueness on every id is what makes the
-loader's MERGE semantics idempotent — re-seeding updates in place, never duplicates."""
+"""Neo4j constraints + indexes (brief §5). Uniqueness on every id is what makes the"""
 
 from __future__ import annotations
 

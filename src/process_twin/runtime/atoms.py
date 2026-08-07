@@ -1,12 +1,4 @@
-"""Atom contract + registry (brief §7.2), plus the phase-0 hello-world atom.
-
-An atom is the smallest governed unit of work: AtomInput -> AtomOutput, always.
-The seven v1 KYC atoms (verify_identity_documents, screen_sanctions_pep,
-assess_jurisdiction_risk, check_beneficial_ownership, compute_risk_rating,
-determine_edd_requirement, final_onboarding_decision) arrive in Phase 4, each grounded
-by retrieval (§7.4). Phase 0 ships one deliberately trivial atom to prove the full
-pipe: model call -> schema validation -> trace with cost in Langfuse.
-"""
+"""Atom contract + registry (brief §7.2), plus the phase-0 hello-world atom."""
 
 from __future__ import annotations
 
@@ -46,11 +38,7 @@ HELLO_SYSTEM = (
 
 
 def run_hello_atom(dry_run: bool = False, trace=None) -> tuple[AtomOutput, float]:
-    """Phase-0 acceptance atom. Returns (validated output, estimated cost in USD).
-
-    dry_run uses a canned model response and touches no network — the exact pattern CI
-    and keyless dev rely on, and the same seam later phases reuse for compiler tests.
-    """
+    """Phase-0 acceptance atom. Returns (validated output, estimated cost in USD)."""
     settings = get_settings()
     atom_input = AtomInput(case_id="CASE-HELLO", step_id="hello_world", payload={})
 
@@ -58,17 +46,17 @@ def run_hello_atom(dry_run: bool = False, trace=None) -> tuple[AtomOutput, float
         if dry_run:
             raw = json.dumps(
                 {
-                    "greeting": "Hello from process-twin (dry run — no model called).",
+                    "greeting": "Hello from process-twin (dry run - no model called).",
                     "confidence": 0.99,
                 }
             )
             in_tok, out_tok = 0, 0
         else:
-            import anthropic  # lazy: dry-run path must not require the package at import time
+            import anthropic
 
             client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
             msg = client.messages.create(
-                model=settings.model_fast,  # cheap tier — ground rule 6
+                model=settings.model_fast,
                 max_tokens=200,
                 system=HELLO_SYSTEM,
                 messages=[{"role": "user", "content": "Run the self-test."}],
@@ -79,7 +67,7 @@ def run_hello_atom(dry_run: bool = False, trace=None) -> tuple[AtomOutput, float
         parsed = json.loads(raw)
         output = AtomOutput(
             result={"greeting": parsed["greeting"]},
-            citations=[],  # citations become mandatory for decision atoms in phase 4 (§7.3)
+            citations=[],
             confidence=float(parsed["confidence"]),
             needs_human=False,
             notes="phase-0 hello atom: proves model call -> schema validation -> traced cost",
@@ -95,19 +83,9 @@ def run_hello_atom(dry_run: bool = False, trace=None) -> tuple[AtomOutput, float
         )
     return output, cost
 
-# ---------------------------------------------------------------- v1 KYC atoms (§7.2)
-#
-# Each atom is deterministic on the parts of the decision that must be auditable
-# (thresholds, list hits, ownership math) and uses the LLM only where judgment is
-# genuinely required. That split is deliberate: an examiner can re-derive every
-# threshold decision by hand, and the eval numbers don't drift with model sampling.
-# Citations come from the clause store via the retriever seam (`clause_ids`), so the
-# citation guardrail has something real to validate.
 
 from process_twin.schemas.case import ApplicantProfile  # noqa: E402
 
-# Written thresholds. These live here (not in config) because they ARE the policy under
-# test — changing one must show up as a code diff in review, not as an env var.
 BO_CERTIFICATION_PCT = 25.0
 HIGH_RISK_JURISDICTION_RISK = "high"
 
@@ -142,8 +120,6 @@ def collect_customer_information(inp: AtomInput) -> AtomOutput:
     )
     missing = [f for f in required if not getattr(p, f, None)]
     if p.tax_id_type == "foreign":
-        # D9: no written procedure exists for foreign-tax-ID-only applicants. A gap is not
-        # a licence to improvise — the case goes to a human, and the gap gets reported.
         return _out({"collected": not missing, "missing_identifiers": missing,
                      "issue": "foreign_tax_id_only_no_written_procedure"},
                     [CLAUSES["cip_identifiers"]], 0.4, needs_human=True,
@@ -176,14 +152,12 @@ def verify_identity_documents(inp: AtomInput) -> AtomOutput:
         return _out({"verified": True, "method": "documentary"},
                     [CLAUSES["cip_documentary"]], 0.93, notes="unexpired primary ID on file")
     if expired_with_receipt:
-        # D2 territory: policy is silent on renewal receipts, so we do NOT auto-accept.
         return _out({"verified": False, "method": "documentary",
                      "issue": "expired_primary_id_with_renewal_receipt"},
                     [CLAUSES["cip_documentary"]], 0.45, needs_human=True,
                     notes="expired primary ID + renewal receipt: written policy silent "
                           "(floor practice accepts with 30-day follow-up) -> human decides")
     if po_box:
-        # D10 territory: practitioners disagree, policy silent -> never auto-decide.
         return _out({"verified": False, "issue": "po_box_address"},
                     [CLAUSES["cip_documentary"]], 0.4, needs_human=True,
                     notes="PO-box address: unresolved practitioner conflict -> human decides")
@@ -194,8 +168,7 @@ def verify_identity_documents(inp: AtomInput) -> AtomOutput:
 
 @register_atom("callback_verification")
 def callback_verification(inp: AtomInput) -> AtomOutput:
-    """Written control with no activity-based exemption (the D6 divergence). The atom
-    performs it unconditionally; the skip is exactly what the delta documents."""
+    """Written control with no activity-based exemption (the D6 divergence). The atom"""
     p = _profile(inp)
     return _out({"callback_performed": True,
                  "expected_activity_usd": p.expected_activity_usd},
@@ -235,9 +208,7 @@ def assess_jurisdiction_risk(inp: AtomInput) -> AtomOutput:
 
 @register_atom("check_beneficial_ownership")
 def check_beneficial_ownership(inp: AtomInput) -> AtomOutput:
-    """The D1 boundary lives here. Written rule: identify owners at >= 25%. Practice
-    scrutinises from 20% in high-risk jurisdictions. Unresolved -> escalate, never
-    silently pick a side."""
+    """The D1 boundary lives here. Written rule: identify owners at >= 25%. Practice"""
     p = _profile(inp)
     if p.applicant_type != "legal_entity":
         return _out({"applicable": False}, [CLAUSES["bo_threshold"]], 0.99,
@@ -269,7 +240,7 @@ def check_beneficial_ownership(inp: AtomInput) -> AtomOutput:
 
 @register_atom("compute_risk_rating")
 def compute_risk_rating(inp: AtomInput) -> AtomOutput:
-    """Deterministic additive scoring — an examiner can re-derive it by hand."""
+    """Deterministic additive scoring - an examiner can re-derive it by hand."""
     p = _profile(inp)
     ctx = inp.context
     score = 0
@@ -318,9 +289,6 @@ def determine_edd_requirement(inp: AtomInput) -> AtomOutput:
     hits = ctx.get("screen_sanctions_pep", {}).get("screening_hits", [])
     bo = ctx.get("check_beneficial_ownership", {})
     p = _profile(inp)
-    # Written triggers, straight from policy — NOT derived from the aggregate risk score.
-    # A 30% owner in a high-risk jurisdiction is an EDD case even when the additive score
-    # lands at "medium"; folding it into the score let exactly that case slip (FAILURES.md).
     high_risk_certified_owner = [
         o.name for o in p.beneficial_owners
         if o.ownership_pct >= BO_CERTIFICATION_PCT
@@ -348,7 +316,7 @@ def determine_edd_requirement(inp: AtomInput) -> AtomOutput:
 
 @register_atom("edd_review")
 def edd_review(inp: AtomInput) -> AtomOutput:
-    """EDD is a human review by design — the atom prepares the file, never clears it."""
+    """EDD is a human review by design - the atom prepares the file, never clears it."""
     ctx = inp.context
     return _out({"edd_prepared": True,
                  "reasons": ctx.get("determine_edd_requirement", {}).get("reasons", [])},
@@ -378,8 +346,7 @@ def final_onboarding_decision(inp: AtomInput) -> AtomOutput:
 
 @register_atom("record_step_note")
 def record_step_note(inp: AtomInput) -> AtomOutput:
-    """Fallback for extracted steps with no mapped atom: keeps the step in the audit
-    trail (with an explicit human flag) instead of silently dropping it."""
+    """Fallback for extracted steps with no mapped atom: keeps the step in the audit"""
     return _out({"recorded": True, "step_id": inp.step_id},
                 [CLAUSES["cdd_risk_profile"]], 0.5, needs_human=True,
                 notes="no atom implements this extracted step -> recorded for human handling")

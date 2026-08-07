@@ -1,15 +1,4 @@
-"""Temporal activities: everything non-deterministic lives HERE, never in workflow code
-(brief §8, the determinism rule).
-
-Why: Temporal replays workflow code from history to rebuild state after a crash. If the
-workflow itself called an LLM, read the clock, or generated a UUID, the replay would take
-a different path than the original run and Temporal would raise a non-determinism error —
-or worse, silently diverge. Activities are recorded as results in history, so on replay
-their outputs are *read back*, not recomputed. That is the whole reason this file exists.
-
-Idempotency: every activity keys on (case_id, step_id). Retries after a partial failure
-must not produce duplicate audit events — the check is `already_recorded`.
-"""
+"""Temporal activities: everything non-deterministic lives HERE, never in workflow code"""
 
 from __future__ import annotations
 
@@ -57,13 +46,7 @@ async def execute_atom(payload: ExecuteAtomInput) -> dict:
 
 @activity.defn
 async def append_audit(payload: AuditInput) -> str:
-    """Append one audit event, idempotently.
-
-    Duplicate source: an activity that wrote its event and then failed before ACKing gets
-    retried by Temporal. Without this guard the case would show the same step twice and
-    the hash chain would encode a lie. The (case_id, step_id, event_type) key makes the
-    retry a no-op that returns the existing hash.
-    """
+    """Append one audit event, idempotently."""
     log = AuditLog()
     for existing in log.replay(payload.case_id):
         if existing.step_id == payload.step_id and existing.event_type == payload.event_type:
@@ -78,8 +61,7 @@ async def append_audit(payload: AuditInput) -> str:
 
 @activity.defn
 async def load_workflow_spec(_: str) -> dict:
-    """Compile the workflow from the derived process graph (activity, not workflow code:
-    it touches the filesystem/database)."""
+    """Compile the workflow from the derived process graph (activity, not workflow code:"""
     import json
 
     from process_twin.runtime.compiler import compile_workflow

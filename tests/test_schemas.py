@@ -1,5 +1,4 @@
-"""Runtime contract tests (§7.2). Strictness is the feature under test: the
-self-correction loop only works if bad output is rejected loudly and specifically."""
+"""Runtime contract tests (§7.2). Strictness is the feature under test: the"""
 
 import pytest
 from pydantic import ValidationError
@@ -24,8 +23,6 @@ def test_confidence_bounds_enforced(bad):
 
 
 def test_extra_fields_forbidden():
-    # An LLM inventing fields must be a validation error, not silent acceptance —
-    # that error text is what gets fed back in the self-correction re-prompt.
     with pytest.raises(ValidationError) as exc:
         AtomOutput(result={}, confidence=0.5, hallucinated_field="x")
     assert "hallucinated_field" in str(exc.value)
@@ -43,7 +40,7 @@ def test_citation_strips_whitespace():
 def test_atom_input_defaults_are_independent():
     a, b = AtomInput(case_id="c1", step_id="s1"), AtomInput(case_id="c2", step_id="s2")
     a.payload["k"] = "v"
-    assert b.payload == {}  # default_factory, not shared mutable default
+    assert b.payload == {}
 
 
 def test_approval_request_roundtrip():
@@ -56,4 +53,4 @@ def test_approval_request_roundtrip():
     )
     restored = ApprovalRequest.model_validate_json(req.model_dump_json())
     assert restored.atom_output.confidence == 0.4
-    assert restored.created_at.tzinfo is not None  # timestamps are always tz-aware
+    assert restored.created_at.tzinfo is not None

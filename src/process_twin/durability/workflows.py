@@ -1,16 +1,4 @@
-"""Temporal workflow: one workflow per case (brief §8).
-
-Interrupt-and-resume is the whole point: a case that hits a HITL gate calls
-`workflow.wait_condition(...)` and the workflow SLEEPS — no process held, no thread
-parked, no timer burning. Days later a human decides, the API signals, and the workflow
-continues from exactly that step. Kill the worker mid-case and restart: Temporal replays
-history, activity results are read back rather than recomputed, and the case resumes at
-the step it was on.
-
-DETERMINISM RULE (interview topic #6): this module contains no LLM calls, no
-`datetime.now()`, no `random`, no file or network I/O. All of it lives in activities.py.
-`scripts/check_determinism.py` greps this file in CI to keep it that way.
-"""
+"""Temporal workflow: one workflow per case (brief §8)."""
 
 from __future__ import annotations
 
@@ -29,8 +17,6 @@ with workflow.unsafe.imports_passed_through():
         load_workflow_spec,
     )
 
-# Exponential backoff for transient LLM/API failures (brief §8). Max 4 attempts: beyond
-# that we are usually re-buying the same failure, and a stuck case belongs in a human queue.
 ATOM_RETRY = RetryPolicy(
     initial_interval=timedelta(seconds=2),
     backoff_coefficient=2.0,
@@ -47,7 +33,7 @@ class CaseWorkflowInput:
 
 @dataclass
 class ApprovalSignal:
-    decision: str  # approve | reject | request_info
+    decision: str
     reviewer: str
     note: str = ""
 
@@ -66,8 +52,7 @@ class CaseWorkflow:
 
     @workflow.query
     def status(self) -> dict:
-        """Queryable mid-flight state — this is what the durability demo shows before and
-        after the worker is killed."""
+        """Queryable mid-flight state - this is what the durability demo shows before and"""
         return {"current_step": self._current_step, "path": list(self._path),
                 "awaiting_human": self._approval is None and self._current_step.endswith("::hitl")}
 
@@ -130,8 +115,7 @@ class CaseWorkflow:
         return {"case_id": payload.case_id, "outcome": outcome, "path": self._path}
 
     async def _await_human(self, case_id: str, step_id: str) -> str:
-        """Sleep until a human decides. This is the interrupt-and-resume primitive: no
-        process is held, and a worker restart resumes exactly here."""
+        """Sleep until a human decides. This is the interrupt-and-resume primitive: no"""
         self._approval = None
         await workflow.execute_activity(
             append_audit,

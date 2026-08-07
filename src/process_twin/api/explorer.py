@@ -1,10 +1,4 @@
-"""Explorer backend (brief §11): graph + delta JSON for the browser view.
-
-Serves from live Neo4j when reachable, else falls back to data/derived/ dumps — so the
-explorer works right after `seed_graph --skip-graph` too. Deviation note: the page uses
-vis-network fed by these endpoints instead of neovis-over-bolt, so no database
-credentials ever reach the browser (docs/architecture.md, phase 3).
-"""
+"""Explorer backend (brief §11): graph + delta JSON for the browser view."""
 
 from __future__ import annotations
 
@@ -32,7 +26,7 @@ def _neo4j_session():
         )
         driver.verify_connectivity()
         return driver
-    except Exception:  # noqa: BLE001 — any failure means: use the derived-file fallback
+    except Exception:  # noqa: BLE001 - any failure means: use the derived-file fallback
         return None
 
 

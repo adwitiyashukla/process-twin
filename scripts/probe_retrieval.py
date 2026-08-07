@@ -1,11 +1,4 @@
-"""Phase-1 acceptance: 20 probe queries against the real corpus, hit@5 >= 0.9.
-
-    make probe                    # requires: make up && make fetch parse index
-    python scripts/probe_retrieval.py --no-rerank   # ablation: vector-only comparison
-
-Reports hit@5 and MRR per probe and overall. Failing probes print what WAS retrieved —
-that diff is the debugging surface (and FAILURES.md material when systematic).
-"""
+"""Phase-1 acceptance: 20 probe queries against the real corpus, hit@5 >= 0.9."""
 
 from __future__ import annotations
 
@@ -15,7 +8,7 @@ from pathlib import Path
 
 import yaml
 
-PASS_THRESHOLD = 0.9  # brief §13 phase-1 acceptance
+PASS_THRESHOLD = 0.9
 
 
 def main() -> int:
@@ -28,7 +21,7 @@ def main() -> int:
 
     retriever = build_default_retriever()
     if args.no_rerank:
-        retriever._reranker = None  # ablation switch, test-visible on purpose
+        retriever._reranker = None
 
     spec = yaml.safe_load(Path(args.probes).read_text(encoding="utf-8"))
     hits, rr_sum, failures = 0, 0.0, []

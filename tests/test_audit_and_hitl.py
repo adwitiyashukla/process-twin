@@ -92,7 +92,7 @@ class TestAuditChain:
             log.append(case_id="C1", step_id=f"s{i}", actor="agent", event_type="e",
                        decision="d", citations=[], confidence=0.9)
         lines = path.read_text(encoding="utf-8").splitlines()
-        path.write_text(lines[0] + "\n" + lines[2] + "\n", encoding="utf-8")  # drop the middle
+        path.write_text(lines[0] + "\n" + lines[2] + "\n", encoding="utf-8")
         intact, problem = log.verify_chain()
         assert not intact and "broken link" in problem
 
@@ -122,7 +122,7 @@ class TestApprovalStore:
         rec = store.create("C", "S", "r", AtomOutput(result={}, confidence=0.1))
         store.decide(rec.request.approval_id, "approve", "adi")
         second = store.decide(rec.request.approval_id, "reject", "someone_else")
-        assert second.decision.decision == "approve"  # first decision stands
+        assert second.decision.decision == "approve"
 
     def test_unknown_approval_raises(self, tmp_path):
         with pytest.raises(KeyError):
@@ -137,7 +137,7 @@ class TestExecutor:
         assert result.outcome == "approved"
         assert not result.escalated
         assert "verify_identity_documents" in result.path or "EL-verify" in result.path
-        assert result.citations  # every decision carried citations
+        assert result.citations
 
     def test_boundary_case_escalates_and_never_auto_decides(self, tmp_path):
         spec = compile_workflow(PROCESS)
@@ -158,8 +158,8 @@ class TestExecutor:
         result = execute_case(spec, "GC-017", BOUNDARY_ENTITY,
                               approval_resolver=lambda *a, **k: "approve",
                               audit=AuditLog(tmp_path / "a.jsonl"))
-        assert result.escalated  # it DID stop for a human…
-        assert "EL-decide" in [r.node_id for r in result.records]  # …and then continued
+        assert result.escalated
+        assert "EL-decide" in [r.node_id for r in result.records]
 
     def test_forced_hitl_gate_from_high_severity_delta(self, tmp_path):
         proc = {**PROCESS, "deltas": [{"id": "DET-001", "severity": "high",
